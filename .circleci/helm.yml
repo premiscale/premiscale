@@ -24,6 +24,7 @@ jobs:
         type: string
         default: helm/
     steps:
+      - checkout
       - helm/install-helm-client
       - run:
           command: helm lint << parameters.chart-path >>
