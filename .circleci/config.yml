@@ -18,29 +18,11 @@ executors:
       - image: cimg/python:3.10.6
 
 
-commands:
-  pypi:
-    description: Publish a package to PyPI.
-    steps:
-      - run:
-          name: Build package.
-          command: python setup.py sdist bdist_wheel
-      - run:
-          name: Publish package to PyPI.
-          command: |
-            pip install twine
-            twine upload dist/* -u $PYPI_USERNAME -p $API_TOKEN
+commands: {}
 
 
 jobs:
-  publish-pypi:
-    executor: python3-10
-    resource_class: small
-    steps:
-      - checkout
-      - pypi
-
-  generate-release:
+  release:
     executor: default
     resource_class: small
     steps:
@@ -61,6 +43,54 @@ jobs:
             echo "$GITHUB_TOKEN" | gh auth login --with-token 2>/dev/null || true
             gh release create "$LATEST_TAG" --generate-notes
 
+  release-pypi:
+    executor: python3-10
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Build package.
+          command: python setup.py sdist bdist_wheel
+      - run:
+          name: Publish package to PyPI.
+          command: |
+            pip install twine
+            twine upload dist/* -u $PYPI_USERNAME -p $API_TOKEN
+
+  release-helm:
+    executor: default
+    resource_class: small
+    parameters:
+      chart-path:
+        description: Path to Helm chart we wish to package.
+        type: string
+        default: helm/
+      github-user:
+        description: Username of the repository owner or collaborator.
+        type: string
+        default: $GITHUB_USERNAME
+      github-token:
+        description: GitHub token env var to reference.
+        type: string
+        default: $GITHUB_TOKEN
+    steps:
+      - run:
+          name: Install chart-releaser
+          command: |
+            wget https://github.com/helm/chart-releaser/releases/download/v1.4.1/chart-releaser_1.4.1_linux_amd64.tar.gz -O chart-releaser.tar.gz
+            tar -zxvf chart-releaser.tar.gz
+            install cr /usr/loca/bin/cr
+            rm LICENSE README.md cr chart-releaser.tar.gz
+      - run:
+          name: 'chart-releaser: package'
+          command: cr package << parameters.chart-path >>
+      - run:
+          name: 'chart-releaser: upload'
+          command: cr upload --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+      - run:
+          name: 'chart-releaser: index'
+          command: cr index --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+
 
 workflows:
   autoscaler:
@@ -68,19 +98,16 @@ workflows:
       - dynamic/continue:
           context: orb-publishing
           modules: |
-            /
             /scripts
             /src
             /tests
-            /docker
+            /docker/autoscaler
+            /docker/influxdb
+            /docker/mysql
             /helm
-          filters:
-            branches:
-              ignore:
-                - master
 
-      - generate-release:
-          name: Generate release from tag
+      - release:
+          name: Create GitHub release from tag
           context: github
           filters:
             branches:
@@ -88,8 +115,17 @@ workflows:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
 
-      - publish-pypi:
+      - release-pypi:
           context: pypi
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - release-helm:
+          context: github
+          chart-path: helm/autoscaler/
           filters:
             branches:
               ignore: /.*/

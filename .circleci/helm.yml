@@ -1,0 +1,36 @@
+version: 2.1
+
+
+orbs:
+  helm: circleci/helm@2.0.1
+
+
+executors:
+  default:
+    docker:
+      - image: cimg/base:stable
+
+
+commands: {}
+
+
+jobs:
+  helm-lint:
+    executor: default
+    resource_class: small
+    parameters:
+      chart-path:
+        description: Path to Helm chart we wish to lint.
+        type: string
+        default: helm/
+    steps:
+      - checkout
+      - helm/install-helm-client
+      - run:
+          command: helm lint << parameters.chart-path >>
+
+workflows:
+  helm:
+    jobs:
+      - helm-lint:
+          chart-path: helm/autoscaler/
