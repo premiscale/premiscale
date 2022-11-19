@@ -4,7 +4,8 @@ FROM ${IMAGE}
 
 USER root
 
-LABEL org.opencontainers.image.description "Libvirt autoscaler Docker image"
+LABEL org.opencontainers.image.description \
+    Libvirt autoscaler Docker image
 
 # Install the Doppler CLI via apt for secrets retrieval.
 RUN apt-get update && apt-get install -y htop apt-transport-https ca-certificates curl wget unzip gnupg && \
