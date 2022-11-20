@@ -88,6 +88,7 @@ jobs:
           command: |
             git config --global user.email "ejd2385@github.com"
             git config --global user.name "Emma Doyle"
+            git reset
             git add << parameters.publish-path >>/*
             git commit -m "Upload autoscaler Helm artifact"
             git push
