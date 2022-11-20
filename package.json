@@ -11,6 +11,7 @@
     "pylint": "./scripts/pylint.sh",
     "develop": "./scripts/develop.sh",
     "clean": "./scripts/clean.sh",
+    "freeze": "pip freeze | grep -v \"file:///\" > \"$(git rev-parse --show-toplevel)\"/requirements.txt",
     "docker:compose:up": "./scripts/compose-up.sh",
     "docker:compose:build": "./scripts/compose-build.sh",
     "docker:compose:down": "./scripts/compose-down.sh"

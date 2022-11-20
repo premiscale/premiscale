@@ -22,9 +22,9 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
-    name='kvm-autoscaler',
+    name='autoscaler',
     version='0.0.1',
-    description='Autoscaling for KVM virtual machines over the libvirt API.',
+    description='Autoscaling for virtual machines over the libvirt API.',
     cmdclass=cmd_classes,
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -37,7 +37,7 @@ setup(
     url = 'https://github.com/bjd2385/autoscaler',
     install_requires=[],
     entry_points={
-        "console_scripts": ["autoscaled = daemon.server:main"]
+        "console_scripts": ["autoscaled = cli.autoscaler:main"]
     },
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/bjd2385/autoscaler/issues',
