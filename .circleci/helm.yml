@@ -74,6 +74,7 @@ jobs:
       - run:
           name: 'helm: upload'
           command: |
+            git add autoscaler-*.tgz
             git stash
             git checkout -b gh-pages origin/gh-pages
             git stash apply
