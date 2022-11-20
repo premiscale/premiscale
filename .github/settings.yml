@@ -6,7 +6,7 @@ repository:
   # See https://docs.github.com/en/rest/reference/repos#update-a-repository for all available settings.
   name: autoscaler
   description: Libvirt autoscaler
-  homepage: helm.aperiodicity.com
+  homepage: https://github.com/bjd2385/autoscaler
   topics: KVM, virtual machine, libvirt, autoscaling, autoscaler
 
   # I want to document processes with this project.
