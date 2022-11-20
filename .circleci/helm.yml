@@ -78,7 +78,7 @@ jobs:
             git stash push *.tgz
             git reset --hard
             git checkout << parameters.pages-branch >>
-            git stash apply stash{0}
+            git stash apply
             mv *.tgz << parameters.publish-path >>
       - run:
           name: 'helm: index'
