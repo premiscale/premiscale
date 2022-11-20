@@ -85,7 +85,7 @@ jobs:
       - run:
           name: 'Push changes: << parameters.pages-branch >>'
           command: |
-            git add .
+            git add << parameters.publish-path >>/*
             git commit -m "Upload autoscaler Helm artifact"
             git push -u origin gh-pages
 
