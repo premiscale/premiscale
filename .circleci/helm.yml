@@ -29,7 +29,7 @@ jobs:
       - run:
           command: helm lint << parameters.chart-path >>
 
-  release-helm:
+  release-development-helm:
     executor: default
     resource_class: small
     parameters:
@@ -37,46 +37,75 @@ jobs:
         description: Path to Helm chart we wish to package.
         type: string
         default: helm/
-      github-user:
-        description: Username of the repository owner or collaborator.
+      chart-type:
+        description: Enum of either development or production (determines whether or not to respect Chart.yaml .version-values).
+        type: enum
+        enum:
+          - development
+          - production
+        default: development
+      publish-path:
+        description: Which directory in gh-pages to publish this Helm chart.
         type: string
-        default: $GITHUB_USERNAME
-      github-token:
-        description: GitHub token env var to reference.
+        default: charts/development
+      pages-branch:
+        description: GitHub pages branch to publish this Helm chart to.
         type: string
-        default: $GITHUB_TOKEN
-      chart-releaser-version:
-        description: Helm project chart-releaser (cr) binary version to install.
-        type: string
-        default: '1.4.1'
+        default: gh-pages
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "bd:7c:f9:c7:c2:b2:14:82:81:f9:25:75:58:dd:83:4a"
+      - checkout
+      - helm/install-helm-client
+      - when:
+          condition:
+            equal:
+              - << parameters.chart-type >>
+              - development
+          steps:
+            - run:
+                name: Replace chart version
+                command: |
+                  sed -i "s@^version:.*@version: 0.0.<< pipeline.number >>@" << parameters.chart-path >>/Chart.yaml
       - run:
-          name: Install chart-releaser
+          name: 'helm: package'
+          command: helm package << parameters.chart-path >> --dependency-update
+      - run:
+          name: 'helm: upload'
           command: |
-            wget https://github.com/helm/chart-releaser/releases/download/v<< parameters.chart-releaser-version >>/chart-releaser_<< parameters.chart-releaser-version >>_linux_amd64.tar.gz -O chart-releaser.tar.gz
-            tar -zxvf chart-releaser.tar.gz
-            install cr /usr/loca/bin/cr
-            rm LICENSE README.md cr chart-releaser.tar.gz
+            git add *.tgz
+            git stash push *.tgz
+            git reset --hard
+            git checkout << parameters.pages-branch >>
+            git stash apply
+            mv *.tgz << parameters.publish-path >>
       - run:
-          name: 'chart-releaser: package'
-          command: cr package << parameters.chart-path >>
+          name: 'helm: index'
+          command: helm repo index --url https://helm.aperiodicity.com/<< parameters.publish-path >> << parameters.publish-path >> --merge << parameters.publish-path >>/index.yaml
       - run:
-          name: 'chart-releaser: upload'
-          command: cr upload --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
-      - run:
-          name: 'chart-releaser: index'
-          command: cr index --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+          name: 'Push changes: << parameters.pages-branch >>'
+          command: |
+            git config --global user.email "ejd2385@github.com"
+            git config --global user.name "Emma Doyle"
+            git reset
+            git add << parameters.publish-path >>/*
+            git commit -m "Upload Helm artifact"
+            git push
 
 workflows:
   helm:
     jobs:
       - helm-lint:
-          chart-path: helm/autoscaler/
+          chart-path: helm/autoscaler
 
-      - release-helm:
+      - release-development-helm:
+          name: 'chart-releaser: publish development chart'
           context: github
-          chart-path: helm/autoscaler/
+          chart-path: helm/autoscaler
           filters:
             branches:
               ignore:
                 - master
+          requires:
+            - helm-lint
