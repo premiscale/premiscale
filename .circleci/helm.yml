@@ -74,7 +74,8 @@ jobs:
       - run:
           name: 'helm: upload'
           command: |
-            git stash *.tgz
+            git add *.tgz
+            git stash
             git checkout -b gh-pages origin/gh-pages
             git stash apply
             mv *.tgz << parameters.publish-path >>
