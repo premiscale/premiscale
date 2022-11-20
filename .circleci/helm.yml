@@ -74,11 +74,10 @@ jobs:
       - run:
           name: 'helm: upload'
           command: |
-            git add autoscaler-*.tgz
-            git stash
+            git stash *.tgz
             git checkout -b gh-pages origin/gh-pages
             git stash apply
-            mv autoscaler-*.tgz << parameters.publish-path >>
+            mv *.tgz << parameters.publish-path >>
       - run:
           name: 'helm: index'
           command: helm repo index --url https://helm.aperiodicity.com/<< parameters.publish-path >> << parameters.publish-path >> --merge << parameters.publish-path >>/index.yaml
@@ -87,7 +86,7 @@ jobs:
           command: |
             git add << parameters.publish-path >>/*
             git commit -m "Upload autoscaler Helm artifact"
-            git push -u origin gh-pages
+            git push
 
 workflows:
   helm:
