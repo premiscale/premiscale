@@ -78,7 +78,7 @@ jobs:
             - run:
                 name: Replace chart version
                 command: |
-                  sed -i "s@^version:.*@version: $CIRCLE_SHA1@" << parameters.chart-path >>/Chart.yaml
+                  sed -i "s@^version:.*@version: 0.0.<< pipeline.number >>@" << parameters.chart-path >>/Chart.yaml
       - run:
           name: 'chart-releaser: package'
           command: cr package << parameters.chart-path >>
