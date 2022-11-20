@@ -106,3 +106,5 @@ workflows:
             branches:
               ignore:
                 - master
+          requires:
+            - helm-lint
