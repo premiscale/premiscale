@@ -76,6 +76,7 @@ jobs:
           command: |
             git add *.tgz
             git stash
+            git reset --hard
             git checkout -b gh-pages origin/gh-pages
             git stash apply
             mv *.tgz << parameters.publish-path >>
