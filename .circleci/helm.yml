@@ -74,11 +74,10 @@ jobs:
       - run:
           name: 'helm: upload'
           command: |
-            git add *.tgz
-            git stash
+            git stash push *.tgz
             git reset --hard
-            git checkout -b << parameters.pages-branch >> origin/<< parameters.pages-branch >>
-            git stash apply
+            git checkout << parameters.pages-branch >>
+            git stash apply stash{0}
             mv *.tgz << parameters.publish-path >>
       - run:
           name: 'helm: index'
