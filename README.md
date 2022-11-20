@@ -55,7 +55,7 @@ At this time, I'm hoping to cover the following items with an initial v0.1.0-rel
       hostGroups:
         group-1:
           # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
-          # managed as a separate group?
+          # managed as a separate group? But they should all be within reach of an ~/.ssh/config.
           - name: localhost
             address: qemu+ssh:///system
           - name: domain-1
