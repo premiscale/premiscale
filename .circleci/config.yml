@@ -150,7 +150,7 @@ workflows:
 
       - release-helm:
           context: github
-          chart-path: helm/autoscaler/
+          chart-path: helm/autoscaler
           package-path: autoscaler/charts/production
           chart-type: production
           filters:

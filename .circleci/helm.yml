@@ -92,12 +92,12 @@ workflows:
   helm:
     jobs:
       - helm-lint:
-          chart-path: helm/autoscaler/
+          chart-path: helm/autoscaler
 
       - release-development-helm:
           name: 'chart-releaser: publish development chart'
           context: github
-          chart-path: helm/autoscaler/
+          chart-path: helm/autoscaler
           filters:
             branches:
               ignore:
