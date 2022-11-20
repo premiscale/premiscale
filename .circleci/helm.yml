@@ -66,7 +66,7 @@ jobs:
           command: |
             wget https://github.com/helm/chart-releaser/releases/download/v<< parameters.chart-releaser-version >>/chart-releaser_<< parameters.chart-releaser-version >>_linux_amd64.tar.gz -O chart-releaser.tar.gz
             tar -zxvf chart-releaser.tar.gz
-            install cr /usr/loca/bin/cr
+            install cr /usr/local/bin/cr
             rm LICENSE README.md cr chart-releaser.tar.gz
       - when:
           condition:
