@@ -86,6 +86,8 @@ jobs:
       - run:
           name: 'Push changes: << parameters.pages-branch >>'
           command: |
+            git config --global user.email "ejd2385@github.com"
+            git config --global user.name "Emma Doyle"
             git add << parameters.publish-path >>/*
             git commit -m "Upload autoscaler Helm artifact"
             git push
