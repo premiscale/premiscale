@@ -56,9 +56,12 @@ At this time, I'm hoping to cover the following items with an initial v0.1.0-rel
         group-1:
           # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
           # managed as a separate group?
-          - qemu+ssh:///system
-          - qemu+ssh://domain-1/system
-          - qemu+ssh://domain-2/system
+          - name: localhost
+            address: qemu+ssh:///system
+          - name: domain-1
+            address: qemu+ssh://domain-1/system
+          - name: domain-2
+            address: qemu+ssh://domain-2/system
 
       autoscalingGroups:
         # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
