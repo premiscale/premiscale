@@ -81,7 +81,7 @@ jobs:
             mv autoscaler-*.tgz << parameters.publish-path >>
       - run:
           name: 'helm: index'
-          command: helm repo index --url https://helm.aperiodicity.com/<< parameters.publish-path >> << parameters.publish-path >>
+          command: helm repo index --url https://helm.aperiodicity.com/<< parameters.publish-path >> << parameters.publish-path >> --merge << parameters.publish-path >>/index.yaml
       - run:
           name: 'Push changes: << parameters.pages-branch >>'
           command: |
