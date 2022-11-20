@@ -74,7 +74,7 @@ jobs:
       - run:
           name: 'helm: upload'
           command: |
-            git stash push *.tgz
+            git stash push autoscaler-*.tgz
             git reset --hard
             git checkout << parameters.pages-branch >>
             git stash apply stash{0}
