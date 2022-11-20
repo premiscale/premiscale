@@ -37,10 +37,6 @@ jobs:
         description: Path to Helm chart we wish to package.
         type: string
         default: helm/
-      package-path:
-        description: Path to upload charts in gh-pages branch.
-        type: string
-        default: autoscaler/charts/development
       chart-type:
         description: Enum of either development or production (determines whether or not to respect Chart.yaml .version-values).
         type: enum
@@ -84,10 +80,10 @@ jobs:
           command: cr package << parameters.chart-path >>
       - run:
           name: 'chart-releaser: upload'
-          command: cr upload --package-path << parameters.package-path >> --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+          command: cr upload --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
       - run:
           name: 'chart-releaser: index'
-          command: cr index --package-path << parameters.package-path >> --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+          command: cr index --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
 
 workflows:
   helm:
