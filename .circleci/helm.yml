@@ -29,7 +29,7 @@ jobs:
       - run:
           command: helm lint << parameters.chart-path >>
 
-  release-helm:
+  release-development-helm:
     executor: default
     resource_class: small
     parameters:
@@ -37,6 +37,17 @@ jobs:
         description: Path to Helm chart we wish to package.
         type: string
         default: helm/
+      package-path:
+        description: Path to upload charts in gh-pages branch.
+        type: string
+        default: autoscaler/charts/development
+      chart-type:
+        description: Enum of either development or production (determines whether or not to respect Chart.yaml .version-values).
+        type: enum
+        enum:
+          - development
+          - production
+        default: development
       github-user:
         description: Username of the repository owner or collaborator.
         type: string
@@ -57,15 +68,25 @@ jobs:
             tar -zxvf chart-releaser.tar.gz
             install cr /usr/loca/bin/cr
             rm LICENSE README.md cr chart-releaser.tar.gz
+      - when:
+          condition:
+            equal:
+              - << parameters.chart-type >>
+              - development
+          steps:
+            - run:
+                name: Replace chart version
+                command: |
+                  sed -i "s@^version:.*@version: $CIRCLE_SHA1@" << parameters.chart-path >>/Chart.yaml
       - run:
           name: 'chart-releaser: package'
           command: cr package << parameters.chart-path >>
       - run:
           name: 'chart-releaser: upload'
-          command: cr upload --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+          command: cr upload --package-path << parameters.package-path >> --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
       - run:
           name: 'chart-releaser: index'
-          command: cr index --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+          command: cr index --package-path << parameters.package-path >> --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
 
 workflows:
   helm:
@@ -73,7 +94,8 @@ workflows:
       - helm-lint:
           chart-path: helm/autoscaler/
 
-      - release-helm:
+      - release-development-helm:
+          name: 'chart-releaser: publish development chart'
           context: github
           chart-path: helm/autoscaler/
           filters:
