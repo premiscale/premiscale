@@ -74,7 +74,7 @@ jobs:
       - run:
           name: 'helm: upload'
           command: |
-            git add .
+            git add *.tgz
             git stash push *.tgz
             git reset --hard
             git checkout << parameters.pages-branch >>
