@@ -53,9 +53,6 @@ jobs:
         type: string
         default: gh-pages
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "bd:7c:f9:c7:c2:b2:14:82:81:f9:25:75:58:dd:83:4a"
       - checkout
       - helm/install-helm-client
       - when:
@@ -83,6 +80,9 @@ jobs:
       - run:
           name: 'helm: index'
           command: helm repo index --url https://helm.aperiodicity.com/<< parameters.publish-path >> << parameters.publish-path >> --merge << parameters.publish-path >>/index.yaml
+      - add_ssh_keys:
+          fingerprints:
+            - "bd:7c:f9:c7:c2:b2:14:82:81:f9:25:75:58:dd:83:4a"
       - run:
           name: 'Push changes: << parameters.pages-branch >>'
           command: |
