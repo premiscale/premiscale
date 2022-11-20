@@ -47,7 +47,7 @@ jobs:
       publish-path:
         description: Which directory in gh-pages to publish this Helm chart.
         type: string
-        default: autoscaler/charts/development
+        default: charts/development
       pages-branch:
         description: GitHub pages branch to publish this Helm chart to.
         type: string
