@@ -68,6 +68,7 @@ jobs:
             tar -zxvf chart-releaser.tar.gz
             sudo install cr /usr/local/bin/cr
             rm LICENSE README.md cr chart-releaser.tar.gz
+      - checkout
       - when:
           condition:
             equal:
