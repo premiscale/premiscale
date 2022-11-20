@@ -23,12 +23,12 @@ At this time, I'm hoping to cover the following items with an initial v0.1.0-rel
           store:
             type: mysql
             connection:
-            ip: localhost
-            port: 3306
-            credentials:
-              env:
-                username: $MYSQL_USERNAME
-                password: $MYSQL_PASSWORD
+              url: localhost
+              port: 3306
+              credentials:
+                env:
+                  username: $MYSQL_USERNAME
+                  password: $MYSQL_PASSWORD
 
         metrics:
           # Define where to store metrics: either in-memory or influxdb, since that's a time-series db I'm familiar with for now.
