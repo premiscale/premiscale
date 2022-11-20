@@ -29,8 +29,54 @@ jobs:
       - run:
           command: helm lint << parameters.chart-path >>
 
+  release-helm:
+    executor: default
+    resource_class: small
+    parameters:
+      chart-path:
+        description: Path to Helm chart we wish to package.
+        type: string
+        default: helm/
+      github-user:
+        description: Username of the repository owner or collaborator.
+        type: string
+        default: $GITHUB_USERNAME
+      github-token:
+        description: GitHub token env var to reference.
+        type: string
+        default: $GITHUB_TOKEN
+      chart-releaser-version:
+        description: Helm project chart-releaser (cr) binary version to install.
+        type: string
+        default: '1.4.1'
+    steps:
+      - run:
+          name: Install chart-releaser
+          command: |
+            wget https://github.com/helm/chart-releaser/releases/download/v<< parameters.chart-releaser-version >>/chart-releaser_<< parameters.chart-releaser-version >>_linux_amd64.tar.gz -O chart-releaser.tar.gz
+            tar -zxvf chart-releaser.tar.gz
+            install cr /usr/loca/bin/cr
+            rm LICENSE README.md cr chart-releaser.tar.gz
+      - run:
+          name: 'chart-releaser: package'
+          command: cr package << parameters.chart-path >>
+      - run:
+          name: 'chart-releaser: upload'
+          command: cr upload --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+      - run:
+          name: 'chart-releaser: index'
+          command: cr index --owner << parameters.github-user >> --git-repo $CIRCLE_REPOSITORY_URL --token << parameters.github-token >>
+
 workflows:
   helm:
     jobs:
       - helm-lint:
           chart-path: helm/autoscaler/
+
+      - release-helm:
+          context: github
+          chart-path: helm/autoscaler/
+          filters:
+            branches:
+              ignore:
+                - master

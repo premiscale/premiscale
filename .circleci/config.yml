@@ -73,11 +73,15 @@ jobs:
         description: GitHub token env var to reference.
         type: string
         default: $GITHUB_TOKEN
+      chart-releaser-version:
+        description: Helm project chart-releaser (cr) binary version to install.
+        type: string
+        default: '1.4.1'
     steps:
       - run:
           name: Install chart-releaser
           command: |
-            wget https://github.com/helm/chart-releaser/releases/download/v1.4.1/chart-releaser_1.4.1_linux_amd64.tar.gz -O chart-releaser.tar.gz
+            wget https://github.com/helm/chart-releaser/releases/download/v<< parameters.chart-releaser-version >>/chart-releaser_<< parameters.chart-releaser-version >>_linux_amd64.tar.gz -O chart-releaser.tar.gz
             tar -zxvf chart-releaser.tar.gz
             install cr /usr/loca/bin/cr
             rm LICENSE README.md cr chart-releaser.tar.gz
