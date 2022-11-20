@@ -136,6 +136,10 @@ workflows:
             /docker/influxdb
             /docker/mysql
             /helm
+          filters:
+            branches:
+              ignore:
+                - master
 
       - release:
           name: Create GitHub release from tag
