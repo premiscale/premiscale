@@ -77,7 +77,7 @@ jobs:
             git add *.tgz
             git stash
             git reset --hard
-            git checkout -b gh-pages origin/gh-pages
+            git checkout -b << parameters.pages-branch >> origin/<< parameters.pages-branch >>
             git stash apply
             mv *.tgz << parameters.publish-path >>
       - run:
