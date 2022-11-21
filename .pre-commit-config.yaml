@@ -8,7 +8,7 @@ repos:
       - id: check-merge-conflict
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.982
+    rev: v0.991
     hooks:
       - id: mypy
         args:
@@ -24,6 +24,6 @@ repos:
           - -x
 
   - repo: https://github.com/bjd2385/circleci-config-pre-commit-hook
-    rev: v1.0.4
+    rev: v1.1.1
     hooks:
       - id: circleci-config-validate
