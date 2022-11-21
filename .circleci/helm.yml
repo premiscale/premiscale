@@ -3,109 +3,32 @@ version: 2.1
 
 orbs:
   helm: circleci/helm@2.0.1
+  general: bjd2385/general@0.3.0
 
 
-executors:
-  default:
-    docker:
-      - image: cimg/base:stable
+executors: {}
 
 
 commands: {}
 
 
-jobs:
-  helm-lint:
-    executor: default
-    resource_class: small
-    parameters:
-      chart-path:
-        description: Path to Helm chart we wish to lint.
-        type: string
-        default: helm/
-    steps:
-      - checkout
-      - helm/install-helm-client
-      - run:
-          command: helm lint << parameters.chart-path >>
+jobs: {}
 
-  release-development-helm:
-    executor: default
-    resource_class: small
-    parameters:
-      chart-path:
-        description: Path to Helm chart we wish to package.
-        type: string
-        default: helm/
-      chart-type:
-        description: Enum of either development or production (determines whether or not to respect Chart.yaml .version-values).
-        type: enum
-        enum:
-          - development
-          - production
-        default: development
-      publish-path:
-        description: Which directory in gh-pages to publish this Helm chart.
-        type: string
-        default: charts/development
-      pages-branch:
-        description: GitHub pages branch to publish this Helm chart to.
-        type: string
-        default: gh-pages
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "bd:7c:f9:c7:c2:b2:14:82:81:f9:25:75:58:dd:83:4a"
-      - checkout
-      - helm/install-helm-client
-      - when:
-          condition:
-            equal:
-              - << parameters.chart-type >>
-              - development
-          steps:
-            - run:
-                name: Replace chart version
-                command: |
-                  sed -i "s@^version:.*@version: 0.0.<< pipeline.number >>@" << parameters.chart-path >>/Chart.yaml
-      - run:
-          name: 'helm: package'
-          command: helm package << parameters.chart-path >> --dependency-update
-      - run:
-          name: 'helm: upload'
-          command: |
-            git add *.tgz
-            git stash push *.tgz
-            git reset --hard
-            git checkout << parameters.pages-branch >>
-            git stash apply
-            mv *.tgz << parameters.publish-path >>
-      - run:
-          name: 'helm: index'
-          command: helm repo index --url https://helm.aperiodicity.com/<< parameters.publish-path >> << parameters.publish-path >> --merge << parameters.publish-path >>/index.yaml
-      - run:
-          name: 'Push changes: << parameters.pages-branch >>'
-          command: |
-            git config --global user.email "ejd2385@github.com"
-            git config --global user.name "Emma Doyle"
-            git reset
-            git add << parameters.publish-path >>/*
-            git commit -m "Upload Helm artifact"
-            git push
 
 workflows:
   helm:
     jobs:
-      - helm-lint:
+      - general/helm-lint:
           chart-path: helm/autoscaler
 
-      - release-development-helm:
-          name: 'chart-releaser: publish development chart'
+      - general/helm-release-github-pages:
+          name: 'helm: release development chart'
           context: github
           chart-path: helm/autoscaler
+          git-ssh-key-fingerprint: "bd:7c:f9:c7:c2:b2:14:82:81:f9:25:75:58:dd:83:4a"
           filters:
             branches:
               ignore:
                 - master
           requires:
-            - helm-lint
+            - general/helm-lint
