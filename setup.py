@@ -33,7 +33,7 @@ setup(
     keywords='kvm, virtualization, virtual machine, vm, autoscaler, autoscaling, libvirt',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
-    python_requires='>=3.8, <4',
+    python_requires='>=3.10, <4',
     url = 'https://github.com/bjd2385/autoscaler',
     install_requires=[],
     entry_points={

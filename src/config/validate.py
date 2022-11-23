@@ -1,0 +1,3 @@
+"""
+Validate a config file.
+"""
