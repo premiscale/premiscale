@@ -10,7 +10,7 @@ At the time I've started this project, while most public clouds offer autoscalin
 
 At this time, I'm hoping to cover the following items with an initial v0.1.0-release.
 
-1. Collect metrics for disk IO, CPU and memory, provided by the libvirt API, and form a decision, based on a configuration file in YAML format /etc/autoscaler/autoscaler.yaml, whether or not to scale up or down, or wait an additional configured period before the daemon checks in on these metrics again.
+1. Collect metrics for disk IO, CPU and memory, provided by the libvirt API, and form a decision, based on a configuration file in YAML format /etc/autoscaler/autoscale.yaml, whether or not to scale up or down, or wait an additional configured period before the daemon checks in on these metrics again.
 
 2. Provision new VMs on a list of hosts, reachable with the libvirt API.
     - Eventually, a strategy should be respected for placing VMs, such as round-robin (rr), resource-based (free resources) i.e. the host with the most free CPU, memory and disk IO should be selected), or first-come-first-utilized, so hosts are used one-by-one as necessary. Eventually, it would be neat if plugins could be used with this tool to control hosts as well (or maybe that's for a separate tool altogether).
