@@ -29,7 +29,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Emma Doyle',
-    author_email='bjd2385.linux@gmail.com',
+    author_email='ejd2385@gmail.com',
     keywords='kvm, virtualization, virtual machine, vm, autoscaler, autoscaling, libvirt',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
@@ -37,7 +37,7 @@ setup(
     url = 'https://github.com/bjd2385/autoscaler',
     install_requires=[],
     entry_points={
-        "console_scripts": ["autoscaled = cli.autoscaler:main"]
+        "console_scripts": ["autoscale = cli.autoscaler:cli"]
     },
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/bjd2385/autoscaler/issues',

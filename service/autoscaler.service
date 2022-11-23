@@ -2,7 +2,7 @@
 Description=KVM autoscaler
 
 [Service]
-ExecStart=autoscaler
+ExecStart=autoscaler -d
 
 [Install]
 WantedBy=multi-user.target
