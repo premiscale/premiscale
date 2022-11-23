@@ -14,4 +14,4 @@ fi
 sudo apt install -y bats libvirt-dev
 
 conda activate autoscaler
-#pip install setupext_janitor pylint mypy
+pip install -r requirements.txt

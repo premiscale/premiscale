@@ -1,1 +1,2 @@
+libvirt-python==8.9.0
 setupext-janitor==1.1.2

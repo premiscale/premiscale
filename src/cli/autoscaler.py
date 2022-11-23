@@ -1,5 +1,5 @@
 """
-Primary autoscaler interface.
+Autoscaler interface.
 """
 
 
@@ -26,8 +26,6 @@ def cli() -> None:
     )
 
     args = parser.parse_args()
-
-    print(args)
 
 
 if __name__ == '__main__':
