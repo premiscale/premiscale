@@ -11,8 +11,32 @@ executors: {}
 commands: {}
 
 
-jobs: {}
+jobs:
+  validate-config-schema:
+    executor: general/python-3-10
+    resource_class: small
+    parameters:
+      schema-path:
+        type: string
+        default: config/schema.yaml
+        description: Path to the schema file to validate with Yamale.
+      path:
+        type: string
+        default: .
+        description: Path containing YAML files to validate.
+    steps:
+      - run:
+          description: Install yamale
+          command: pip install yamale
+      - run:
+          description: Validate Yamale schema
+          command: |
+            yamale << parameters.path >> -s << parameters.schema-path >>
 
 
-workflows: {}
-  #schema: {}
+workflows:
+  schema:
+    jobs:
+      - validate-config-schema:
+          schema-path: schema/schema.yaml
+          path: tests/schema

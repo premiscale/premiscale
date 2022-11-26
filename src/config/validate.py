@@ -5,7 +5,7 @@ Validate a config file.
 import yamale
 
 
-schema = yamale.make_schema('config/schema.yaml')
+schema = yamale.make_schema('schema/schema.yaml')
 
 
 def validate() -> bool:
