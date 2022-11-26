@@ -32,6 +32,7 @@ workflows:
             /docker/influxdb
             /docker/mysql
             /helm
+            /schema
           filters:
             branches:
               ignore:
