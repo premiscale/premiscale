@@ -17,7 +17,7 @@ def cli() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true', default=False,
-        help='Start the autoscaling daemon.'
+        help='Start the autoscaling daemon. By default, this tool is a minimal client.'
     )
 
     parser.add_argument(

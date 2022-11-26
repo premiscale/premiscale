@@ -16,13 +16,13 @@ repos:
           - --non-interactive
           - --config-file=.mypy.ini
 
-  - repo: https://github.com/mgedmin/check-manifest
-    rev: "0.48"
-    hooks:
-      - id: check-manifest
-        args:
-          - --ignore
-          - "*.json,*.txt,*.yaml,.mypy.ini,config/*.md,docker/*.sh,,examples/*,helm/*,package/*,scripts/*,service/*,tests/*,.circleci/*,.pylintrc,.tool-versions,docker/**/*,helm/**/*,examples/**/*"
+  # - repo: https://github.com/mgedmin/check-manifest
+  #   rev: "0.48"
+  #   hooks:
+  #     - id: check-manifest
+  #       args:
+  #         - --ignore
+  #         - "*.json,*.txt,*.yaml,.mypy.ini,config/*.md,docker/*.sh,,examples/*,helm/*,package/*,scripts/*,service/*,tests/*,.circleci/*,.pylintrc,.tool-versions,docker/**/*,helm/**/*,examples/**/*"
 
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
