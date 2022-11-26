@@ -26,10 +26,10 @@ jobs:
         description: Path containing YAML files to validate.
     steps:
       - run:
-          description: Install yamale
+          name: Install yamale
           command: pip install yamale
       - run:
-          description: Validate Yamale schema
+          name: Validate Yamale schema
           command: |
             yamale << parameters.path >> -s << parameters.schema-path >>
 
