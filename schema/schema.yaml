@@ -18,8 +18,8 @@ state:
       port: integer(min=1, max=65535)
       credentials:
         env:
-          username: str()
-          password: str()
+          username: MYSQL_USERNAME
+          password: MYSQL_PASSWORD
 ---
 metrics:
   type: influxdb
@@ -34,9 +34,9 @@ metrics:
   evaluate: int()
   trailing: int()
 ---
-hostGroups:
+hostGroups: map(include('hostGroup'), key=, min=1)
 ---
-hostGroup:
+hostGroup: list()
 ---
 autoscalingGroups:
 ---
