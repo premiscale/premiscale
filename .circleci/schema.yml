@@ -1,0 +1,43 @@
+version: 2.1
+
+
+orbs:
+  general: bjd2385/general@0.3.3
+
+
+executors: {}
+
+
+commands: {}
+
+
+jobs:
+  validate-config-schema:
+    executor: general/python-3-10
+    resource_class: small
+    parameters:
+      schema-path:
+        type: string
+        default: config/schema.yaml
+        description: Path to the schema file to validate with Yamale.
+      path:
+        type: string
+        default: .
+        description: Path containing YAML files to validate.
+    steps:
+      - run:
+          name: Install yamale
+          command: pip install yamale
+      - checkout
+      - run:
+          name: Validate Yamale schema
+          command: |
+            yamale << parameters.path >> -s << parameters.schema-path >>
+
+
+workflows:
+  schema:
+    jobs:
+      - validate-config-schema:
+          schema-path: schema/schema.yaml
+          path: tests/schema

@@ -32,6 +32,7 @@ workflows:
             /docker/influxdb
             /docker/mysql
             /helm
+            /schema
           filters:
             branches:
               ignore:
@@ -44,7 +45,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/pypi-release:
           context: pypi
@@ -52,7 +53,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/helm-release-github-pages:
           name: 'helm: release production chart'
@@ -65,4 +66,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
