@@ -36,7 +36,7 @@ metrics:
 ---
 hostGroups: map(include('hostGroup'), key=, min=1)
 ---
-hostGroup: list()
+hostGroup: list(str())
 ---
 autoscalingGroups:
 ---
