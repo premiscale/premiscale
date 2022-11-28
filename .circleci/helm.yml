@@ -3,7 +3,7 @@ version: 2.1
 
 orbs:
   helm: circleci/helm@2.0.1
-  general: bjd2385/general@0.4.0
+  general: bjd2385/general@0.4.2
 
 
 workflows:
