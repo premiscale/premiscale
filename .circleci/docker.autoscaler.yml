@@ -1,17 +1,8 @@
 version: 2.1
 
 
-executors: {}
-
-
 orbs:
-  general: bjd2385/general@0.3.3
-
-
-commands: {}
-
-
-jobs: {}
+  general: bjd2385/general@0.4.2
 
 
 workflows:
