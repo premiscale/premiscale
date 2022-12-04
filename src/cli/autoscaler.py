@@ -4,6 +4,8 @@ Autoscaler interface.
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from config import validate
+from utils import errprint
 
 
 def cli() -> None:
@@ -26,6 +28,11 @@ def cli() -> None:
     )
 
     args = parser.parse_args()
+
+    with open(args.config, 'r') as conf:
+        msg, ret = validate(conf)
+        if not ret:
+            errprint(f'Config file is not valid: {msg}')
 
 
 if __name__ == '__main__':
