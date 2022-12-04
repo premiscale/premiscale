@@ -9,5 +9,5 @@ workflows:
   schema:
     jobs:
       - general/pypi-yamale:
-          schema-path: schema/schema.yaml
+          schema-path: conf/schema.yaml
           path: tests/schema
