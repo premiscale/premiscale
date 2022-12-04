@@ -6,6 +6,7 @@ Autoscaler interface.
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from config import validate, config
 from utils import errprint
+from .. import __version__
 
 
 def cli() -> None:
@@ -19,12 +20,17 @@ def cli() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true', default=False,
-        help='Start the autoscaling daemon. By default, this tool is a minimal client.'
+        help='Start the autoscaling daemon.'
     )
 
     parser.add_argument(
         '-c', '--config', type=str, default='/etc/autoscaler/autoscale.conf',
         help='Configuration file to use.'
+    )
+
+    parser.add_argument(
+        '--version', 'version', type=str, default=__version__,
+        help='Show autoscaler version.'
     )
 
     args = parser.parse_args()
@@ -34,6 +40,7 @@ def cli() -> None:
         msg, ret = validate(conf)
         if not ret:
             errprint(f'Config file is not valid:\n\n{msg}')
+
 
 
 if __name__ == '__main__':
