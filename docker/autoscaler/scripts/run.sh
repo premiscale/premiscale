@@ -1,4 +1,5 @@
 #! /bin/bash
 # Start the backend api.
 
-sleep 3600
+autoscale --version
+autoscale --daemon

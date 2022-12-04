@@ -35,3 +35,14 @@ repos:
     rev: v1.1.1
     hooks:
       - id: circleci-config-validate
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint
+        args:
+          - docker/autoscaler/Dockerfile
+          - docker/influxdb/Dockerfile
+          - docker/mysql/Dockerfile
+          - --config
+          - .hadolint.yaml
