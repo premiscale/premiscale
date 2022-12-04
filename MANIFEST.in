@@ -1,2 +1,2 @@
-recursive-include config *.yaml
+recursive-include conf *.yaml
 recursive-include src *.py
