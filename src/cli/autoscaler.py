@@ -6,7 +6,7 @@ Autoscaler interface.
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from config import validate, config
 from utils import errprint
-from .. import __version__
+from version import __version__
 
 
 def cli() -> None:
@@ -29,11 +29,15 @@ def cli() -> None:
     )
 
     parser.add_argument(
-        '--version', 'version', type=str, default=__version__,
+        '--version', action='store_true', default=False,
         help='Show autoscaler version.'
     )
 
     args = parser.parse_args()
+
+    if args.version:
+        print(f'autoscale v{__version__}')
+        exit(0)
 
     config.make_default(args.config)
     with open(args.config, 'r') as conf:
