@@ -3,7 +3,7 @@
   "description": "Autoscaling for KVM virtual machines over the libvirt API",
   "repository": "git@github.com:bjd2385/autoscaler.git",
   "author": "Emma Doyle <ejd2385.linux@gmail.com>",
-  "license": "MIT",
+  "license": "GPLv3",
   "private": true,
   "scripts": {
     "install:dependencies": "./scripts/dependencies.sh",
