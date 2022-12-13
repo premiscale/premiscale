@@ -8,10 +8,8 @@ repository:
   description: Libvirt autoscaler
   homepage: https://github.com/bjd2385/autoscaler
   topics: KVM, virtual machine, libvirt, autoscaling, autoscaler
-
-  # I want to document processes with this project.
+  private: true
   has_wiki: true
-
   has_projects: false
 
 branches:
