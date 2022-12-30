@@ -23,10 +23,6 @@ workflows:
             /docker/mysql
             /helm
             /conf
-          filters:
-            branches:
-              ignore:
-                - master
 
       - general/github-release:
           name: Create GitHub release from tag
