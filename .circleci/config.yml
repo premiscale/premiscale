@@ -13,7 +13,7 @@ workflows:
   autoscaler:
     jobs:
       - dynamic/continue:
-          context: orb-publishing
+          context: circleci
           modules: |
             /scripts
             /src

@@ -1,7 +1,5 @@
 # libvirt autoscaler
 
-[![bjd2385](https://circleci.com/gh/bjd2385/autoscaler.svg?style=svg&circle-token=938cb53c2e72e9aa088b5adb106e9db6c4b68486)](https://github.com/bjd2385/autoscaler)
-
 This project is a PoC for autoscaling via [libvirt](https://libvirt.org/) virtual machines (primarily KVM-based).
 
 At the time I've started this project, while most public clouds offer autoscaling controllers, there don't appear to be _any_ open source initiatives, let alone one that utilizes the libvirt API. It's my opinion that many on-premise clouds may benefit from such a controller.
