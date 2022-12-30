@@ -29,19 +29,19 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Emma Doyle',
-    author_email='ejd2385@gmail.com',
+    author_email='emma@premiscale.com',
     keywords='kvm, virtualization, virtual machine, vm, autoscaler, autoscaling, libvirt',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=3.10, <4',
-    url = 'https://github.com/bjd2385/autoscaler',
+    url = 'https://github.com/premiscale/autoscaler',
     install_requires=[],
     entry_points={
         "console_scripts": ["autoscale = cli.autoscaler:cli"]
     },
     project_urls={  # Optional
-        'Bug Reports': 'https://github.com/bjd2385/autoscaler/issues',
-        'Source': 'https://github.com/bjd2385/autoscaler'
+        'Bug Reports': 'https://github.com/premiscale/autoscaler/issues',
+        'Source': 'https://github.com/premiscale/autoscaler'
     },
     include_package_data=True,
     classifiers=[
