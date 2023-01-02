@@ -1,42 +1,36 @@
 # https://github.com/23andMe/Yamale
 version: enum('v1')
 scaling:
-  databases:
-    state: include('state')
-    metrics: include('metrics')
+  databases: map(include('databases'), min=2, max=2)
   hostGroups: list(include('hostGroups'), min=1)
   autoscalingGroups: list(include('autoscalingGroups'), min=1)
 ---
-databases: map(include('database'), key=, min=2, max=2)
----
-database:
+databases:
+  state: include('state')
+  metrics: include('metrics')
 ---
 state:
   type: mysql
-    connection:
-      url: str()
-      port: integer(min=1, max=65535)
-      credentials:
-        env:
-          username: MYSQL_USERNAME
-          password: MYSQL_PASSWORD
+  connection: include('connection')
 ---
 metrics:
   type: influxdb
-  connection:
-    url: str()
-    port: integer(min=1, max=65535)
-    credentials:
-      env:
-        username: str()
-        password: str()
-  interval: int()
-  evaluate: int()
-  trailing: int()
+  connection: include('connection')
+  interval: int(min=0)
+  evaluate: int(min=0)
+  trailing: int(min=0)
 ---
-hostGroups: map(include('hostGroup'), key=, min=1)
+connection:
+  url: str()
+  port: integer(min=1, max=65535)
+  credentials:
+    env:
+      username: USERNAME
+      password: PASSWORD
 ---
-hostGroup: list(str())
+hostGroups: map(include('hostGroup'), key=str(equals='hostGroup'), min=1)
+---
+hostGroup: list(map())
 ---
 autoscalingGroups:
 ---
