@@ -1,43 +1,71 @@
-# https://github.com/23andMe/Yamale
-version: enum('v1')
+version: enum('v1-alpha1')
+agent: map()
 scaling:
-  databases:
-    state: include('state')
-    metrics: include('metrics')
-  hostGroups: list(include('hostGroups'), min=1)
-  autoscalingGroups: list(include('autoscalingGroups'), min=1)
+  databases: include('databases')
+  hostGroups: include('hostGroups')
+  autoscalingGroups: include('autoscalingGroups')
 ---
-databases: map(include('database'), key=, min=2, max=2)
----
-database:
+databases:
+  state: include('state')
+  metrics: include('metrics')
 ---
 state:
-  type: mysql
-    connection:
-      url: str()
-      port: integer(min=1, max=65535)
-      credentials:
-        env:
-          username: MYSQL_USERNAME
-          password: MYSQL_PASSWORD
+  type: enum('mysql')
+  connection: include('connection')
 ---
 metrics:
-  type: influxdb
-  connection:
-    url: str()
-    port: integer(min=1, max=65535)
-    credentials:
-      env:
-        username: str()
-        password: str()
-  interval: int()
-  evaluate: int()
-  trailing: int()
+  type: enum('influxdb')
+  connection: include('connection')
+  interval: int(min=0)
+  evaluate: int(min=0)
+  trailing: int(min=0)
 ---
-hostGroups: map(include('hostGroup'), key=, min=1)
+connection:
+  url: str(min=1)
+  credentials:
+    env:
+      username: str(min=1)
+      password: str(min=1)
 ---
-hostGroup: list(str())
+hostGroups: map(include('hostGroup'), min=1)
+---
+hostGroup: list(include('hostGroupMember'), min=1)
+---
+hostGroupMember:
+  name: str(min=1)
+  address: str(min=1)
 ---
 autoscalingGroups:
+  type: enum('prefix', 'postfix', 'none')
+  # Create new VMs prefix- or postfixed with numbers or hashes.
+  enumerate: enum('numerical', 'hash')
+  groups: include('groups')
 ---
-autoscalingGroup:
+groups: map(include('group'), min=1)
+---
+group:
+  image: str(min=1)
+  name: str(min=1)
+  imageMigration: enum('migrate', 'centralized')
+  cloud-init:
+    inline: str(min=1)
+    file: str(min=1)
+  hostGroups: any(include('hostGroups'), list(min=1))
+  replacement:
+    strategy: enum('rollingUpdate')
+    maxUnavailable: int(min=1)
+  networking:
+    # Ignore in the case that the users' cloud-init scripts perform the networking.
+    type: enum('static', 'dynamic', 'ignore')
+    addresses: list(str(min=1), min=1)
+    subnet: str(min=1)
+    gateway: str(min=1)
+  scaling:
+    maxNodes: int(min=0)
+    minNodes: int(min=0)
+    increment: int(min=0)
+    cooldown: int(min=0)
+  metrics:
+    io: int(min=0)
+    cpu: int(min=0, max=100)
+    memory: int(min=0, max=100)

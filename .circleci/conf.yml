@@ -9,5 +9,11 @@ workflows:
   schema:
     jobs:
       - general/pypi-yamale:
+          name: yamale [<< matrix.path >>]
+          matrix:
+            parameters:
+              path:
+                - tests/schema
+                - conf/default.yaml
+            alias: yamale
           schema-path: conf/schema.yaml
-          path: tests/schema

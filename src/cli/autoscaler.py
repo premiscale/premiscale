@@ -4,8 +4,10 @@ Autoscaler interface.
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from config import validate, config
+from config.validate import validate
+from config.config import make_default
 from utils import errprint
+
 from version import __version__
 
 
@@ -39,7 +41,7 @@ def cli() -> None:
         print(f'autoscale v{__version__}')
         exit(0)
 
-    config.make_default(args.config)
+    make_default(args.config)
     with open(args.config, 'r') as conf:
         msg, ret = validate(conf)
         if not ret:
