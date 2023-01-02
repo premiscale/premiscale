@@ -8,7 +8,7 @@ from typing import Tuple
 import yamale
 
 
-def validate(config: str, schema: str = 'schema/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: str, schema: str = '../../schema/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 

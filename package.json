@@ -1,8 +1,8 @@
 {
-  "name": "kvm-autoscaler",
+  "name": "libvirt-autoscaler",
   "description": "Autoscaling for KVM virtual machines over the libvirt API",
-  "repository": "git@github.com:bjd2385/autoscaler.git",
-  "author": "Emma Doyle <ejd2385.linux@gmail.com>",
+  "repository": "git@github.com:premiscale/autoscaler.git",
+  "author": "Emma Doyle <emma@premiscale.com>",
   "license": "GPLv3",
   "private": true,
   "scripts": {
