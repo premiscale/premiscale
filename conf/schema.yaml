@@ -1,4 +1,4 @@
-version: enum('v1-alpha')
+version: enum('v1-alpha1')
 agent: map()
 scaling:
   databases: include('databases')

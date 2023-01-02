@@ -1,4 +1,4 @@
-version: v1-alpha
+version: v1-alpha1
 agent: {}
 scaling:
   databases:
