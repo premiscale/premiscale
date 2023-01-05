@@ -5,7 +5,7 @@ setup: true
 
 
 orbs:
-  dynamic: bjd2385/dynamic-continuation@3.4.0
+  dynamic: bjd2385/dynamic-continuation@3.4.1
   general: bjd2385/general@0.4.2
 
 
