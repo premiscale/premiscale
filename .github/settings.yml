@@ -1,11 +1,7 @@
 _extends: .github
 
 repository:
-  # See https://docs.github.com/en/rest/reference/repos#update-a-repository for all available settings.
   name: autoscaler
   description: Libvirt autoscaler
   homepage: https://github.com/premiscale/autoscaler
   topics: KVM, virtual machine, libvirt, autoscaling, autoscaler
-  private: true
-  has_wiki: false
-  has_projects: false
