@@ -1,3 +1,4 @@
+{{ if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -5,8 +6,9 @@ metadata:
 spec:
   selector:
     app.kubernetes.io/name: {{ .Chart.Name }}
+  {{- with .Values.service.ports }}
   ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
+    {{- toYaml $.Values.service.ports | nindent 4 }}
+  {{- end }}
   type: {{ .Values.service.type }}
+{{ end }}`

@@ -20,5 +20,5 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.resources }}
           resources:
-            {{ toYaml $.Values.resources | nindent 10 }}
+            {{- toYaml $.Values.resources | nindent 10 }}
           {{- end }}
