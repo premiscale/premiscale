@@ -11,5 +11,5 @@ LABEL org.opencontainers.image.description \
 # Install the Doppler CLI via apt for secrets retrieval.
 RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
 
-ENTRYPOINT [ "doppler", "run", "--", "/entrypoint.sh" ]
+ENTRYPOINT [ "doppler", "run", "/entrypoint.sh" ]
 CMD [ "influxd" ]

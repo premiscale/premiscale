@@ -1,0 +1,71 @@
+global:
+  imageRegistry: docker.ops.premiscale.com
+  imagePullSecrets:
+    - nexus-docker-registry
+  storageClass: longhorn
+
+mysql:
+  image:
+    registry: docker.ops.premiscale.com
+    repository: mysql
+    tag: latest
+    pullPolicy: Always
+
+  architecture: standalone
+
+  auth:
+    existingSecret: mysql-passwords
+    database: autoscaler
+    username: autoscaler
+    replicationUser: autoscaler
+
+  # Eventually I'll need these
+  # https://github.com/bitnami/charts/blob/main/bitnami/mysql/values.yaml#L149
+  initdbScripts: {}
+
+  primary:
+    name: primary
+
+    resources:
+      requests:
+        cpu: 0.5
+        memory: 500Mi
+      limits:
+        cpu: 1.0
+        memory: 1Gi
+
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+
+    extraEnvVarsSecret: doppler
+
+    containerSecurityContext:
+      enabled: true
+      runAsUser: 0
+      runAsNonRoot: false
+
+  # Only necessary if architecture is set to replication.
+  # secondary:
+  #   name: secondary
+
+  #   resources:
+  #     requests:
+  #       cpu: 0.5
+  #       memory: 500Mi
+  #     limits:
+  #       cpu: 1.0
+  #       memory: 1Gi
+
+  #   persistence:
+  #     enabled: true
+  #     storageClass: longhorn
+  #     accessModes:
+  #       - ReadWriteOnce
+  #     size: 1Gi
+
+  metrics:
+    enabled: false
