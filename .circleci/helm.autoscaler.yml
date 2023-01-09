@@ -1,0 +1,22 @@
+version: 2.1
+
+
+orbs:
+  general: bjd2385/general@0.5.3
+
+
+workflows:
+  helm-autoscaler:
+    jobs:
+      - general/helm-lint:
+          name: helm lint [helm/autoscaler]
+          chart-path: helm/autoscaler
+
+      - general/nexus-helm:
+          name: helm build and push [helm/autoscaler]
+          context: nexus
+          path: helm/autoscaler
+          repo-name: premiscale
+          version: 0.0.<< pipeline.number >>
+          requires:
+            - helm lint [helm/autoscaler]

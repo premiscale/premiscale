@@ -2,17 +2,15 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.4.2
+  general: bjd2385/general@0.5.3
 
 
 workflows:
   docker-mysql:
     jobs:
-      - general/github-ghcr:
-          name: "Docker: mysql"
-          context:
-            - github
+      - general/nexus-docker:
+          name: docker [mysql]
           image-name: mysql
-          args: ''
-          commit-tag: false
+          context: nexus
           path: docker/mysql
+          commit-tag: true

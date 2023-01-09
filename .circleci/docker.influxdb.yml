@@ -2,17 +2,15 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.4.2
+  general: bjd2385/general@0.5.3
 
 
 workflows:
   docker-influxdb:
     jobs:
-      - general/github-ghcr:
-          name: "Docker: influxdb"
-          context:
-            - github
+      - general/nexus-docker:
+          name: docker [influxdb]
           image-name: influxdb
-          args: ''
-          commit-tag: false
+          context: nexus
           path: docker/influxdb
+          commit-tag: true

@@ -1,0 +1,22 @@
+version: 2.1
+
+
+orbs:
+  general: bjd2385/general@0.5.3
+
+
+workflows:
+  helm-influxdb:
+    jobs:
+      - general/helm-lint:
+          name: helm lint [helm/influxdb]
+          chart-path: helm/influxdb
+
+      - general/nexus-helm:
+          name: helm build and push [helm/influxdb]
+          context: nexus
+          path: helm/influxdb
+          repo-name: premiscale
+          version: 0.0.<< pipeline.number >>
+          requires:
+            - helm lint [helm/influxdb]

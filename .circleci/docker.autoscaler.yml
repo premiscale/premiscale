@@ -2,17 +2,15 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.4.2
+  general: bjd2385/general@0.5.3
 
 
 workflows:
   docker-autoscaler:
     jobs:
-      - general/github-ghcr:
-          name: "Docker: autoscaler"
-          context:
-            - github
+      - general/nexus-docker:
+          name: docker [autoscaler]
           image-name: autoscaler
-          args: ''
-          commit-tag: false
+          context: nexus
           path: docker/autoscaler
+          commit-tag: true

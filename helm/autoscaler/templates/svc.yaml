@@ -11,4 +11,4 @@ spec:
     {{- toYaml $.Values.service.ports | nindent 4 }}
   {{- end }}
   type: {{ .Values.service.type }}
-{{ end }}`
+{{ end }}
