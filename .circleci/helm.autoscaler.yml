@@ -9,14 +9,14 @@ workflows:
   helm-autoscaler:
     jobs:
       - general/helm-lint:
-          name: helm [autoscaler]
+          name: helm lint [helm/autoscaler]
           chart-path: helm/autoscaler
 
       - general/nexus-helm:
-          name: helm [helm/autoscaler]
+          name: helm build and push [helm/autoscaler]
           context: nexus
           path: helm/autoscaler
           repo-name: premiscale
           version: 0.0.$CIRCLE_WORKFLOW_ID
           requires:
-            - helm [autoscaler]
+            - helm lint [helm/autoscaler]

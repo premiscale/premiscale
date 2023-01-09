@@ -9,14 +9,14 @@ workflows:
   helm-mysql:
     jobs:
       - general/helm-lint:
-          name: helm [mysql]
+          name: helm lint [helm/mysql]
           chart-path: helm/mysql
 
       - general/nexus-helm:
-          name: helm [helm/mysql]
+          name: helm build and push [helm/mysql]
           context: nexus
           path: helm/mysql
           repo-name: premiscale
           version: 0.0.$CIRCLE_WORKFLOW_ID
           requires:
-            - helm [mysql]
+            - helm lint [helm/mysql]
