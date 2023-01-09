@@ -2,6 +2,6 @@ _extends: .github
 
 repository:
   name: autoscaler
-  description: Libvirt autoscaler
+  description: PremiScale autoscaler
   homepage: https://github.com/premiscale/autoscaler
   topics: KVM, virtual machine, libvirt, autoscaling
