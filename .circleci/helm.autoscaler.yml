@@ -1,0 +1,19 @@
+version: 2.1
+
+
+orbs:
+  general: bjd2385/general@0.5.3
+
+
+workflows:
+  helm-argo-cd:
+    jobs:
+      - general/helm-lint:
+          chart-path: helm/autoscaler
+
+      - general/nexus-helm:
+          name: helm [helm/autoscaler]
+          context: nexus
+          path: helm/autoscaler
+          repo-name: premiscale
+          version: 0.0.$CIRCLE_WORKFLOW_ID
