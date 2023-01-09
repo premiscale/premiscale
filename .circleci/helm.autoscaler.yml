@@ -17,3 +17,5 @@ workflows:
           path: helm/autoscaler
           repo-name: premiscale
           version: 0.0.$CIRCLE_WORKFLOW_ID
+          requires:
+            - general/helm-lint
