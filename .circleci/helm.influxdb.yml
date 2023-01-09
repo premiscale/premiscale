@@ -6,7 +6,7 @@ orbs:
 
 
 workflows:
-  helm-argo-cd:
+  helm-influxdb:
     jobs:
       - general/helm-lint:
           chart-path: helm/influxdb

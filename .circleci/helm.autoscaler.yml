@@ -6,7 +6,7 @@ orbs:
 
 
 workflows:
-  helm-argo-cd:
+  helm-autoscaler:
     jobs:
       - general/helm-lint:
           chart-path: helm/autoscaler
