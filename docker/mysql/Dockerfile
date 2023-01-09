@@ -12,5 +12,5 @@ LABEL org.opencontainers.image.description \
 RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
 
 # Wrap this Docker image in secrets we can pull from doppler.
-ENTRYPOINT [ "doppler", "run", "docker-entrypoint.sh" ]
+ENTRYPOINT [ "doppler", "run", "--", "docker-entrypoint.sh" ]
 CMD [ "mysqld" ]
