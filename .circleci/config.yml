@@ -21,7 +21,9 @@ workflows:
             /docker/autoscaler
             /docker/influxdb
             /docker/mysql
-            /helm
+            /helm/autoscaler
+            /helm/influxdb
+            /helm/mysql
             /conf
 
       - general/github-release:
