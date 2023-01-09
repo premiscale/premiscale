@@ -5,3 +5,4 @@ repository:
   description: PremiScale autoscaler
   homepage: https://premiscale.com
   topics: KVM, virtual machine, libvirt, autoscaling
+  private: true
