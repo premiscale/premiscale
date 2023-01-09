@@ -10,5 +10,7 @@ workflows:
     jobs:
       - general/nexus-docker:
           name: docker [influxdb]
+          image-name: influxdb
           context: nexus
           path: docker/influxdb
+          commit-tag: true

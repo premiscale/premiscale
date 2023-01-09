@@ -10,5 +10,7 @@ workflows:
     jobs:
       - general/nexus-docker:
           name: docker [autoscaler]
+          image-name: autoscaler
           context: nexus
           path: docker/autoscaler
+          commit-tag: true
