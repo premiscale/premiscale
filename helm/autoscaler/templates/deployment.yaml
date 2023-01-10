@@ -24,7 +24,5 @@ spec:
           {{- end }}
           {{- with .Values.global.imagePullSecrets }}
           imagePullSecrets:
-            {{- range $.Values.global.imagePullSecrets }}
-            - name: {{ . }}
-            {{- end }}
+            {{- toYaml $.Values.global.imagePullSecrets | nindent 12 }}
           {{- end }}
