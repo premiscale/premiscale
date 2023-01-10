@@ -1,25 +1,39 @@
-influxdb:
-  image:
-    repository: docker.ops.premiscale.com/influxdb
-    tag: latest
-    pullPolicy: Always
+global:
+  imageRegistry: docker.ops.premiscale.com
+  imagePullSecrets:
+    - nexus-docker-registry
+  storageClass: longhorn
 
-  fullnameOverride: influxdb
+image:
+  name: influxdb
+  tag: latest
+  pullPolicy: Always
 
-  resources:
-    requests:
-      cpu: 0.5
-      memory: 500Mi
-    limits:
-      cpu: 1.0
-      memory: 1Gi
+resources:
+  requests:
+    cpu: 0.5
+    memory: 500Mi
+  limits:
+    cpu: 1.0
+    memory: 1Gi
 
-  securityContext: {}
+securityContext: {}
 
-  env: []
+env:
+  - name: DOPPLER_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: doppler
+        key: doppler_token
 
-  adminUser:
-    bucket: default
-    user: admin
-    retention_policy: "0s"
-    existingSecret: influxdb-passwords
+adminUser:
+  bucket: default
+  user: admin
+  retention_policy: "0s"
+  existingSecret: influxdb-passwords
+
+ports:
+
+service:
+  enabled: true
+  ports: []

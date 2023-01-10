@@ -3,10 +3,4 @@ name: influxdb
 description: A Helm chart for influxdb
 type: application
 version: 1.0.0
-appVersion: "1.16.0"
-
-dependencies:
-  - name: influxdb2
-    repository: https://helm.influxdata.com/
-    version: 2.1.1
-    alias: influxdb
+appVersion: "2.6.1"
