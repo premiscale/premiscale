@@ -6,7 +6,7 @@ setup: true
 
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.4.1
-  general: bjd2385/general@dev:b66c69da19f434072cd33c0394cad2270f8e2b3f
+  general: bjd2385/general@dev:ecb6fd6a61aa1a10f9cb4168b97408380ca40898
 
 
 workflows:
