@@ -6,7 +6,7 @@ setup: true
 
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.4.1
-  general: bjd2385/general@0.5.3
+  general: bjd2385/general@dev:041d454e74fa99ea7e65bd77e527a081afe171c1
 
 
 workflows:
@@ -35,13 +35,15 @@ workflows:
             tags:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
-      # - general/pypi-release:
-      #     context: pypi
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+      - general/python-release-twine:
+          name: pypi autoscaler upload [python]
+          context: nexus
+          repository: python
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       # - general/helm-release-github-pages:
       #     name: 'helm: release production chart'
