@@ -1,10 +1,21 @@
-[build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools", "wheel"]  # PEP 508 specifications.
-build-backend = "setuptools.build_meta"
-
 [tool.poetry]
 name = "autoscaler"
-version = "0.0.1"
-description = "Libvirt autoscaler"
-authors = ["Emma Doyle"]
+version = "0.1.0"
+description = "autoscaler for on-premise clouds"
+authors = ["Emma Doyle <emma@premiscale.com>"]
+license = "GPLv3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+libvirt-python = "^8.10.0"
+
+[tool.poetry.group.dev.dependencies]
+libvirt-python = ""
+yamale = "^4.0.4"
+setupext-janitor = ""
+PyYAML = "^6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
