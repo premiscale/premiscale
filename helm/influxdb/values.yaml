@@ -19,20 +19,18 @@ resources:
 
 securityContext: {}
 
-env:
-  - name: DOPPLER_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: doppler
-        key: doppler_token
-
 adminUser:
   bucket: default
   user: admin
   retention_policy: "0s"
   existingSecret: influxdb-passwords
 
-ports:
+env:
+  - name: DOPPLER_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: doppler
+        key: doppler_token
 
 service:
   enabled: true
