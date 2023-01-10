@@ -36,3 +36,5 @@ env: []
 
 service:
   enabled: true
+  ports: []
+  type: ClusterIP
