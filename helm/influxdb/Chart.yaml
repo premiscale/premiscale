@@ -6,7 +6,7 @@ version: 1.0.0
 appVersion: "1.16.0"
 
 dependencies:
-  - name: influx2
+  - name: influxdb2
     repository: https://helm.influxdata.com/
     version: 2.1.1
     alias: influxdb
