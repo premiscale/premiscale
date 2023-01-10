@@ -1,0 +1,25 @@
+influxdb:
+  image:
+    repository: docker.ops.premiscale.com/influxdb
+    tag: latest
+    pullPolicy: Always
+
+  fullnameOverride: influxdb
+
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 500Mi
+    limits:
+      cpu: 1.0
+      memory: 1Gi
+
+  securityContext: {}
+
+  env: []
+
+  adminUser:
+    bucket: default
+    user: admin
+    retention_policy: "0s"
+    existingSecret: influxdb-passwords
