@@ -6,7 +6,7 @@ setup: true
 
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.4.1
-  general: bjd2385/general@dev:041d454e74fa99ea7e65bd77e527a081afe171c1
+  general: bjd2385/general@dev:b66c69da19f434072cd33c0394cad2270f8e2b3f
 
 
 workflows:
@@ -45,15 +45,13 @@ workflows:
             tags:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
-      # - general/helm-release-github-pages:
-      #     name: 'helm: release production chart'
-      #     context: github
-      #     chart-path: helm/autoscaler
-      #     publish-path: charts/production
-      #     chart-type: production
-      #     git-ssh-key-fingerprint: "bd:7c:f9:c7:c2:b2:14:82:81:f9:25:75:58:dd:83:4a"
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+      - general/helm-release-nexus:
+          name: helm build and push [helm/autoscaler]
+          context: nexus
+          path: helm/autoscaler
+          repo-name: premiscale
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/

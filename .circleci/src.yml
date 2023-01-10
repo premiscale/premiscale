@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@dev:041d454e74fa99ea7e65bd77e527a081afe171c1
+  general: bjd2385/general@dev:b66c69da19f434072cd33c0394cad2270f8e2b3f
 
 
 workflows:

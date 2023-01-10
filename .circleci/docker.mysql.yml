@@ -2,13 +2,13 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.5.3
+  general: bjd2385/general@dev:b66c69da19f434072cd33c0394cad2270f8e2b3f
 
 
 workflows:
   docker-mysql:
     jobs:
-      - general/nexus-docker:
+      - general/docker-nexus:
           name: docker [mysql]
           image-name: mysql
           context: nexus

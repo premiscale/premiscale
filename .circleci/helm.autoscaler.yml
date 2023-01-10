@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.5.3
+  general: bjd2385/general@dev:b66c69da19f434072cd33c0394cad2270f8e2b3f
 
 
 workflows:
@@ -12,7 +12,7 @@ workflows:
           name: helm lint [helm/autoscaler]
           chart-path: helm/autoscaler
 
-      - general/nexus-helm:
+      - general/helm-release-nexus:
           name: helm build and push [helm/autoscaler]
           context: nexus
           path: helm/autoscaler
