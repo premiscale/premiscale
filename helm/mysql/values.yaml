@@ -30,11 +30,39 @@ persistence:
   storageClass: longhorn
   accessModes:
     - ReadWriteOnce
-  size: 1Gi
+  size: 500Mi
+  mountPath: /var/lib/mysql
 
-env: []
+livenessProbe:
+  enabled: true
+
+env:
+  - name: DOPPLER_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: doppler
+        key: doppler_token
+  - name: MYSQL_ROOT_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mysql-credentials
+        key: mysql-root-password
+  - name: MYSQL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mysql-credentials
+        key: mysql-password
+  - name: MYSQL_DATABASE
+    value: autoscaler
+  - name: MYSQL_USER
+    value: autoscaler
 
 service:
   enabled: true
-  ports: []
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
   type: ClusterIP
+
+securityContext: {}

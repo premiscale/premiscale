@@ -6,6 +6,7 @@ metadata:
     app: {{ .Chart.Name }}
 spec:
   replicas: 1
+  serviceName: {{ .Chart.Name }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -14,6 +15,16 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 12 }}
+      {{- end }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $.Values.global.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
       containers:
         - name: {{ .Values.image.name }}
           image: {{ .Values.global.imageRegistry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
@@ -22,9 +33,32 @@ spec:
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
           {{- end }}
-          {{- with .Values.global.imagePullSecrets }}
-          imagePullSecrets:
-            {{- range $.Values.global.imagePullSecrets }}
-            - name: {{ . }}
-            {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -ec
+                # No spaces between -u and -p and their arguments.
+                - |
+                  mysqladmin status -uroot -p"${MYSQL_ROOT_PASSWORD}"
           {{- end }}
+          {{- if .Values.env }}
+          env:
+            {{- toYaml $.Values.env | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ .Chart.Name }}
+              mountPath: {{ .Values.persistence.mountPath }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Chart.Name }}
+      spec:
+        storageClassName: {{ .Values.global.storageClass }}
+        accessModes:
+          {{- range $.Values.persistence.accessModes }}
+          - {{ . }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}

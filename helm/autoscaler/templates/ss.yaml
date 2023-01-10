@@ -1,3 +1,4 @@
+{{- if not (lookup "v1" "Secret" "platform-develop" "nexus-docker-registry") }}
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
@@ -9,6 +10,8 @@ spec:
     type: kubernetes.io/dockerconfigjson
   encryptedData:
     .dockerconfigjson: AgCZZMfzg1YSDYO/L2Go4ApZGbkaEY2oIHrD6pCn2exRDxXYOl/4N55T/G2bREuXdf14lX6Za/A6JOIazI3/Tj5TRbFNPnMw6nkgO+5oIj5MC5quIdMH1NVbvW/Q4FJY/tQdxCvi8OFaiBYg+E+7cwka3TORiJ6YJWGS1qD6UkihPBLdMnxUVDTVuYIN0IbaiswuH/AeFG9FoWEPu9RN56YOY7vzzmDNsT2EvARDsw9dp42QusVpSyE1TtP3QYQgocthEq0PefjWi2urnID+JhMZwaMD+cPMWXNpxKx556E1ICOABpqXX2VqwesWEWNQR4fJrZqbmkbI0gujCOO5W90sfoOQ0exFipudKJuyeb0N9XJXqCJjyzL+G503yqBpA6tnn8enPlgKGqELkV8YspQZVZ0F5nxJ3FxSL/prnDL+9MDuriXolfTkxhzhhfUTFrHZZEhxlpS92e1r1QCoNKXj4AJAM3PGLR0fxKKNQCVqxAENyPw4MvyIRnwFaxghhDHFIL75uBLmumudZdaLaz+DNejDsIZJZKlRgZzhdt/oJ4q8Tv4SLStLel/WQn2udoFcGHkljL0lxKAVGMtE7XOxd/S+TjuiGmKrXhY4DUGEAessayucxtJtgX4iZK1I79CIl8Kke82J4T9frDj6TNeaL/jGOUKoXRM1laqDiBYDP5EAdgjWPg57T8kNPdqZdoi2xRVVvKL3yXOFbUTF/hBf8UVl01pSxCpGD/Rbhemt3GJqQQR9GSejqxyvd60zA32WXFClejRVgyqm34+AHT2q+LVGLHYqQzjNJ3Cm/RerdvxAwBk=
+{{- end }}
+{{- if not (lookup "v1" "Secret" "platform-develop" "doppler") }}
 ---
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
@@ -19,3 +22,4 @@ metadata:
 spec:
   encryptedData:
     doppler_token: AgBMyMt2GnMmBTx1zig+9TaWhbsBGNThZnJyNPS4hKn+kEdoYPtTZ1aQbGyN6LCyu7fiX9oJ6Bc00semYZ9Tf28x1J4KeZ+GAD75bsI4pab1t6aYpkPhkwZ+Xl3bzruqfEbOOU5BoqhOP4HLClpqSXmx+sMFkgAu7Gy5Xp1bF5frypKO+YLAeipyS6MyuoPgpviuihzIIQQHDZi83x+w5FMjWDe4wnVAzGWvwRVwiqlrLE0m2Sf7hCQPe2G7xsNQMEmc8+anJ6dLbaU0/G8ccLcH/tC3o7rxwf7tmfdgTHcOARlWEQ8hNdD3iNXeoMUGRMqgubcZJvxieHsGvlrNvFr9RO+jPTG6WW4ipKsIpWp4AV7oTrI7Dt//OCtoStPv10hklavNEO0MA5TpeFsbH7WoeJASjLpNYOv1lXz2YOK5aJvRZf11cmy64Gh7vSKgOJQq9D6CIF0KkqCEu5X/gtKhRz/B0H+JJv+Fa1ms1WN+gQgwb9gNcqwMTgV/dbpH8QRyLYkqsSRtrN43Ll++kM8m72CaLPlkN6uQGLG6/2WwVkZMUiB4LqisbtnOn/yJ521LFc7rZn2IXYgz6uHJdu9oPNg/hkh0yeOZ6nTgTk2z3mZI5fNic4L6mUv1nNWfLuneDC8oLo5iTnf4pxabzFRinxbQH8cQ9DG2++UxBnSmaewKyiFhrS4BYacgFZAvj3eY90TSiwrmAgJrSBXnP4Eidf349bg5EvM+Vaw4WkX6LCUj55EMDrpFdX2GIk9K86di7UGOgbo=
+{{- end }}
