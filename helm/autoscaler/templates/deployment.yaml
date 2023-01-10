@@ -14,11 +14,34 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $.Values.global.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 12 }}
+      {{- end }}
       containers:
         - name: {{ .Values.image.name }}
-          image: {{ .Values.image.name }}:{{ .Values.image.version }}
+          image: {{ .Values.global.imageRegistry }}/{{ .Values.image.name }}:{{ .Values.image.version }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.resources }}
           resources:
-            {{- toYaml $.Values.resources | nindent 10 }}
+            {{- toYaml $.Values.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.api.enabled }}
+          ports:
+            - containerPort: {{ .Values.api.listeningPort }}
+              name: http
+          {{- end }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          {{- end }}
+          {{- if .Values.env }}
+          env:
+            {{- toYaml $.Values.env | nindent 12 }}
           {{- end }}

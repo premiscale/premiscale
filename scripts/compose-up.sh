@@ -3,5 +3,5 @@
 
 (
     cd docker/ || exit 1 && \
-    DOPPLER_TOKEN="$(pass show doppler/autoscaler-sa)" docker compose up -d --build
+    DOPPLER_TOKEN="$(pass show doppler/development-service-token)" docker compose up -d --build
 )

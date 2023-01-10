@@ -1,6 +1,12 @@
+global:
+  imageRegistry: docker.ops.premiscale.com
+  imagePullSecrets:
+    - nexus-docker-registry
+  storageClass: longhorn
+
 image:
   name: autoscaler
-  version: 0.1.0
+  version: latest
   pullPolicy: Always
 
 resources:
@@ -13,10 +19,21 @@ resources:
 
 service:
   enabled: true
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
 
-  metallb:
+securityContext: {}
+
+api:
+  enabled: true
+  listeningPort: 8080
+
+env:
+  - name: DOPPLER_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: doppler
+        key: doppler_token

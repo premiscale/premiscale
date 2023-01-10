@@ -1,0 +1,68 @@
+global:
+  imageRegistry: docker.ops.premiscale.com
+  imagePullSecrets:
+    - nexus-docker-registry
+  storageClass: longhorn
+
+image:
+  name: mysql
+  tag: latest
+  pullPolicy: Always
+
+auth:
+  existingSecret: mysql-passwords
+  database: autoscaler
+  username: autoscaler
+
+# Eventually I'll need these
+initdbScripts: {}
+
+resources:
+  requests:
+    cpu: 0.5
+    memory: 500Mi
+  limits:
+    cpu: 1.0
+    memory: 1Gi
+
+persistence:
+  enabled: true
+  storageClass: longhorn
+  accessModes:
+    - ReadWriteOnce
+  size: 500Mi
+  mountPath: /var/lib/mysql
+
+livenessProbe:
+  enabled: true
+
+env:
+  - name: DOPPLER_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: doppler
+        key: doppler_token
+  - name: MYSQL_ROOT_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mysql-credentials
+        key: mysql-root-password
+  - name: MYSQL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mysql-credentials
+        key: mysql-password
+  - name: MYSQL_DATABASE
+    value: autoscaler
+  - name: MYSQL_USER
+    value: autoscaler
+
+service:
+  enabled: true
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+
+securityContext: {}

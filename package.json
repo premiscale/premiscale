@@ -15,6 +15,15 @@
     "docker:compose:up": "./scripts/compose-up.sh",
     "docker:compose:build": "./scripts/compose-build.sh",
     "docker:compose:down": "./scripts/compose-down.sh",
-    "helm:dependency:update": "for p in helm/*; do helm dependency update \"$p\"/; done"
+    "helm:dependency:update": "for p in helm/*; do echo \"$p\" && helm dependency update \"$p\"/; done",
+    "helm:install:influxdb": "./scripts/helm/influxdb-install.sh",
+    "helm:uninstall:influxdb": "helm uninstall influxdb -n platform-develop",
+    "helm:install:autoscaler": "./scripts/helm/autoscaler-install.sh",
+    "helm:install:as": "yarn helm:install:autoscaler",
+    "helm:uninstall:autoscaler": "helm uninstall autoscaler -n platform-develop",
+    "helm:uninstall:as": "yarn helm:uninstall:autoscaler",
+    "helm:install:mysql": "./scripts/helm/mysql-install.sh",
+    "helm:uninstall:mysql": "helm uninstall -n platform-develop mysql",
+    "poetry:lock": "poetry lock"
   }
 }
