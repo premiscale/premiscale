@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@dev:ecb6fd6a61aa1a10f9cb4168b97408380ca40898
+  general: bjd2385/general@dev:e64cff81e91386511909a87c6f221ddb12adadac
 
 
 workflows:
@@ -13,10 +13,33 @@ workflows:
           chart-path: helm/influxdb
 
       - general/helm-release-nexus:
-          name: helm build and push [helm/influxdb]
+          name: helm build and push [helm/influxdb] [develop]
           context: nexus
           path: helm/influxdb
           repo-name: premiscale
+          repo: $HELM_DEVELOP_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
+          image-tag: 0.0.<< pipeline.number >>
+          image-tag-path: .influxdb.image.tag
           requires:
             - helm lint [helm/influxdb]
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - general/helm-release-nexus:
+          name: helm build and push [helm/influxdb] [master]
+          context: nexus
+          path: helm/influxdb
+          repo-name: premiscale
+          repo: $HELM_MASTER_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          image-tag: 0.0.<< pipeline.number >>
+          image-tag-path: .influxdb.image.tag
+          requires:
+            - helm lint [helm/influxdb]
+          filters:
+            branches:
+              only:
+                - master

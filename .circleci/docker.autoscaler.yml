@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@dev:ecb6fd6a61aa1a10f9cb4168b97408380ca40898
+  general: bjd2385/general@dev:e64cff81e91386511909a87c6f221ddb12adadac
 
 
 workflows:
@@ -13,4 +13,21 @@ workflows:
           image-name: autoscaler
           context: nexus
           path: docker/autoscaler
-          commit-tag: true
+          nexus-domain: $DOCKER_DEVELOP_DOMAIN
+          tag: 0.0.<< pipeline.number >>
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - general/docker-nexus:
+          name: docker [autoscaler]
+          image-name: autoscaler
+          context: nexus
+          path: docker/autoscaler
+          nexus-domain: $DOCKER_MASTER_DOMAIN
+          tag: 0.0.<< pipeline.number >>
+          filters:
+            branches:
+              only:
+                - master

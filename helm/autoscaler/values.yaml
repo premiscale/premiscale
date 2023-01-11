@@ -6,7 +6,7 @@ global:
 
 image:
   name: autoscaler
-  version: latest
+  tag: latest
   pullPolicy: Always
 
 resources:
