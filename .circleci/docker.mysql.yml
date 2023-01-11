@@ -9,7 +9,7 @@ workflows:
   docker-mysql:
     jobs:
       - general/docker-nexus:
-          name: docker [mysql]
+          name: docker [mysql] [develop]
           image-name: mysql
           context: nexus
           path: docker/mysql
@@ -21,7 +21,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [mysql]
+          name: docker [mysql] [master]
           image-name: mysql
           context: nexus
           path: docker/mysql

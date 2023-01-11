@@ -9,7 +9,7 @@ workflows:
   docker-autoscaler:
     jobs:
       - general/docker-nexus:
-          name: docker [autoscaler]
+          name: docker [autoscaler] [develop]
           image-name: autoscaler
           context: nexus
           path: docker/autoscaler
@@ -21,7 +21,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [autoscaler]
+          name: docker [autoscaler] [master]
           image-name: autoscaler
           context: nexus
           path: docker/autoscaler

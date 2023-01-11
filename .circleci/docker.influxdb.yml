@@ -9,7 +9,7 @@ workflows:
   docker-influxdb:
     jobs:
       - general/docker-nexus:
-          name: docker [influxdb]
+          name: docker [influxdb] [develop]
           image-name: influxdb
           context: nexus
           path: docker/influxdb
@@ -21,7 +21,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [influxdb]
+          name: docker [influxdb] [master]
           image-name: influxdb
           context: nexus
           path: docker/influxdb
