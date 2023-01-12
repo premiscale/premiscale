@@ -46,6 +46,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            pip install --upgrade pip
+
             # Remove poetry from venv, install via pip.
             sudo rm /home/circleci/.local/bin/poetry
             pip install poetry==<< parameters.poetry-version >>
@@ -58,10 +60,11 @@ jobs:
             fi
 
             poetry install --no-interaction --ansi --no-cache --sync
+
+            pip install pylint
       - run:
           name: Pylint
           command: |
-            pip install pylint
             pylint --rcfile=<< parameters.configuration_file >> << parameters.modules_path >>
 
 
