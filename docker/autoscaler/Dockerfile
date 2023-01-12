@@ -24,7 +24,7 @@ RUN mkdir -p /etc/autoscaler && \
 WORKDIR /autoscaler
 
 # Copy autoscaler into container.
-COPY docker/autoscaler/scripts/run.sh /autoscaler
+COPY ./scripts/run.sh /autoscaler
 
 RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
