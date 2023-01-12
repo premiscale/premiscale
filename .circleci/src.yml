@@ -1,8 +1,60 @@
 version: 2.1
 
 
-orbs:
-  general: bjd2385/general@0.6.0
+# orbs:
+#   general: bjd2385/general@0.6.0
+
+
+executors:
+  python-3-10:
+    docker:
+      - image: cimg/python:3.10.6
+
+
+commands: {}
+
+
+jobs:
+  pylint:
+    executor: python-3-10
+    resource_class: << parameters.resource-class >>
+    parameters:
+      resource-class:
+        type: enum
+        enum:
+          - small
+          - medium
+          - large
+          - xlarge
+          - 2xlarge
+        default: small
+        description: Resource class to run as.
+      modules_path:
+        type: string
+        description: Path to modules directory in package.
+        default: src
+      configuration_file:
+        type: string
+        description: Path to pylint configuration file
+        default: .pylintrc
+      poetry-version:
+        type: string
+        description: Poetry version to install.
+        default: 1.3.1
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip uninstall poetry
+            pip install poetry==<< parameters.poetry-version >>
+            poetry --version
+            poetry install
+      - run:
+          name: Pylint
+          command: |
+            pip install pylint
+            pylint --rcfile=<< parameters.configuration_file >> << parameters.modules_path >>
 
 
 workflows:
@@ -10,40 +62,40 @@ workflows:
     jobs:
       # develop
 
-      - general/python-pylint:
+      - pylint:
           name: pylint [python-develop]
           filters:
             branches:
               ignore:
                 - master
 
-      - general/python-release-twine:
-          name: twine upload [python-develop]
-          context: nexus
-          repository: python-develop
-          requires:
-            - pylint [python-develop]
-          filters:
-            branches:
-              ignore:
-                - master
+      # - general/python-release-twine:
+      #     name: twine upload [python-develop]
+      #     context: nexus
+      #     repository: python-develop
+      #     requires:
+      #       - pylint [python-develop]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      # master
+      # # master
 
-      - general/python-pylint:
-          name: pylint [python-master]
-          filters:
-            branches:
-              only:
-                - master
+      # - general/python-pylint:
+      #     name: pylint [python-master]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
 
-      - general/python-release-twine:
-          name: twine upload [python-master]
-          context: nexus
-          repository: python-master
-          requires:
-            - pylint [python-master]
-          filters:
-            branches:
-              only:
-                - master
+      # - general/python-release-twine:
+      #     name: twine upload [python-master]
+      #     context: nexus
+      #     repository: python-master
+      #     requires:
+      #       - pylint [python-master]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
