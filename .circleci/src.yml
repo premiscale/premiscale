@@ -57,7 +57,7 @@ jobs:
                 sudo apt update && sudo apt install -y libvirt-dev
             fi
 
-            poetry install
+            poetry install --no-interaction --ansi --no-cache --sync
       - run:
           name: Pylint
           command: |
