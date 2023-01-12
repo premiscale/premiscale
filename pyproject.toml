@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "autoscaler"
 version = "0.1.0"
-description = "autoscaler for on-premise clouds"
+description = "PremiScale Autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 license = "GPLv3"
 readme = "README.md"
@@ -11,10 +11,9 @@ python = "^3.10"
 libvirt-python = "^8.10.0"
 
 [tool.poetry.group.dev.dependencies]
-libvirt-python = "^8.10.0"
-yamale = "^4.0.4"
 setupext-janitor = "^1.1.2"
-PyYAML = "^6.0"
+yamale = "^4.0.4"
+Flask = "^2.2.2"
 
 [build-system]
 requires = ["poetry-core"]
