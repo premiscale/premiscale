@@ -3,7 +3,8 @@ ARG TAG=8.0.31
 
 FROM ${IMAGE}:${TAG}
 
-# ENV DOPPLER_TOKEN=...
+# Only for homogeneity between all 3 services' Dockerfiles and yarn commands. Not used.
+ARG VERSION=8.0.31
 
 LABEL org.opencontainers.image.description \
     MySQL Docker image with Doppler env var wrapper

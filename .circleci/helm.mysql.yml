@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.5.3
+  general: bjd2385/general@0.6.0
 
 
 workflows:
@@ -12,11 +12,32 @@ workflows:
           name: helm lint [helm/mysql]
           chart-path: helm/mysql
 
-      - general/nexus-helm:
-          name: helm build and push [helm/mysql]
+      - general/helm-release-nexus:
+          name: helm build and push [helm/mysql] [develop]
           context: nexus
           path: helm/mysql
           repo-name: premiscale
+          repo: $HELM_DEVELOP_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
+          image-tag: 0.0.<< pipeline.number >>
           requires:
             - helm lint [helm/mysql]
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - general/helm-release-nexus:
+          name: helm build and push [helm/mysql] [master]
+          context: nexus
+          path: helm/mysql
+          repo-name: premiscale
+          repo: $HELM_MASTER_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          image-tag: 0.0.<< pipeline.number >>
+          requires:
+            - helm lint [helm/mysql]
+          filters:
+            branches:
+              only:
+                - master

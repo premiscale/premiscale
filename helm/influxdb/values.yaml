@@ -3,17 +3,14 @@ global:
   imagePullSecrets:
     - nexus-docker-registry
   storageClass: longhorn
-
 influxdb:
   image:
     repository: docker.ops.premiscale.com/influxdb
-    tag: latest
+    tag: 0.0.233
     pullPolicy: Always
     pullSecrets:
       - nexus-docker-registry
-
   fullnameOverride: influxdb
-
   resources:
     requests:
       cpu: 0.5
@@ -21,40 +18,30 @@ influxdb:
     limits:
       cpu: 1.0
       memory: 1Gi
-
   securityContext: {}
-
   livenessProbe: {}
   readinessProbe: {}
-
   env:
     - name: DOPPLER_TOKEN
       valueFrom:
         secretKeyRef:
           name: doppler
           key: doppler_token
-
   adminUser:
     existingSecret: influxdb-passwords
-
   persistence:
     enabled: true
     size: 500Mi
     storageClass: longhorn
     accessMode: ReadWriteOnce
-
   enterprise:
     enabled: false
-
   initScripts:
     enabled: false
-
   service:
     type: ClusterIP
-
   ingress:
     enabled: false
-
   ## InfluxDB configuration
   ## ref: https://docs.influxdata.com/influxdb/v1.8/administration/config
   config:

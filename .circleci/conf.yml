@@ -2,13 +2,12 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.4.2
-
+  general: bjd2385/general@0.6.0
 
 workflows:
   schema:
     jobs:
-      - general/pypi-yamale:
+      - general/python-yamale:
           name: yamale [<< matrix.path >>]
           matrix:
             parameters:

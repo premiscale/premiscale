@@ -2,7 +2,7 @@ version: "3.9"
 services:
   state:
     image: docker.ops.premiscale.com/mysql-doppler:latest
-    build: ./mysql
+    build: ./docker/mysql
     depends_on: []
     privileged: false
     container_name: mysql
@@ -27,7 +27,7 @@ services:
 
   metrics:
     image: docker.ops.premiscale.com/influxdb-doppler:latest
-    build: ./influxdb
+    build: ./docker/influxdb
     depends_on: []
     privileged: false
     container_name: influxdb
@@ -52,7 +52,7 @@ services:
 
   autoscaler:
     image: docker.ops.premiscale.com/autoscaler:latest
-    build: ./autoscaler
+    build: ./docker/autoscaler
     depends_on:
       - metrics
       - state
