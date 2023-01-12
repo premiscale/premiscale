@@ -52,7 +52,7 @@ jobs:
             sudo ln -s /home/circleci/.pyenv/shims/poetry /home/circleci/.local/bin/poetry
             poetry --version
 
-            Install libvirt-python. Requires libvirt-dev package installed.
+            # Install libvirt-python. Requires libvirt-dev package installed.
             if ! pkg-config --print-errors --atleast-version=0.9.11 libvirt >/dev/null; then
                 sudo apt install -y libvirt-dev
             fi
