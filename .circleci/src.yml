@@ -46,9 +46,17 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pip uninstall poetry
+            # Remove poetry from venv, install via pip.
+            sudo rm /home/circleci/.local/bin/poetry
             pip install poetry==<< parameters.poetry-version >>
+            sudo ln -s /home/circleci/.pyenv/shims/poetry /home/circleci/.local/bin/poetry
             poetry --version
+
+            Install libvirt-python. Requires libvirt-dev package installed.
+            if ! pkg-config --print-errors --atleast-version=0.9.11 libvirt >/dev/null; then
+                sudo apt install -y libvirt-dev
+            fi
+
             poetry install
       - run:
           name: Pylint
