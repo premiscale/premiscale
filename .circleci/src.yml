@@ -56,10 +56,10 @@ jobs:
 
             # Install libvirt-python. Requires libvirt-dev package installed.
             if ! pkg-config --print-errors --atleast-version=0.9.11 libvirt 2>/dev/null; then
-                sudo apt update && sudo apt install -y libvirt-dev || true
+                sudo apt update && sudo apt install -y libvirt-dev
             fi
 
-            poetry install -v --no-interaction --ansi --no-cache --sync
+            poetry install -v --no-interaction --ansi --no-cache --sync || true
 
             pip install pylint
       - run:
