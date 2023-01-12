@@ -55,8 +55,8 @@ jobs:
             poetry --version
 
             # Install libvirt-python. Requires libvirt-dev package installed.
-            if ! pkg-config --print-errors --atleast-version=0.9.11 libvirt >/dev/null; then
-                sudo apt update && sudo apt install -y libvirt-dev
+            if ! pkg-config --print-errors --atleast-version=0.9.11 libvirt 2>/dev/null; then
+                sudo apt update && sudo apt install -y libvirt-dev || true
             fi
 
             poetry install -v --no-interaction --ansi --no-cache --sync
