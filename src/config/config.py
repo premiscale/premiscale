@@ -2,14 +2,18 @@
 Parse a configuration file, or create a default one.
 """
 
+
 from typing import Union, Tuple
 
 import sys
+import logging
 from pathlib import Path
+
 
 import yamale
 
-from utils import errprint
+
+log = logging.getLogger(__name__)
 
 
 def initialize(config_path: str) -> None:
@@ -22,7 +26,7 @@ def initialize(config_path: str) -> None:
     with open(config_path, 'r', encoding='utf-8') as config:
         msg, ret = validate(config.read().rstrip())
         if not ret:
-            errprint(f'Config file is not valid:\n\n{msg}')
+            log.error(f'Config file is not valid:\n\n{msg}')
 
 
 def validate(config: str, schema: str = '../../schema/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
@@ -76,5 +80,5 @@ def _make_default(path: Union[str, Path]) -> None:
             with open(str(path), 'x', encoding='utf-8') as f, open('conf/default.yaml', 'r', encoding='utf-8') as conf:
                 f.write(conf.read().strip())
     except PermissionError:
-        errprint('premiscale does not have permission to install to /opt, must run as root.')
+        log.error('premiscale does not have permission to install to /opt, must run as root.')
         sys.exit(1)

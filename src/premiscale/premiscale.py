@@ -7,9 +7,13 @@ PremiScale autoscaler agent.
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
+import logging
 
 from config.config import initialize, validate
 from version import __version__
+
+
+log = logging.getLogger(__name__)
 
 
 def cli() -> None:
@@ -41,10 +45,29 @@ def cli() -> None:
         help='Show premiscale version.'
     )
 
+    parser.add_argument(
+        '--log-stdout', action='store_true', default=False,
+        help='Log to stdout (for use in containerized deployments).'
+    )
+
     args = parser.parse_args()
 
+    # Configure logger.
+    if args.log_stdout:
+        logging.basicConfig(
+            stream=sys.stdout,
+            format='%(asctime)s | %(levelname)s %(message)s',
+            level=logging.INFO
+        )
+    else:
+        logging.basicConfig(
+        stream=sys.stdout,
+        format='%(message)s',
+        level=logging.INFO
+    )
+
     if args.version:
-        print(f'premiscale v{__version__}')
+        log.info(f'premiscale v{__version__}')
         sys.exit(0)
 
     if args.validate:
