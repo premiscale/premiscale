@@ -12,4 +12,5 @@ __all__ = [
 ]
 
 
+# TODO: replace with logging module.
 errprint = partial(print, sys.stderr)

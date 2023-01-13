@@ -169,7 +169,7 @@ workflows:
 
       - pylint:
           name: pylint [python-develop]
-          resource-class: medium
+          resource-class: large
           filters:
             branches:
               ignore:
@@ -191,7 +191,7 @@ workflows:
 
       - pylint:
           name: pylint [python-master]
-          resource-class: medium
+          resource-class: large
           filters:
             branches:
               only:

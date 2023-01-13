@@ -4,11 +4,11 @@ Parse a configuration file, or create a default one.
 
 from typing import Union, Tuple
 
-from pathlib import Path
-from utils import errprint
-
 import yamale
 import sys
+from pathlib import Path
+
+from utils import errprint
 
 
 def initialize(config_path: str) -> None:

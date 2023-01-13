@@ -1,4 +1,4 @@
 [MESSAGES CONTROL]
 
-disable=invalid-name,superfluous-parens,line-too-long
+disable=invalid-name,superfluous-parens,line-too-long,missing-final-newline
 fail-under=6
