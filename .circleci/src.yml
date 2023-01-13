@@ -126,6 +126,8 @@ jobs:
             - run:
                 name: Update package version
                 command: |
+                  ## pyproject.yaml
+
                   _VERSION="$(grep -oiP "(?<=version = \").*(?=\")" pyproject.toml)"
 
                   if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
@@ -136,12 +138,25 @@ jobs:
                   fi
 
                   mv pyproject.toml.tmp pyproject.toml
+
+                  ## setup.py
+
+                  _VERSION="$(grep -oiP "(?<=version=\').*(?=\',)" setup.py)"
+
+                  if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
+                      sed "s@version=\'${_VERSION}\'@version=\'${_VERSION}a<< parameters.version >>\'@" setup.py > setup.py.tmp
+                  elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
+                      _VERSION_A="${_VERSION%%a*}"
+                      sed "s@version=\'${_VERSION}\'@version=\'${_VERSION_A}a<< parameters.version >>\'@" setup.py > setup.py.tmp
+                  fi
+
+                  mv setup.py.tmp setup.py
       - run:
-          name: Build package.
+          name: Build package
           command: |
             poetry build
       - run:
-          name: Publish package to PyPI.
+          name: Publish package to PyPI
           command: |
             pip install twine
             twine upload dist/* -u << parameters.user >> -p << parameters.password >> --repository << parameters.repository >> --non-interactive --config-file << parameters.config >>

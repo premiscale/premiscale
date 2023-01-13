@@ -24,7 +24,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='premiscale',
     # This value dictates what version premiscale --version prints / shows.
-    version='0.0.1',
+    version='0.0.1a0',
     description='Autoscaling for virtual machines over the libvirt API.',
     cmdclass=cmd_classes,
     long_description=long_description,
