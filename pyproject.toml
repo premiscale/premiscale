@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "premiscale"
-version = "0.0.1a"
+version = "0.0.2a"
 description = "PremiScale autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 license = "GPLv3"
