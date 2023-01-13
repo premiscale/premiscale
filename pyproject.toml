@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "autoscaler"
-version = "0.1.0"
-description = "PremiScale Autoscaler"
+name = "premiscale"
+version = "0.0.1a"
+description = "PremiScale autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 license = "GPLv3"
 readme = "README.md"
@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 libvirt-python = "^8.10.0"
+yamale = "^4.0.4"
 
 [tool.poetry.group.dev.dependencies]
 setupext-janitor = "^1.1.2"

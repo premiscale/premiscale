@@ -22,8 +22,8 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
-    name='autoscaler',
-    version='0.0.1',
+    name='premiscale',
+    version='0.0.1a',
     description='Autoscaling for virtual machines over the libvirt API.',
     cmdclass=cmd_classes,
     long_description=long_description,
@@ -34,14 +34,14 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=3.10, <4',
-    url = 'https://github.com/premiscale/autoscaler',
+    url = 'https://github.com/premiscale/premiscale',
     install_requires=[],
     entry_points={
-        "console_scripts": ["autoscale = cli.autoscaler:cli"]
+        "console_scripts": ["premiscale = premiscale.premiscale:cli"]
     },
     project_urls={  # Optional
-        'Bug Reports': 'https://github.com/premiscale/autoscaler/issues',
-        'Source': 'https://github.com/premiscale/autoscaler'
+        'Bug Reports': 'https://github.com/premiscale/premiscale/issues',
+        'Source': 'https://github.com/premiscale/premiscale'
     },
     include_package_data=True,
     classifiers=[

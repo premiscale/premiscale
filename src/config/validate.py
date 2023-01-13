@@ -1,5 +1,5 @@
 """
-Validate a config file.
+Validate a PremiScale config file.
 """
 
 

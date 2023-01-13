@@ -144,7 +144,7 @@ files = [
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -227,7 +227,7 @@ watchdog = ["watchdog"]
 name = "yamale"
 version = "4.0.4"
 description = "A schema and validator for YAML."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -241,4 +241,4 @@ pyyaml = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "11e1b163dda0e7be11fd75bbe589501efbe34dbb623930b58d242518dae3f3b7"
+content-hash = "656c7aa1dd7a173768ab795a08240668ec5d22a4ada9f2ab3a16ddf7cb67fcce"

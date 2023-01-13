@@ -1,12 +1,10 @@
 """
-Autoscaler interface.
+PremiScale autoscaler agent.
 """
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from config.validate import validate
-from config.config import make_default
-from utils import errprint
+from config.config import initialize
 
 from version import __version__
 
@@ -26,27 +24,22 @@ def cli() -> None:
     )
 
     parser.add_argument(
-        '-c', '--config', type=str, default='/etc/autoscaler/autoscale.conf',
+        '-c', '--config', type=str, default='/opt/premiscale/premiscale.conf',
         help='Configuration file to use.'
     )
 
     parser.add_argument(
         '--version', action='store_true', default=False,
-        help='Show autoscaler version.'
+        help='Show premiscale version.'
     )
 
     args = parser.parse_args()
 
     if args.version:
-        print(f'autoscale v{__version__}')
+        print(f'premiscale v{__version__}')
         exit(0)
 
-    make_default(args.config)
-    with open(args.config, 'r') as conf:
-        msg, ret = validate(conf)
-        if not ret:
-            errprint(f'Config file is not valid:\n\n{msg}')
-
+    initialize(args.config)
 
 
 if __name__ == '__main__':
