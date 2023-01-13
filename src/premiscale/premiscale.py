@@ -6,11 +6,10 @@ PremiScale autoscaler agent.
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from config.config import initialize, validate
-
-from version import __version__
-
 import sys
+
+from config.config import initialize, validate
+from version import __version__
 
 
 def cli() -> None:
