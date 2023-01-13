@@ -44,7 +44,7 @@ def validate(config: str, schema: str = '../../schema/schema.yaml', strict: bool
     schema = yamale.make_schema(schema)
 
     try:
-        yamale.validate(config, strict=strict)
+        yamale.validate(schema, config, strict=strict)
         return '', True
     except ValueError as msg:
         return str(msg), False
