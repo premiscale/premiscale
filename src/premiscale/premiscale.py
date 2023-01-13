@@ -1,10 +1,12 @@
 """
 PremiScale autoscaler agent.
+
+© PremiScale, Inc. 2023
 """
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from config.config import initialize
+from config.config import initialize, validate
 
 from version import __version__
 
@@ -29,6 +31,11 @@ def cli() -> None:
     )
 
     parser.add_argument(
+        '--validate', type=str, default=False,
+        help='Validate the provided configuration file.'
+    )
+
+    parser.add_argument(
         '--version', action='store_true', default=False,
         help='Show premiscale version.'
     )
@@ -38,6 +45,9 @@ def cli() -> None:
     if args.version:
         print(f'premiscale v{__version__}')
         exit(0)
+
+    if args.validate:
+        exit(0 if validate(args.config) else 1)
 
     initialize(args.config)
 
