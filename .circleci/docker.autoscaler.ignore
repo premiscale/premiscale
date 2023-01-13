@@ -1,3 +1,4 @@
 !conf/
 !src/
 !helm/
+!.circleci/src.yml
