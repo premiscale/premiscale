@@ -4,9 +4,10 @@ Parse a configuration file, or create a default one.
 
 from typing import Union, Tuple
 
-import yamale
 import sys
 from pathlib import Path
+
+import yamale
 
 from utils import errprint
 
@@ -74,6 +75,6 @@ def _make_default(path: Union[str, Path]) -> None:
         if not _config_exists(path):
             with open(str(path), 'x', encoding='utf-8') as f, open('conf/default.yaml', 'r', encoding='utf-8') as conf:
                 f.write(conf.read().strip())
-    except PermissionError as msg:
+    except PermissionError:
         errprint('premiscale does not have permission to install to /opt, must run as root.')
         sys.exit(1)
