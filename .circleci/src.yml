@@ -101,9 +101,13 @@ jobs:
         type: string
         default: $TWINE_PASSWORD
       repository:
-        description: Repository name to upload to.
+        description: Repository name to upload to. Must have a URL set in .pypirc.
         type: string
         default: python
+      config:
+        description: Location of the .pypirc-file to use.
+        type: string
+        default: .pypirc
     steps:
       - checkout
       - install-poetry
@@ -115,7 +119,7 @@ jobs:
           name: Publish package to PyPI.
           command: |
             pip install twine
-            twine upload dist/* -u << parameters.user >> -p << parameters.password >> --repository << parameters.repository >>
+            twine upload dist/* -u << parameters.user >> -p << parameters.password >> --repository << parameters.repository >> --non-interactive --config-file << parameters.config >>
 
 
 workflows:
