@@ -71,7 +71,9 @@ jobs:
                 sudo apt update && sudo apt install -y libvirt-dev
             fi
 
-            poetry install -v --no-interaction --ansi --no-cache --with dev || true
+            poetry install -v --no-interaction --ansi --no-cache || true
+
+            pip install pylint
       - run:
           name: Pylint
           command: |
