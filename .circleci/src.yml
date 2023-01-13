@@ -171,6 +171,7 @@ workflows:
 
       - pylint:
           name: pylint [python-develop]
+          context: nexus
           filters:
             branches:
               ignore:
@@ -192,6 +193,7 @@ workflows:
 
       - pylint:
           name: pylint [python-master]
+          context: nexus
           filters:
             branches:
               only:
