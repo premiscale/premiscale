@@ -4,4 +4,4 @@ disable=invalid-name,superfluous-parens,line-too-long,missing-final-newline,logg
 fail-under=6
 
 [MASTER]
-init-hook='import sys; sys.path.append(".")'
+init-hook='import sys; import os; sys.path.append(os.path.abspath(os.curdir))'
