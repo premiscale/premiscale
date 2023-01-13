@@ -35,7 +35,11 @@ commands:
 jobs:
   pylint:
     description: PyLint
-    executor: python-3-10
+    docker:
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.0
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
     resource_class: << parameters.resource-class >>
     parameters:
       resource-class:
@@ -77,7 +81,11 @@ jobs:
 
   release-twine:
     description: twine upload
-    executor: << parameters.executor >>
+    docker:
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.0
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
     resource_class: << parameters.resource-class >>
     environment:
       TWINE_NON_INTERACTIVE: true
@@ -92,10 +100,6 @@ jobs:
           - 2xlarge
         default: small
         description: Resource class to run as.
-      executor:
-        type: executor
-        default: python-3-10
-        description: Executor to use
       user:
         description: PyPi username.
         type: string
