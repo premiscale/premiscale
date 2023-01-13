@@ -72,12 +72,10 @@ jobs:
             fi
 
             poetry install -v --no-interaction --ansi --no-cache --sync || true
-
-            pip install pylint
       - run:
           name: Pylint
           command: |
-            pylint --rcfile=<< parameters.configuration_file >> << parameters.modules_path >>
+            pylint --rcfile="$(pwd)"/<< parameters.configuration_file >> << parameters.modules_path >>
 
   release-twine:
     description: twine upload
