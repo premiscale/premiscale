@@ -1,3 +1,4 @@
 [MESSAGES CONTROL]
 
 disable=invalid-name,superfluous-parens,line-too-long
+fail-under=6
