@@ -74,7 +74,7 @@ jobs:
           command: |
             pylint --rcfile=<< parameters.configuration_file >> << parameters.modules_path >>
 
-  python-release-twine:
+  release-twine:
     description: twine upload
     executor: << parameters.executor >>
     resource_class: << parameters.resource-class >>
@@ -111,9 +111,23 @@ jobs:
         description: Location of the .pypirc-file to use.
         type: string
         default: .pypirc
+      version:
+        description: Override the version of the uploaded artifact in pyproject.toml. Mainly for development pipelines.
+        type: integer
+        default: -1
     steps:
       - checkout
       - install-poetry
+      - unless:
+          condition:
+            equal: [<< parameters.version >>, -1]
+          steps:
+            - run:
+                name: Update package version
+                command: |
+                  _VERSION="$(grep -oiP "(?<=version = \").*(?=a[0-9]+\")" pyproject.toml)"
+                  sed "s@version = \"${_VERSION}\"@version = \"${_VERSION}a<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
+                  mv pyproject.toml.tmp pyproject.toml
       - run:
           name: Build package.
           command: |
@@ -132,15 +146,17 @@ workflows:
 
       - pylint:
           name: pylint [python-develop]
+          resource-class: medium
           filters:
             branches:
               ignore:
                 - master
 
-      - python-release-twine:
+      - release-twine:
           name: twine upload [python-develop]
           context: nexus
           repository: python-develop
+          version: << pipeline.number >>
           # requires:
           #   - pylint [python-develop]
           filters:
@@ -148,22 +164,24 @@ workflows:
               ignore:
                 - master
 
-      # # master
+      # master
 
-      # - general/python-pylint:
-      #     name: pylint [python-master]
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
+      - pylint:
+          name: pylint [python-master]
+          resource-class: medium
+          filters:
+            branches:
+              only:
+                - master
 
-      # - general/python-release-twine:
-      #     name: twine upload [python-master]
-      #     context: nexus
-      #     repository: python-master
-      #     requires:
-      #       - pylint [python-master]
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
+      - release-twine:
+          name: twine upload [python-master]
+          context: nexus
+          repository: python-master
+          version: << pipeline.number >>
+          requires:
+            - pylint [python-master]
+          filters:
+            branches:
+              only:
+                - master

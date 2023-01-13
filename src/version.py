@@ -1,5 +1,7 @@
 """
-Version of PremiScale.
+Set __version__ of PremiScale.
 """
 
-__version__ = '0.0.1a'
+import importlib.metadata as meta
+
+__version__ = meta.version('premiscale')
