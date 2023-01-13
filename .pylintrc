@@ -1,4 +1,4 @@
 [MESSAGES CONTROL]
 
-disable=invalid-name,superfluous-parens,line-too-long,missing-final-newline
+disable=invalid-name,superfluous-parens,line-too-long,missing-final-newline,logging-fstring-interpolation
 fail-under=6
