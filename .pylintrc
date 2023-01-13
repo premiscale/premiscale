@@ -2,3 +2,6 @@
 
 disable=invalid-name,superfluous-parens,line-too-long,missing-final-newline,logging-fstring-interpolation
 fail-under=6
+
+[MASTER]
+init-hook='import sys; sys.path.append(".")'
