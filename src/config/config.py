@@ -8,6 +8,7 @@ from pathlib import Path
 from utils import errprint
 
 import yamale
+import sys
 
 
 def initialize(config_path: str) -> None:
@@ -75,4 +76,4 @@ def _make_default(path: Union[str, Path]) -> None:
                 f.write(conf.read().strip())
     except PermissionError as msg:
         errprint('premiscale does not have permission to install to /opt, must run as root.')
-        exit(1)
+        sys.exit(1)

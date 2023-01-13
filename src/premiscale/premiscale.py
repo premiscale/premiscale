@@ -10,6 +10,8 @@ from config.config import initialize, validate
 
 from version import __version__
 
+import sys
+
 
 def cli() -> None:
     """
@@ -44,10 +46,10 @@ def cli() -> None:
 
     if args.version:
         print(f'premiscale v{__version__}')
-        exit(0)
+        sys.exit(0)
 
     if args.validate:
-        exit(0 if validate(args.config) else 1)
+        sys.exit(0 if validate(args.config)[1] else 1)
 
     initialize(args.config)
 
