@@ -13,6 +13,7 @@ executors:
 
 commands:
   install-poetry:
+    description: Install poetry
     parameters:
       poetry-version:
         type: string
@@ -32,6 +33,7 @@ commands:
 
 jobs:
   pylint:
+    description: PyLint
     executor: python-3-10
     resource_class: << parameters.resource-class >>
     parameters:
@@ -73,6 +75,7 @@ jobs:
             pylint --rcfile=<< parameters.configuration_file >> << parameters.modules_path >>
 
   python-release-twine:
+    description: twine upload
     executor: << parameters.executor >>
     resource_class: << parameters.resource-class >>
     environment:
