@@ -11,7 +11,23 @@ executors:
       - image: cimg/python:3.10.6
 
 
-commands: {}
+commands:
+  install-poetry:
+    parameters:
+      poetry-version:
+        type: string
+        description: Poetry version to install.
+        default: 1.3.1
+    steps:
+      - run:
+          command: |
+            pip install --upgrade pip
+
+            # Remove poetry from venv, install via pip.
+            sudo rm /home/circleci/.local/bin/poetry
+            pip install poetry==<< parameters.poetry-version >>
+            sudo ln -s /home/circleci/.pyenv/shims/poetry /home/circleci/.local/bin/poetry
+            poetry --version
 
 
 jobs:
@@ -37,23 +53,12 @@ jobs:
         type: string
         description: Path to pylint configuration file
         default: .pylintrc
-      poetry-version:
-        type: string
-        description: Poetry version to install.
-        default: 1.3.1
     steps:
       - checkout
+      - install-poetry
       - run:
-          name: Install dependencies
+          name: Install dependencies with Poetry
           command: |
-            pip install --upgrade pip
-
-            # Remove poetry from venv, install via pip.
-            sudo rm /home/circleci/.local/bin/poetry
-            pip install poetry==<< parameters.poetry-version >>
-            sudo ln -s /home/circleci/.pyenv/shims/poetry /home/circleci/.local/bin/poetry
-            poetry --version
-
             # Install libvirt-python. Requires libvirt-dev package installed.
             if ! pkg-config --print-errors --atleast-version=0.9.11 libvirt 2>/dev/null; then
                 sudo apt update && sudo apt install -y libvirt-dev
@@ -66,6 +71,51 @@ jobs:
           name: Pylint
           command: |
             pylint --rcfile=<< parameters.configuration_file >> << parameters.modules_path >>
+
+  python-release-twine:
+    executor: << parameters.executor >>
+    resource_class: << parameters.resource-class >>
+    environment:
+      TWINE_NON_INTERACTIVE: true
+    parameters:
+      resource-class:
+        type: enum
+        enum:
+          - small
+          - medium
+          - large
+          - xlarge
+          - 2xlarge
+        default: small
+        description: Resource class to run as.
+      executor:
+        type: executor
+        default: python-3-10
+        description: Executor to use
+      user:
+        description: PyPi username.
+        type: string
+        default: $TWINE_USERNAME
+      password:
+        description: PyPi API token.
+        type: string
+        default: $TWINE_PASSWORD
+      repository:
+        description: Repository name to upload to.
+        type: string
+        default: python
+    steps:
+      - checkout
+      - install-poetry
+      - run:
+          name: Build package.
+          command: |
+            poetry build
+      - run:
+          name: Publish package to PyPI.
+          command: |
+            pip install twine
+            twine upload dist/* -u << parameters.user >> -p << parameters.password >> --repository << parameters.repository >>
 
 
 workflows:
@@ -80,7 +130,7 @@ workflows:
               ignore:
                 - master
 
-      - general/python-release-twine:
+      - python-release-twine:
           name: twine upload [python-develop]
           context: nexus
           repository: python-develop
