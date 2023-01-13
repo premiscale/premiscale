@@ -1,8 +1,8 @@
 version: 2.1
 
 
-# orbs:
-#   general: bjd2385/general@0.6.0
+orbs:
+  general: bjd2385/general@0.6.0
 
 
 executors:
@@ -80,16 +80,16 @@ workflows:
               ignore:
                 - master
 
-      # - general/python-release-twine:
-      #     name: twine upload [python-develop]
-      #     context: nexus
-      #     repository: python-develop
-      #     requires:
-      #       - pylint [python-develop]
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - master
+      - general/python-release-twine:
+          name: twine upload [python-develop]
+          context: nexus
+          repository: python-develop
+          # requires:
+          #   - pylint [python-develop]
+          filters:
+            branches:
+              ignore:
+                - master
 
       # # master
 
