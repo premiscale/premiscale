@@ -18,7 +18,7 @@ def initialize(config_path: str) -> None:
     if not Path.exists(Path(config_path)):
         _make_default(config_path)
 
-    with open(config_path, 'r') as config:
+    with open(config_path, 'r', encoding='utf-8') as config:
         msg, ret = validate(config.read().rstrip())
         if not ret:
             errprint(f'Config file is not valid:\n\n{msg}')
@@ -72,7 +72,7 @@ def _make_default(path: Union[str, Path]) -> None:
         if not Path.exists(Path(path).parent):
             Path.mkdir(Path(path).parent)
         if not _config_exists(path):
-            with open(str(path), 'x') as f, open('conf/default.yaml', 'r') as conf:
+            with open(str(path), 'x', encoding='utf-8') as f, open('conf/default.yaml', 'r', encoding='utf-8') as conf:
                 f.write(conf.read().strip())
     except PermissionError as msg:
         errprint('premiscale does not have permission to install to /opt, must run as root.')
