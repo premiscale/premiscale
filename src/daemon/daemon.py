@@ -7,8 +7,6 @@ import logging
 from queue import LifoQueue, Queue
 from threading import Thread
 
-from config.parse import env
-
 
 log = logging.getLogger(__name__)
 
@@ -18,7 +16,7 @@ class DaemonInfluxPublisher:
     Provide an interface to a daemon that periodically flushes a queue of data points.
     """
     def __init__(self, credentials: str) -> None:
-        self.queue: Queue = LifoQueue(maxsize=env['QUEUE_MAX'])
+        # self.queue: Queue = LifoQueue(maxsize=env['QUEUE_MAX'])
         self._n_threads = 0
 
         # Start a non-blocking daemon thread that's created and periodically reads
