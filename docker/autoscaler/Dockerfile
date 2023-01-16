@@ -3,8 +3,6 @@ ARG TAG=3.10.8
 
 FROM ${IMAGE}:${TAG}
 
-ARG VERSION=0.1.0
-
 LABEL org.opencontainers.image.description \
     Libvirt autoscaler Docker image
 
@@ -24,10 +22,15 @@ RUN mkdir -p /etc/autoscaler && \
 WORKDIR /autoscaler
 
 # Copy autoscaler into container.
-COPY ./scripts/run.sh /autoscaler
+COPY ./docker/autoscaler/scripts/run.sh /autoscaler
 
 RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
+
+# Install premiscale autoscaler.
+ARG PYTHON_INDEX=https://repo.ops.premiscale.com/repository/python-develop/
+ARG VERSION=0.0.1
+RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale=="${VERSION}"
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]

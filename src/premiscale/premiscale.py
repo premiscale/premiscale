@@ -9,8 +9,8 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from src.config.parse import initialize, validate
-from src.version import __version__
+from config.parse import initialize, validate
+from version import __version__
 
 
 log = logging.getLogger(__name__)
