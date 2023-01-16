@@ -593,13 +593,13 @@ files = [
 
 [[package]]
 name = "libvirt-python"
-version = "8.10.0"
+version = "9.0.0"
 description = "The libvirt virtualization API python binding"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "libvirt-python-8.10.0.tar.gz", hash = "sha256:fc30f136abe0b8228029a90814c8f44ac2947433c12f211363051c57df2d5401"},
+    {file = "libvirt-python-9.0.0.tar.gz", hash = "sha256:49702d33fa8cbcae19fa727467a69f7ae2241b3091324085ca1cc752b2b414ce"},
 ]
 
 [[package]]
@@ -1217,4 +1217,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ec05ebef31272b58e53b58b34b72c84f7acf253782aed042343a82b3d07b1a7b"
+content-hash = "61a856dee9ce182539730506665e0df34e5334f12c4773620e26938939d9f3c5"

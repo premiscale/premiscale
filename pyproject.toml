@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-libvirt-python = "^8.10.0"
+libvirt-python = "^9.0.0"
 yamale = "^4.0.4"
 Flask = "^2.2.2"
 
