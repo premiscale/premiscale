@@ -75,7 +75,3 @@ def cli() -> None:
         ...
 
     initialize(args.config)
-
-
-if __name__ == '__main__':
-    cli()
