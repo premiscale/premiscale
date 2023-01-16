@@ -3,17 +3,29 @@ Parse a configuration file, or create a default one.
 """
 
 
-from typing import Union, Tuple
-
 import sys
 import logging
-from pathlib import Path
+import os
 
+from typing import Union, Tuple
+from pathlib import Path
 
 import yamale
 
 
 log = logging.getLogger(__name__)
+
+
+# env = {
+#     'ROBINHOOD_CREDS': os.getenv('ROBINHOOD_CREDS'),
+
+#     # Daemon configuration.
+#     'DAEMON_WAKEUP': int(os.getenv('DAEMON_WAKEUP')),
+#     'QUEUE_MAX': int(os.getenv('QUEUE_SIZE')),
+#     'TIMEOUT': int(os.getenv('QUEUE_TIMEOUT')),
+#     'MAX_THREADS': int(os.getenv('MAX_THREADS')),
+#     'QUEUE_TIMEOUT': int(os.getenv('QUEUE_TIMEOUT'))
+# }
 
 
 def initialize(config_path: str) -> None:
