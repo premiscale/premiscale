@@ -28,9 +28,12 @@ RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
 
 # Install premiscale autoscaler.
-ARG PYTHON_INDEX=https://repo.ops.premiscale.com/repository/python-develop/
+ARG USERNAME=admin
+ARG PASSWORD=1234
+ARG PYTHON_REPOSITORY=python
+ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/
 ARG VERSION=0.0.1
-RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale=="${VERSION}"
+RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale==${VERSION}
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]
