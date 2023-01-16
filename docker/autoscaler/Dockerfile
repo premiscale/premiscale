@@ -16,6 +16,9 @@ RUN chmod +x /tini
 # Install the Doppler CLI via apt for secrets retrieval.
 RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
 
+RUN apt update && apt install -y libvirt-dev && \
+    rm -rf /var/apt/lists/*
+
 RUN mkdir -p /etc/autoscaler && \
     useradd -rm -d /autoscaler -s /bin/bash -g root -G sudo -u 1001 autoscaler
 
@@ -28,12 +31,12 @@ RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
 
 # Install premiscale autoscaler.
-ARG USERNAME=admin
-ARG PASSWORD=1234
+ARG PYTHON_USERNAME=admin
+ARG PYTHON_PASSWORD=1234
 ARG PYTHON_REPOSITORY=python
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/
-ARG VERSION=0.0.1
-RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale==${VERSION}
+ARG PYTHON_PACKAGE_VERSION=0.0.1
+RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION}
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]

@@ -1,5 +1,5 @@
 #! /bin/bash
 # Start the backend api.
 
-autoscaler --version
-autoscaler --daemon
+autoscaler --log-stdout --version
+autoscaler --log-stdout --daemon
