@@ -196,7 +196,7 @@ workflows:
           path: docker/autoscaler
           nexus-domain: $DOCKER_DEVELOP_DOMAIN
           args: >-
-            --build-arg=PYTHON_PACKAGE_VERSION=<< pipeline.number >>
+            --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
             --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
             --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
             --build-arg=PYTHON_REPOSITORY=python-develop
@@ -237,7 +237,7 @@ workflows:
           path: docker/autoscaler
           nexus-domain: $DOCKER_MASTER_DOMAIN
           args: >-
-            --build-arg=PYTHON_PACKAGE_VERSION=<< pipeline.number >>
+            --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
             --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
             --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
             --build-arg=PYTHON_REPOSITORY=python-master
