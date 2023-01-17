@@ -36,6 +36,7 @@ ARG PYTHON_PASSWORD=1234
 ARG PYTHON_REPOSITORY=python
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
+
 RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION}
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]

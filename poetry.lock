@@ -1067,7 +1067,7 @@ dev = ["coverage (==4.5.3)", "flake8 (==3.7.7)", "mock (==1.0.1)", "nose (==1.3.
 name = "setuptools"
 version = "66.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1327,4 +1327,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5665a4c13728f5134c4393457176a4b8f54c02d5c7832efab51e156cdc8de048"
+content-hash = "503c85157998079389de82f84365bf491b76d99b53f111fa6661624a31221776"
