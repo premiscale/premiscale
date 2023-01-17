@@ -10,7 +10,7 @@ orbs:
 
 
 workflows:
-  autoscaler:
+  premiscale:
     jobs:
       - dynamic/continue:
           context: circleci
@@ -18,7 +18,6 @@ workflows:
             /scripts
             /src
             /tests
-            /docker/autoscaler
             /docker/influxdb
             /docker/mysql
             /helm/autoscaler

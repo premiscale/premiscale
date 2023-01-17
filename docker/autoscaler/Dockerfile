@@ -3,8 +3,6 @@ ARG TAG=3.10.8
 
 FROM ${IMAGE}:${TAG}
 
-ARG VERSION=0.1.0
-
 LABEL org.opencontainers.image.description \
     Libvirt autoscaler Docker image
 
@@ -18,16 +16,28 @@ RUN chmod +x /tini
 # Install the Doppler CLI via apt for secrets retrieval.
 RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
 
+RUN apt update && apt install -y libvirt-dev && \
+    rm -rf /var/apt/lists/*
+
 RUN mkdir -p /etc/autoscaler && \
     useradd -rm -d /autoscaler -s /bin/bash -g root -G sudo -u 1001 autoscaler
 
-WORKDIR /autoscaler
-
 # Copy autoscaler into container.
-COPY ./scripts/run.sh /autoscaler
+COPY ./docker/autoscaler/scripts/run.sh /autoscaler/
+
+WORKDIR /autoscaler
 
 RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
+
+# Install autoscaler.
+ARG PYTHON_USERNAME=admin
+ARG PYTHON_PASSWORD=1234
+ARG PYTHON_REPOSITORY=python
+ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
+ARG PYTHON_PACKAGE_VERSION=0.0.1
+
+RUN pip install --no-cache-dir --no-input --extra-index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION}
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]

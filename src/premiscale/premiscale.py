@@ -9,7 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from config.config import initialize, validate
+from config.parse import initialize, validate
 from version import __version__
 
 
@@ -69,12 +69,9 @@ def cli() -> None:
     if args.version:
         log.info(f'premiscale v{__version__}')
         sys.exit(0)
-
-    if args.validate:
+    elif args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
+    elif args.daemon:
+        ...
 
     initialize(args.config)
-
-
-if __name__ == '__main__':
-    cli()

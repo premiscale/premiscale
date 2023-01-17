@@ -1,8 +1,8 @@
 version: 2.1
 
 
-# orbs:
-#   general: bjd2385/general@0.6.0
+orbs:
+  general: bjd2385/general@0.6.1
 
 
 executors:
@@ -36,7 +36,7 @@ jobs:
   pylint:
     description: PyLint
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.0
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -82,7 +82,7 @@ jobs:
   release-twine:
     description: twine upload
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.0
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -133,10 +133,10 @@ jobs:
                   _VERSION="$(grep -oiP "(?<=version = \").*(?=\")" pyproject.toml)"
 
                   if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-                      sed "s@version = \"${_VERSION}\"@version = \"${_VERSION}a<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
+                      sed "s@version = \"${_VERSION}\"@version = \"0.0.<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
                   elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
                       _VERSION_A="${_VERSION%%a*}"
-                      sed "s@version = \"${_VERSION}\"@version = \"${_VERSION_A}a<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
+                      sed "s@version = \"${_VERSION}\"@version = \"0.0.<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
                   fi
 
                   mv pyproject.toml.tmp pyproject.toml
@@ -146,10 +146,10 @@ jobs:
                   _VERSION="$(grep -oiP "(?<=version=\').*(?=\',)" setup.py)"
 
                   if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-                      sed "s@version=\'${_VERSION}\'@version=\'${_VERSION}a<< parameters.version >>\'@" setup.py > setup.py.tmp
+                      sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
                   elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
                       _VERSION_A="${_VERSION%%a*}"
-                      sed "s@version=\'${_VERSION}\'@version=\'${_VERSION_A}a<< parameters.version >>\'@" setup.py > setup.py.tmp
+                      sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
                   fi
 
                   mv setup.py.tmp setup.py
@@ -189,6 +189,25 @@ workflows:
               ignore:
                 - master
 
+      - general/docker-nexus:
+          name: docker [autoscaler] [develop]
+          image-name: autoscaler
+          context: nexus
+          path: docker/autoscaler
+          nexus-domain: $DOCKER_DEVELOP_DOMAIN
+          args: >-
+            --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
+            --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
+            --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
+            --build-arg=PYTHON_REPOSITORY=python-develop
+          tag: 0.0.<< pipeline.number >>
+          requires:
+            - twine upload [python-develop]
+          filters:
+            branches:
+              ignore:
+                - master
+
       # master
 
       - pylint:
@@ -206,6 +225,25 @@ workflows:
           version: << pipeline.number >>
           requires:
             - pylint [python-master]
+          filters:
+            branches:
+              only:
+                - master
+
+      - general/docker-nexus:
+          name: docker [autoscaler] [master]
+          image-name: autoscaler
+          context: nexus
+          path: docker/autoscaler
+          nexus-domain: $DOCKER_MASTER_DOMAIN
+          args: >-
+            --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
+            --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
+            --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
+            --build-arg=PYTHON_REPOSITORY=python-master
+          tag: 0.0.<< pipeline.number >>
+          requires:
+            - twine upload [python-master]
           filters:
             branches:
               only:
