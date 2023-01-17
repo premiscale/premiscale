@@ -25,10 +25,12 @@ RUN mkdir -p /etc/autoscaler && \
 # Copy autoscaler into container.
 COPY ./docker/autoscaler/scripts/run.sh /autoscaler/
 
+WORKDIR /autoscaler
+
 RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
 
-# Install premiscale autoscaler.
+# Install autoscaler.
 ARG PYTHON_USERNAME=admin
 ARG PYTHON_PASSWORD=1234
 ARG PYTHON_REPOSITORY=python
