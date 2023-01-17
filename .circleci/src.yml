@@ -167,6 +167,10 @@ jobs:
 workflows:
   src:
     jobs:
+      - general/helm-lint:
+          name: helm lint [helm/autoscaler]
+          chart-path: helm/autoscaler
+
       # develop
 
       - pylint:
@@ -208,6 +212,21 @@ workflows:
               ignore:
                 - master
 
+      - general/helm-release-nexus:
+          name: helm build and push [helm/autoscaler] [develop]
+          context: nexus
+          path: helm/autoscaler
+          repo-name: premiscale
+          repo: $HELM_DEVELOP_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          image-tag: 0.0.<< pipeline.number >>
+          requires:
+            - helm lint [helm/autoscaler]
+          filters:
+            branches:
+              ignore:
+                - master
+
       # master
 
       - pylint:
@@ -244,6 +263,21 @@ workflows:
           tag: 0.0.<< pipeline.number >>
           requires:
             - twine upload [python-master]
+          filters:
+            branches:
+              only:
+                - master
+
+      - general/helm-release-nexus:
+          name: helm build and push [helm/autoscaler] [master]
+          context: nexus
+          path: helm/autoscaler
+          repo-name: premiscale
+          repo: $HELM_MASTER_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          image-tag: 0.0.<< pipeline.number >>
+          requires:
+            - helm lint [helm/autoscaler]
           filters:
             branches:
               only:

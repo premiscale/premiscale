@@ -6,7 +6,7 @@ setup: true
 
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.4.1
-  general: bjd2385/general@0.6.0
+  general: bjd2385/general@0.6.1
 
 
 workflows:
@@ -20,7 +20,6 @@ workflows:
             /tests
             /docker/influxdb
             /docker/mysql
-            /helm/autoscaler
             /helm/influxdb
             /helm/mysql
             /conf
