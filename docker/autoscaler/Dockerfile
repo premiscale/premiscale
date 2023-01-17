@@ -22,10 +22,8 @@ RUN apt update && apt install -y libvirt-dev && \
 RUN mkdir -p /etc/autoscaler && \
     useradd -rm -d /autoscaler -s /bin/bash -g root -G sudo -u 1001 autoscaler
 
-WORKDIR /autoscaler
-
 # Copy autoscaler into container.
-COPY ./docker/autoscaler/scripts/run.sh /autoscaler
+COPY ./docker/autoscaler/scripts/run.sh /autoscaler/
 
 RUN chmod +x run.sh && chown -R autoscaler:root .
 USER autoscaler
@@ -37,7 +35,7 @@ ARG PYTHON_REPOSITORY=python
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
 
-RUN pip install --no-cache-dir --no-input --index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION}
+RUN pip install --no-cache-dir --no-input --extra-index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION}
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]
