@@ -19,7 +19,6 @@ workflows:
             /scripts
             /src
             /tests
-            /docker/autoscaler
             /docker/influxdb
             /docker/mysql
             /helm/autoscaler
