@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 # Docker build of the docker/autoscaler-directory.
 
-PYTHON_PACKAGE_VERSION="${1:-0.0.1a287}"
+PYTHON_PACKAGE_VERSION="${1:-0.0.1}"
 PYTHON_USERNAME="${2:-$(pass show premiscale/nexus/username)}"
 PYTHON_PASSWORD="${3:-$(pass show premiscale/nexus/password)}"
 PYTHON_REPOSITORY="${4:-python-develop}"

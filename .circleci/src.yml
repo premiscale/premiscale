@@ -133,10 +133,10 @@ jobs:
                   _VERSION="$(grep -oiP "(?<=version = \").*(?=\")" pyproject.toml)"
 
                   if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-                      sed "s@version = \"${_VERSION}\"@version = \"${_VERSION}a<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
+                      sed "s@version = \"${_VERSION}\"@version = \"0.0.<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
                   elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
                       _VERSION_A="${_VERSION%%a*}"
-                      sed "s@version = \"${_VERSION}\"@version = \"${_VERSION_A}a<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
+                      sed "s@version = \"${_VERSION}\"@version = \"0.0.<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
                   fi
 
                   mv pyproject.toml.tmp pyproject.toml
@@ -146,10 +146,10 @@ jobs:
                   _VERSION="$(grep -oiP "(?<=version=\').*(?=\',)" setup.py)"
 
                   if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-                      sed "s@version=\'${_VERSION}\'@version=\'${_VERSION}a<< parameters.version >>\'@" setup.py > setup.py.tmp
+                      sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
                   elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
                       _VERSION_A="${_VERSION%%a*}"
-                      sed "s@version=\'${_VERSION}\'@version=\'${_VERSION_A}a<< parameters.version >>\'@" setup.py > setup.py.tmp
+                      sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
                   fi
 
                   mv setup.py.tmp setup.py
