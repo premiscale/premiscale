@@ -20,6 +20,7 @@ workflows:
             /tests
             /docker/influxdb
             /docker/mysql
+            /helm/autoscaler
             /helm/influxdb
             /helm/mysql
             /conf
