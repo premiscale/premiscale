@@ -1,4 +1,4 @@
-{{- if not (lookup "v1" "Secret" "platform-develop" "nexus-docker-registry") }}
+{{- if not (lookup "v1" "Secret" "{{ .Release.Namespace }}" "nexus-docker-registry") }}
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
@@ -9,9 +9,9 @@ spec:
   template:
     type: kubernetes.io/dockerconfigjson
   encryptedData:
-    .dockerconfigjson: AgCZZMfzg1YSDYO/L2Go4ApZGbkaEY2oIHrD6pCn2exRDxXYOl/4N55T/G2bREuXdf14lX6Za/A6JOIazI3/Tj5TRbFNPnMw6nkgO+5oIj5MC5quIdMH1NVbvW/Q4FJY/tQdxCvi8OFaiBYg+E+7cwka3TORiJ6YJWGS1qD6UkihPBLdMnxUVDTVuYIN0IbaiswuH/AeFG9FoWEPu9RN56YOY7vzzmDNsT2EvARDsw9dp42QusVpSyE1TtP3QYQgocthEq0PefjWi2urnID+JhMZwaMD+cPMWXNpxKx556E1ICOABpqXX2VqwesWEWNQR4fJrZqbmkbI0gujCOO5W90sfoOQ0exFipudKJuyeb0N9XJXqCJjyzL+G503yqBpA6tnn8enPlgKGqELkV8YspQZVZ0F5nxJ3FxSL/prnDL+9MDuriXolfTkxhzhhfUTFrHZZEhxlpS92e1r1QCoNKXj4AJAM3PGLR0fxKKNQCVqxAENyPw4MvyIRnwFaxghhDHFIL75uBLmumudZdaLaz+DNejDsIZJZKlRgZzhdt/oJ4q8Tv4SLStLel/WQn2udoFcGHkljL0lxKAVGMtE7XOxd/S+TjuiGmKrXhY4DUGEAessayucxtJtgX4iZK1I79CIl8Kke82J4T9frDj6TNeaL/jGOUKoXRM1laqDiBYDP5EAdgjWPg57T8kNPdqZdoi2xRVVvKL3yXOFbUTF/hBf8UVl01pSxCpGD/Rbhemt3GJqQQR9GSejqxyvd60zA32WXFClejRVgyqm34+AHT2q+LVGLHYqQzjNJ3Cm/RerdvxAwBk=
+    .dockerconfigjson: AgAORNYg4+6/oEWXKHf6jlSez/jEZVL9eUoS92HBxKlL5YDdGifXOJ7IDOJlahrBhOOrn5sRztqgdXzcWpViTKAfQeZa2oqN0AC6rhEXUb9ZCX1vSlaNlIH8xFuTlrK1wQphrlLwc0u+nZMBUloooyd4HIZmm+hMQRzV49uji1X2GUXkbg0p/AAdJIDQt+r79maedADOk1SbxFMhQ/mNqEQD8EerMhlEkUAXnY2qP5vUxiHC2xNfRypqpQ6JiaWyYqBYHza9REDzRiBdgUtbt6MVzsxLSZpqkx+mE0CYaL1aDqER4HKHFHCxOM6oTlIBHfmHIZPif4+8bOFzTl0DN4y9rVr7EHLwJ6QWPfNo5/yjFmLP14cn4m0pajJztrORmkkGp8Kl2Gkt+Nn4DRpIRtcCbRpnEff6mu3IrE6YeLMvQCBlkEtfnM9yF5NDFJjk349ylBkHw/X3jQQosajeeOAYii9KbJ6wtGHMGEmg2a+dBuhuLGl9k19rNTxZiDdobMG5keCjMAJcop8zQdgveDpacs6OG25oo0w1kvi3Ca8Rbn2nttHUOGUuItbN7ixPSKeGJcluM+/9OYv+O8b0oXqOyOvnfksesTE2TtvCRevZj2o5GI2F3MBAzuLNehzO1aYeV+hOBX7epfVBVAVfOyFufZvBRd0AuoJDUvqQcACLw6ilRzehEv6iZBhGYia9la1eZAStkZwyKRs2fi7ME5F9Q41WX8v46T5EdzBfZp7ox4EJ/VgZ/OOMBy8FLCx7EkJHQ8AaCMO01ZwUPGmRxMNIUknRgdbEQOqE7Udv2f9nzQG0L3aOmsB6U9IUSSVNR9unI65Seq7NGyA2dI1KUSX/KG4X2TIZmAd8Y+GdHfAmhG2i3nR+3kofnqydnM9DtfCrx7OsjdEL5jGF0iOP9SE+m6HyLyLmmqzCgJwMSoq26abF/2/kauy1TodmZUBdzyzZB+cGLH/IDpdmFxoxzKxC33lVsh8HlJJTqDizIPsPolmpjIw2REL/MY5NT2apyyo/sO9Y7dFSTnbHgzwWaB0CnvbcIV+Y5yDZOw/IV1cOllaJqgMVxvZXSfanvaIxhnCJT0EYQzElcTYZMG6vcl/E9NhF2PI8e1dNAQ==
 {{- end }}
-{{- if not (lookup "v1" "Secret" "platform-develop" "doppler") }}
+{{- if not (lookup "v1" "Secret" "{{ .Release.Namespace }}" "doppler") }}
 ---
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
