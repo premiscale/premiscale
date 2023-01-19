@@ -6,7 +6,7 @@ global:
 
 image:
   name: mysql
-  tag: latest
+  tag: 0.0.306
   pullPolicy: Always
 
 auth:
