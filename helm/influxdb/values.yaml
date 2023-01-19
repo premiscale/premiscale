@@ -3,10 +3,11 @@ global:
   imagePullSecrets:
     - nexus-docker-registry
   storageClass: longhorn
+
 influxdb:
   image:
     repository: docker.ops.premiscale.com/influxdb
-    tag: 0.0.233
+    tag: 0.0.301
     pullPolicy: Always
     pullSecrets:
       - nexus-docker-registry
