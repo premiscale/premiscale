@@ -27,12 +27,12 @@ def cli() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true', default=False,
-        help='Start the autoscaling daemon.'
+        help='Start PremiScale as a daemon.'
     )
 
     parser.add_argument(
         '-c', '--config', type=str, default='/opt/premiscale/premiscale.conf',
-        help='Configuration file to use.'
+        help='Configuration file path to use.'
     )
 
     parser.add_argument(

@@ -49,3 +49,15 @@ spec:
           env:
             {{- toYaml $.Values.env | nindent 12 }}
           {{- end }}
+          volumeMounts:
+          {{- if .Values.configMap.enabled }}
+            - name: {{ .Chart.Name }}
+              mountPath: {{ .Values.configMap.mountPath }}
+              readOnly: false
+          {{- end }}
+      volumes:
+      {{- if .Values.configMap.enabled }}
+        - name: {{ .Chart.Name }}
+          configMap:
+            name: {{ .Chart.Name }}
+      {{- end }}
