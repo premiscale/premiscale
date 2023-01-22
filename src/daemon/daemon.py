@@ -5,6 +5,7 @@ Daemon loop.
 
 import logging
 import asyncio
+import signal
 
 from typing import Any
 from queue import Queue
@@ -27,34 +28,37 @@ class PremiScaleDaemon:
         queue_max_size (int > 0): maximum number of hosts to keep on the shared queue.
     """
     def __init__(self,
-                mysql_username: str,
-                mysql_password: str,
-                mysql_connection_string: str,
-                influx_username: str,
-                influx_password: str,
-                influx_connection_string: str,
-                interval_publish: int = 10,
+                # mysql_username: str,
+                # mysql_password: str,
+                # mysql_connection_string: str,
+                # influx_username: str,
+                # influx_password: str,
+                # influx_connection_string: str,
+                interval_platform: int = 10,
                 interval_metrics: int = 10,
                 queue_max_size: int = 10,
                 queue_timeout: int = 3600
                 ) -> None:
-        self.interval_publish = interval_publish
+
+        signal.signal(signal.SIGINT, self.stop)
+        signal.signal(signal.SIGTERM, self.stop)
+
+        self.interval_platform = interval_platform
         self.interval_metrics = interval_metrics
 
         self.queue_max_size = queue_max_size
         self.queue_timeout = queue_timeout
 
-        self.platform_queue: Queue = Queue(maxsize=queue_max_size)
-        self.metrics_queue: Queue = Queue(maxsize=queue_max_size)
-        self._n_threads = 0
-
         # Start a non-blocking daemon thread that periodically reads from the queue.
+        self.platform_queue: Queue = Queue(maxsize=queue_max_size)
         self._platform_daemon = Thread(target=self._d_platform, daemon=True)
-        self._platform_daemon.start()
+        self._n_platform_threads = 0
 
         # Start a non-blocking daemon thread that periodically writes to the queue.
+        self.metrics_queue: Queue = Queue(maxsize=queue_max_size)
         self._metrics_daemon = Thread(target=self._d_metrics, daemon=True)
         self._metrics_daemon.start()
+        self._n_metrics_threads = 0
 
         # Create a client connection, with which we intend to publish measurements.
         # self._ws =
@@ -93,7 +97,7 @@ class PremiScaleDaemon:
                     remainder = self.metrics_queue.qsize() % self._n_threads
 
                 self._spawn_threads_metrics(division, remainder)
-            sleep(self.interval_publish)
+            sleep(self.interval_platform)
 
     def _spawn_threads_metrics(self, division: int, remainder: int =0) -> None:
         """
@@ -173,16 +177,24 @@ class PremiScaleDaemon:
         Publish a datum point to the platform.
         """
 
+    # CM
+
+    def start(self) -> None:
+        """
+        Let the daemons out.
+        """
+        log.info('Starting PremiScale daemon.')
+        self._platform_daemon.start()
+        self._metrics_daemon.start()
+        log.info('Successfully started daemon.')
+
+    def stop(self, *args) -> None:
+        """
+        Stop daemons, close db connections gracefully.
+        """
+
     def __enter__(self) -> 'PremiScaleDaemon':
         return self
 
     def __exit__(self, *args: Any) -> None:
-        # TODO: figure out the correct way to kill the daemon safely?
-        pass
-
-
-def start_daemon() -> None:
-    """
-    Blocking function that spawns PremiScale's daemons (one for gathering host data, and another for
-    publishing and evaluating host data).
-    """
+        self.stop()

@@ -10,6 +10,7 @@ import sys
 import logging
 
 from config.parse import initialize, validate, parse
+from daemon.daemon import PremiScaleDaemon
 from version import __version__
 
 
@@ -74,7 +75,8 @@ def cli() -> None:
 
     if args.daemon:
         initialize(args.config)
-        # daemon()
+        with PremiScaleDaemon() as d:
+            d.start()
     else:
         initialize(args.config)
         parse(args.config)
