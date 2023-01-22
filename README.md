@@ -1,19 +1,20 @@
 # PremiScale
 
 ```shell
-$ premiscale -h
-usage: premiscale [-h] [-d] [-c CONFIG] [--validate VALIDATE] [--version] [--log-stdout]
+$ premiscale --help
+usage: premiscale [-h] [-d] [-c CONFIG] [--validate VALIDATE] [--version] [--log-stdout] [--debug]
 
 PremiScale autoscaler agent. © PremiScale, Inc. 2023
 
 options:
   -h, --help            show this help message and exit
-  -d, --daemon          Start the autoscaling daemon. (default: False)
+  -d, --daemon          Start PremiScale as a daemon. (default: False)
   -c CONFIG, --config CONFIG
-                        Configuration file to use. (default: /opt/premiscale/premiscale.conf)
+                        Configuration file path to use. (default: /opt/premiscale/config.yaml)
   --validate VALIDATE   Validate the provided configuration file. (default: False)
   --version             Show premiscale version. (default: False)
   --log-stdout          Log to stdout (for use in containerized deployments). (default: False)
+  --debug               Turn on logging debug mode. (default: False)
 
 ```
 

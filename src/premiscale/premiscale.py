@@ -32,7 +32,7 @@ def cli() -> None:
     )
 
     parser.add_argument(
-        '-c', '--config', type=str, default='/opt/premiscale/premiscale.conf',
+        '-c', '--config', type=str, default='/opt/premiscale/config.yaml',
         help='Configuration file path to use.'
     )
 
@@ -51,20 +51,25 @@ def cli() -> None:
         help='Log to stdout (for use in containerized deployments).'
     )
 
+    parser.add_argument(
+        '--debug', action='store_true', default=False,
+        help='Turn on logging debug mode.'
+    )
+
     args = parser.parse_args()
 
     # Configure logger.
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
-            format='%(asctime)s | %(levelname)s %(message)s',
-            level=logging.INFO
+            format='%(asctime)s | %(levelname)s | %(message)s',
+            level=logging.DEBUG if args.debug else logging.ERROR
         )
     else:
         logging.basicConfig(
         stream=sys.stdout,
         format='%(message)s',
-        level=logging.INFO
+        level=logging.DEBUG if args.debug else logging.ERROR
     )
 
     if args.version:
