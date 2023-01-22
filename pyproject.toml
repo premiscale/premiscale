@@ -11,6 +11,7 @@ python = "^3.10"
 libvirt-python = "^9.0.0"
 yamale = "^4.0.4"
 Flask = "^2.2.2"
+websockets = "^10.4"
 
 [tool.poetry.group.dev.dependencies]
 setupext-janitor = "^1.1.2"
