@@ -9,7 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from config.parse import initialize, validate
+from config.parse import initialize, validate, parse
 from version import __version__
 
 
@@ -71,7 +71,11 @@ def cli() -> None:
         sys.exit(0)
     elif args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
-    elif args.daemon:
-        ...
 
-    initialize(args.config)
+    if args.daemon:
+        initialize(args.config)
+        # daemon()
+    else:
+        initialize(args.config)
+        parse(args.config)
+        log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')

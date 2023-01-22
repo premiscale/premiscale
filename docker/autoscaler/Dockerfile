@@ -19,26 +19,25 @@ RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/instal
 RUN apt update && apt install -y libvirt-dev && \
     rm -rf /var/apt/lists/*
 
-RUN mkdir -p /etc/autoscaler && \
-    useradd -rm -d /autoscaler -s /bin/bash -g root -G sudo -u 1001 autoscaler
+RUN useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
 
-# Copy autoscaler into container.
-COPY ./docker/autoscaler/scripts/run.sh /autoscaler/
+COPY ./docker/autoscaler/scripts/run.sh /opt/premiscale/
 
-WORKDIR /autoscaler
+WORKDIR /opt/premiscale
 
-RUN chmod +x run.sh && chown -R autoscaler:root .
-USER autoscaler
+RUN chmod +x run.sh && chown -R premiscale:root .
+USER premiscale
 
-# Install autoscaler.
 ARG PYTHON_USERNAME=admin
 ARG PYTHON_PASSWORD=1234
 ARG PYTHON_REPOSITORY=python
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
 
+# Install and initialize PremiScale.
 RUN pip install --no-cache-dir --no-input --extra-index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION} && \
-    premiscale --version
+    premiscale --version && \
+    premiscale
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]

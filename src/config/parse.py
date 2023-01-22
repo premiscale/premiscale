@@ -5,6 +5,7 @@ Parse a configuration file, or create a default one.
 
 import sys
 import logging
+import json
 
 from typing import Union, Tuple
 from pathlib import Path
@@ -15,24 +16,24 @@ import yamale
 log = logging.getLogger(__name__)
 
 
-def initialize(config_path: Union[Path, str]) -> None:
+def initialize(config: Union[Path, str]) -> None:
     """
     Initialize the agent with directories and configuration files.
 
     Args:
         config_path: path to config file to either create or validate.
     """
-    if not Path.exists(Path(config_path)):
-        _make_default(config_path)
+    if not Path.exists(Path(config)):
+        _make_default(config)
 
-    with open(config_path, 'r', encoding='utf-8') as config:
-        msg, ret = validate(config.read().rstrip())
+    with open(config, 'r', encoding='utf-8') as f:
+        msg, ret = validate(f.read().rstrip())
         if not ret:
             log.error(f'Config file is not valid:\n\n{msg}')
 
 
 
-def validate(config: str, schema: str = '../../schema/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: str, schema: str = '../../conf/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 
@@ -51,6 +52,24 @@ def validate(config: str, schema: str = '../../schema/schema.yaml', strict: bool
         return '', True
     except ValueError as msg:
         return str(msg), False
+
+
+def parse(config: str, check: bool = False) -> dict:
+    """
+    Parse a config file and return it as a dictionary (JSON).
+
+    Args:
+        config (str): path to the config file.
+        check (bool): whether or not to validate the provided config file.
+
+    Returns:
+        dict: The parsed config file.
+    """
+    if check:
+        validate(config)
+
+    with open(config, 'r', encoding='utf-8') as f:
+        return json.loads(f.read().rstrip())
 
 
 def _config_exists(path: Union[str, Path]) -> bool:
@@ -78,10 +97,10 @@ def _make_default(path: Union[str, Path]) -> None:
     """
     try:
         if not Path.exists(Path(path).parent):
-            Path.mkdir(Path(path).parent)
+            Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             with open(str(path), 'x', encoding='utf-8') as f, open('conf/default.yaml', 'r', encoding='utf-8') as conf:
                 f.write(conf.read().strip())
     except PermissionError:
-        log.error('premiscale does not have permission to install to /opt, must run as root.')
+        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}, must run as root.')
         sys.exit(1)
