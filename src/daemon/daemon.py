@@ -196,6 +196,7 @@ class PremiScaleDaemon:
         """
         Stop daemons, close db connections gracefully.
         """
+        log.info(f'Stopping PremiScale gracefully.')
         pass
 
     def __enter__(self) -> 'PremiScaleDaemon':
