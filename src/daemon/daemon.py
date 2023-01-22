@@ -1,5 +1,9 @@
 """
-Daemon loop.
+Main agent daemon. There are 3 loops and queues at any given time to
+
+    1) collect host metrics about VMs under management;
+    2) process those metrics on a different interval;
+    3) and upload host metrics to the platform via websocket.
 """
 
 
