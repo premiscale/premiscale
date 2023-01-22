@@ -17,6 +17,9 @@ auth:
 # Eventually I'll need these
 initdbScripts: {}
 
+annotations:
+  argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/mysql
+
 resources:
   requests:
     cpu: 0.5

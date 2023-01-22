@@ -4,6 +4,10 @@ metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
+  {{- with $.Values.annotations }}
+  annotations:
+    {{- toYaml $.Values.annotations | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
   serviceName: {{ .Chart.Name }}
