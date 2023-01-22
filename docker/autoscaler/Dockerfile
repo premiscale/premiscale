@@ -28,6 +28,8 @@ WORKDIR /opt/premiscale
 RUN chmod +x run.sh && chown -R premiscale:root .
 USER premiscale
 
+ENV PATH=${PATH}:/opt/premiscale/.local/bin
+
 ARG PYTHON_USERNAME=admin
 ARG PYTHON_PASSWORD=1234
 ARG PYTHON_REPOSITORY=python

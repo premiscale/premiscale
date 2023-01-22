@@ -19,12 +19,16 @@ log = logging.getLogger(__name__)
 
 class PremiScaleDaemon:
     """
-    Daemon loops that periodically spawn threads to acquire and publish data from hosts to the platform.
+    Daemon loops that periodically spawn threads to acquire and publish data from
+    hosts to the platform.
 
     Args:
-        interval_publish (int > 0): interval that the publication daemon thread wakes to publish host data on-queue.
-        interval_evaluation (int > 0): interval that metrics from hosts should be evaluated, logic behind autoscaling decisions.
-        interval_metrics (int > 0): interval that the metrics collection daemon thread should wake up to spawn threads that acquire data from the list of hosts.
+        interval_publish (int > 0): interval that the publication daemon thread wakes to
+            publish host data on-queue.
+        interval_evaluation (int > 0): interval that metrics from hosts should be evaluated,
+            logic behind autoscaling decisions.
+        interval_metrics (int > 0): interval that the metrics collection daemon thread should
+            wake up to spawn threads that acquire data from the list of hosts.
         queue_max_size (int > 0): maximum number of hosts to keep on the shared queue.
     """
     def __init__(self,
@@ -192,6 +196,7 @@ class PremiScaleDaemon:
         """
         Stop daemons, close db connections gracefully.
         """
+        pass
 
     def __enter__(self) -> 'PremiScaleDaemon':
         return self
