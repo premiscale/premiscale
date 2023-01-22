@@ -33,7 +33,7 @@ annotations:
   # argocd-image-updater.argoproj.io/git-branch: master
 
 configMap:
-  enabled: true
+  enabled: false
   config: |+
     Your PremiScale config file.
   mountPath: /opt/premiscale

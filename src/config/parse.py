@@ -5,7 +5,6 @@ Parse a configuration file, or create a default one.
 
 import sys
 import logging
-import os
 
 from typing import Union, Tuple
 from pathlib import Path
@@ -16,21 +15,12 @@ import yamale
 log = logging.getLogger(__name__)
 
 
-# env = {
-#     'ROBINHOOD_CREDS': os.getenv('ROBINHOOD_CREDS'),
-
-#     # Daemon configuration.
-#     'DAEMON_WAKEUP': int(os.getenv('DAEMON_WAKEUP')),
-#     'QUEUE_MAX': int(os.getenv('QUEUE_SIZE')),
-#     'TIMEOUT': int(os.getenv('QUEUE_TIMEOUT')),
-#     'MAX_THREADS': int(os.getenv('MAX_THREADS')),
-#     'QUEUE_TIMEOUT': int(os.getenv('QUEUE_TIMEOUT'))
-# }
-
-
-def initialize(config_path: str) -> None:
+def initialize(config_path: Union[Path, str]) -> None:
     """
     Initialize the agent with directories and configuration files.
+
+    Args:
+        config_path: path to config file to either create or validate.
     """
     if not Path.exists(Path(config_path)):
         _make_default(config_path)
@@ -39,6 +29,7 @@ def initialize(config_path: str) -> None:
         msg, ret = validate(config.read().rstrip())
         if not ret:
             log.error(f'Config file is not valid:\n\n{msg}')
+
 
 
 def validate(config: str, schema: str = '../../schema/schema.yaml', strict: bool = True) -> Tuple[str, bool]:

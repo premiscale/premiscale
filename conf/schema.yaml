@@ -1,9 +1,15 @@
 version: enum('v1-alpha1')
-agent: map()
+agent: include('daemon')
 scaling:
   databases: include('databases')
   hostGroups: include('hostGroups')
   autoscalingGroups: include('autoscalingGroups')
+---
+daemon:
+  check_interval: int(min=0)
+  timeout: int(min=0)
+  max_threads: int(min=0)
+  queue_max: int(min=0)
 ---
 databases:
   state: include('state')
