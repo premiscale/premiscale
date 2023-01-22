@@ -12,6 +12,8 @@ libvirt-python = "^9.0.0"
 yamale = "^4.0.4"
 Flask = "^2.2.2"
 websockets = "^10.4"
+sqlalchemy = "1.4.46"
+influxdb = "^5.3.1"
 
 [tool.poetry.group.dev.dependencies]
 setupext-janitor = "^1.1.2"
