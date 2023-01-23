@@ -10,7 +10,7 @@ import yaml
 import logging
 import sys
 
-from parse import Config_v1_alpha_1
+from .parse import Config_v1_alpha_1
 
 
 log = logging.getLogger(__name__)
@@ -59,7 +59,9 @@ def parse(config: str, check: bool = False) -> dict:
 
     match config_json['version']:
         case 'v1-alpha1':
-            return Config_v1_alpha_1(config_json)
+            conf = Config_v1_alpha_1(config_json)
+            log.debug(f'Successfully parsed config {conf.version}: {conf}')
+            return conf
         case _:
             log.error(f'Cannot parse config version, supplied \'{config_json["version"]}\'')
             sys.exit(1)

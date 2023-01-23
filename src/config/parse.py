@@ -19,12 +19,12 @@ class Config(dict):
     """
     Parse a config dictionary into an object with methods to interact with the config.
     """
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: dict):
         self.config = config
 
     def __getattr__(self, *args, **kwargs):
-        val = dict.get(*args, **kwargs)
-        return Config_v1_alpha_1(val) if type(val) is dict else val
+        val = Config.get(*args, **kwargs)
+        return Config(val) if type(val) is dict else val
 
     def __setattr__(self, *args, **kwargs) -> Any:
         return self.__setitem__(*args, **kwargs)
@@ -33,10 +33,12 @@ class Config(dict):
         return self.__delitem__(*args, **kwargs)
 
     def version(self) -> str:
-        return self.config.version  # type: ignore
+        return self.config.config.version  # type: ignore
 
 
 class Config_v1_alpha_1(Config):
+
+    # Top-level config items.
 
     def agent(self) -> 'Config_v1_alpha_1':
         return self.config.agent    # type: ignore
@@ -50,7 +52,7 @@ class Config_v1_alpha_1(Config):
         """
         Retrieve a map of hostgroups.
         """
-        return self.scaling.hostGroups  # type: ignore
+        return self.config.scaling.hostGroups  # type: ignore
 
     def hostGroupLookup(self, name: str) -> Optional['Config_v1_alpha_1']:
         """
