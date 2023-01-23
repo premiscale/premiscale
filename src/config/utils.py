@@ -10,6 +10,8 @@ import yaml
 import logging
 import sys
 
+from parse import Config_v1_alpha_1
+
 
 log = logging.getLogger(__name__)
 
@@ -36,6 +38,31 @@ def read_credential_env(variable: str) -> Dict[str, str]:
         Dict[str, str]: _description_
     """
     return {}
+
+
+def parse(config: str, check: bool = False) -> dict:
+    """
+    Parse a config file and return it as a dictionary (JSON).
+
+    Args:
+        config (str): path to the config file.
+        check (bool): whether or not to validate the provided config file.
+
+    Returns:
+        dict: The parsed config file.
+    """
+    if check:
+        validate(config)
+
+    with open(config, 'r', encoding='utf-8') as f:
+        config_json = yaml.safe_load(f.read().rstrip())
+
+    match config_json['version']:
+        case 'v1-alpha1':
+            return Config_v1_alpha_1(config_json)
+        case _:
+            log.error(f'Cannot parse config version, supplied \'{config_json["version"]}\'')
+            sys.exit(1)
 
 
 def initialize(config: Union[Path, str]) -> str:
@@ -83,24 +110,6 @@ def validate(config: Union[Path, str], schema: Union[Path, str] = 'conf/schema.y
         return '', True
     except ValueError as msg:
         return str(msg), False
-
-
-def parse(config: str, check: bool = False) -> dict:
-    """
-    Parse a config file and return it as a dictionary (JSON).
-
-    Args:
-        config (str): path to the config file.
-        check (bool): whether or not to validate the provided config file.
-
-    Returns:
-        dict: The parsed config file.
-    """
-    if check:
-        validate(config)
-
-    with open(config, 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f.read().rstrip())
 
 
 def _config_exists(path: Union[str, Path]) -> bool:

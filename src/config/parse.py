@@ -10,14 +10,17 @@ import logging
 log = logging.getLogger(__name__)
 
 
+__all__ = [
+    'Config_v1_alpha_1'
+]
+
+
 class Config(dict):
     """
     Parse a config dictionary into an object with methods to interact with the config.
     """
     def __init__(self, config: dict) -> None:
         self.config = config
-
-    # https://stackoverflow.com/a/23689767/3928184
 
     def __getattr__(self, *args, **kwargs):
         val = dict.get(*args, **kwargs)
