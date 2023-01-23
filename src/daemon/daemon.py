@@ -16,6 +16,7 @@ from queue import Queue
 from threading import Thread
 from time import sleep
 from websockets import connect
+from config.parse import Config
 
 
 log = logging.getLogger(__name__)
@@ -65,7 +66,6 @@ class PremiScaleDaemon:
         # Start a non-blocking daemon thread that periodically writes to the queue.
         self.metrics_queue: Queue = Queue(maxsize=queue_max_size)
         self._metrics_daemon = Thread(target=self._d_metrics, daemon=True)
-        self._metrics_daemon.start()
         self._n_metrics_threads = 0
 
         # Create a client connection, with which we intend to publish measurements.

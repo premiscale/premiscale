@@ -9,7 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from config.parse import initialize, validate, parse
+from config.utils import initialize, validate, parse
 from daemon.daemon import PremiScaleDaemon
 from version import __version__
 
@@ -63,13 +63,13 @@ def cli() -> None:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(asctime)s | %(levelname)s | %(message)s',
-            level=logging.DEBUG if args.debug else logging.ERROR
+            level=(logging.DEBUG if args.debug else logging.INFO)
         )
     else:
         logging.basicConfig(
         stream=sys.stdout,
         format='%(message)s',
-        level=logging.DEBUG if args.debug else logging.ERROR
+        level=(logging.DEBUG if args.debug else logging.INFO)
     )
 
     if args.version:
@@ -80,9 +80,11 @@ def cli() -> None:
 
     if args.daemon:
         initialize(args.config)
+        config = parse(args.config)
+        print(type(config))
         with PremiScaleDaemon() as d:
             d.start()
     else:
         initialize(args.config)
-        parse(args.config)
+        print(parse(args.config))
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')
