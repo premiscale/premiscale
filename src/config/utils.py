@@ -2,7 +2,7 @@
 Utility methods for daemon.
 """
 
-from typing import Dict, Union, Tuple
+from typing import Union, Tuple
 from pathlib import Path
 
 import yamale

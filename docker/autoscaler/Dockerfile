@@ -27,7 +27,7 @@ RUN apt update && apt install -y libvirt-dev && \
 
 RUN useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
 
-COPY ./docker/autoscaler/scripts/run.sh /opt/premiscale/
+COPY ./docker/autoscaler/scripts/cmd.sh /opt/premiscale/
 
 WORKDIR /opt/premiscale
 
@@ -49,4 +49,4 @@ RUN mkdir -p "$HOME"/.local/bin && \
     pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
-CMD [ "./run.sh" ]
+CMD [ "./cmd.sh" ]
