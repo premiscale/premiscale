@@ -24,7 +24,7 @@ class Config(dict):
 
     def __getattr__(self, *args, **kwargs):
         val = Config.get(*args, **kwargs)
-        return Config(val) if type(val) is dict else val
+        return Config(val) if isinstance(val, dict) else val
 
     def __setattr__(self, *args, **kwargs) -> Any:
         return self.__setitem__(*args, **kwargs)
@@ -33,17 +33,29 @@ class Config(dict):
         return self.__delitem__(*args, **kwargs)
 
     def version(self) -> str:
+        """
+        Get the version of the config.
+        """
         return self.config.config.version  # type: ignore
 
 
 class Config_v1_alpha_1(Config):
+    """
+    Config parser for v1a1.
+    """
 
     # Top-level config items.
 
     def agent(self) -> 'Config_v1_alpha_1':
+        """
+        Get the agent top-level item.
+        """
         return self.config.agent    # type: ignore
 
     def scaling(self) -> 'Config_v1_alpha_1':
+        """
+        Get the scaling top-level item.
+        """
         return self.config.scaling  # type: ignore
 
     # hostGroups
@@ -61,8 +73,7 @@ class Config_v1_alpha_1(Config):
         for group in self.hostGroups():
             if group == name:
                 return self.hostGroups()[group]
-        else:
-            return None
+        return None
 
     # ASGs
 
@@ -79,8 +90,7 @@ class Config_v1_alpha_1(Config):
         for asg in self.autoscalingGroups():
             if asg == name:
                 return self.autoscalingGroups()[asg]
-        else:
-            return None
+        return None
 
     # Databases
 
