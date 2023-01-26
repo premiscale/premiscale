@@ -8,15 +8,15 @@ Main agent daemon. There are 3 loops and queues at any given time to
 
 
 import logging
-import asyncio
+# import asyncio
 import signal
 
 from typing import Any
 from queue import Queue
 from threading import Thread
 from time import sleep
-from websockets import connect
-from config.parse import Config
+# from websockets import connect
+# from config.parse import Config
 
 
 log = logging.getLogger(__name__)
@@ -96,13 +96,13 @@ class PremiScaleDaemon:
             if not self.metrics_queue.empty():
                 # No reason to create more threads than necessary, here.
                 if self.queue_max_size > self.metrics_queue.qsize():
-                    self._n_threads = self.metrics_queue.qsize()
+                    self._n_metrics_threads = self.metrics_queue.qsize()
                     division = 1
                     remainder = 0
                 else:
-                    self._n_threads = self.queue_max_size
-                    division = self.metrics_queue.qsize() // self._n_threads
-                    remainder = self.metrics_queue.qsize() % self._n_threads
+                    self._n_metrics_threads = self.queue_max_size
+                    division = self.metrics_queue.qsize() // self._n_metrics_threads
+                    remainder = self.metrics_queue.qsize() % self._n_metrics_threads
 
                 self._spawn_threads_metrics(division, remainder)
             sleep(self.interval_platform)
@@ -120,7 +120,7 @@ class PremiScaleDaemon:
             for _ in range(_i):
                 q_size_start = self.metrics_queue.qsize()
                 threads = []
-                for _ in range(self._n_threads):
+                for _ in range(self._n_metrics_threads):
                     new_thread = Thread(target=self._t_publish, args=())
                     new_thread.start()
                     threads.append(new_thread)
@@ -129,7 +129,7 @@ class PremiScaleDaemon:
                 # If the ending queue size is the same as we started, just wait until
                 # the next publish cycle to try again, they're obviously failing.
                 if self.metrics_queue.qsize() == q_size_start:
-                    return None
+                    return
 
     # Platform metrics.
 
@@ -145,13 +145,13 @@ class PremiScaleDaemon:
             if not self.platform_queue.empty():
                 # No reason to create more threads than necessary, here.
                 if self.queue_max_size > self.platform_queue.qsize():
-                    self._n_threads = self.platform_queue.qsize()
+                    self._n_platform_threads = self.platform_queue.qsize()
                     division = 1
                     remainder = 0
                 else:
-                    self._n_threads = self.queue_max_size
-                    division = self.platform_queue.qsize() // self._n_threads
-                    remainder = self.platform_queue.qsize() % self._n_threads
+                    self._n_platform_threads = self.queue_max_size
+                    division = self.platform_queue.qsize() // self._n_platform_threads
+                    remainder = self.platform_queue.qsize() % self._n_platform_threads
 
                 self._spawn_threads_platform(division, remainder)
             sleep(self.interval_metrics)
@@ -169,7 +169,7 @@ class PremiScaleDaemon:
             for _ in range(_i):
                 q_size_start = self.platform_queue.qsize()
                 threads = []
-                for _ in range(self._n_threads):
+                for _ in range(self._n_platform_threads):
                     new_thread = Thread(target=self._t_publish, args=())
                     new_thread.start()
                     threads.append(new_thread)
@@ -178,7 +178,7 @@ class PremiScaleDaemon:
                 # If the ending queue size is the same as we started, just wait until
                 # the next publish cycle to try again, they're obviously failing.
                 if self.platform_queue.qsize() == q_size_start:
-                    return None
+                    return
 
     def _t_publish(self) -> None:
         """
@@ -196,15 +196,14 @@ class PremiScaleDaemon:
         self._metrics_daemon.start()
         log.info('Successfully started daemon.')
 
-    def stop(self, *args) -> None:
+    def stop(self, *args: Any) -> None:
         """
         Stop daemons, close db connections gracefully.
         """
-        log.info(f'Stopping PremiScale gracefully.')
-        pass
+        log.info('Stopping PremiScale gracefully.')
 
     def __enter__(self) -> 'PremiScaleDaemon':
         return self
 
     def __exit__(self, *args: Any) -> None:
-        self.stop()
+        self.stop(*args)

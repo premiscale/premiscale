@@ -80,7 +80,7 @@ def cli() -> None:
 
     if args.daemon:
         initialize(args.config)
-        config = parse(args.config)
+        # config = parse(args.config)
         with PremiScaleDaemon() as d:
             d.start()
     else:

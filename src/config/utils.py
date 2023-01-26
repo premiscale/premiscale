@@ -16,28 +16,28 @@ from .parse import Config_v1_alpha_1
 log = logging.getLogger(__name__)
 
 
-def read_credentials_env_prefix(env_prefix: str) -> Dict[str, str]:
-    """_summary_
+# def read_credentials_env_prefix(env_prefix: str) -> Dict[str, str]:
+#     """_summary_
 
-    Args:
-        env_prefix (Optional[str], optional): _description_. Defaults to None.
+#     Args:
+#         env_prefix (Optional[str], optional): _description_. Defaults to None.
 
-    Returns:
-        Dict[str, str]: _description_
-    """
-    return {}
+#     Returns:
+#         Dict[str, str]: _description_
+#     """
+#     return {}
 
 
-def read_credential_env(variable: str) -> Dict[str, str]:
-    """_summary_
+# def read_credential_env(variable: str) -> Dict[str, str]:
+#     """_summary_
 
-    Args:
-        variable (str): _description_
+#     Args:
+#         variable (str): _description_
 
-    Returns:
-        Dict[str, str]: _description_
-    """
-    return {}
+#     Returns:
+#         Dict[str, str]: _description_
+#     """
+#     return {}
 
 
 def parse(config: str, check: bool = False) -> dict:
@@ -124,9 +124,7 @@ def _config_exists(path: Union[str, Path]) -> bool:
     Returns:
         bool: Whether the config exists.
     """
-    exists = Path.exists(Path(path))
-
-    if exists:
+    if Path.exists(Path(path)):
         log.debug(f'Config file at {str(path)} exists.')
         return True
     else:
