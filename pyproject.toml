@@ -26,5 +26,5 @@ pre-commit = "^2.21.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[project.scripts]
-premiscale = premiscale.premiscale:cli
+[tool.poetry.scripts]
+premiscale = "premiscale.premiscale:cli"
