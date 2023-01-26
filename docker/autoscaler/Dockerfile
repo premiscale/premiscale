@@ -3,13 +3,18 @@ ARG TAG=3.10.8
 
 FROM ${IMAGE}:${TAG}
 
-LABEL org.opencontainers.image.description \
-    Libvirt autoscaler Docker image
+ENV DOPPLER_TOKEN="notset"
+
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
+LABEL org.opencontainers.image.description "© PremiScale, Inc. 2023"
+LABEL org.opencontainers.image.licenses "GPLv3"
+LABEL org.opencontainers.image.authors "Emma Doyle <emma@premiscale.com>"
+LABEL org.opencontainers.image.documentation "https://premiscale.com"
 
 USER root
 
 # https://github.com/krallin/tini
-ENV TINI_VERSION v0.19.0
+ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
@@ -17,7 +22,8 @@ RUN chmod +x /tini
 RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
 
 RUN apt update && apt install -y libvirt-dev && \
-    rm -rf /var/apt/lists/*
+    rm -rf /var/apt/lists/* && \
+    python -m venv /opt/premiscale
 
 RUN useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
 
@@ -28,18 +34,19 @@ WORKDIR /opt/premiscale
 RUN chmod +x run.sh && chown -R premiscale:root .
 USER premiscale
 
-ENV PATH=${PATH}:/opt/premiscale/.local/bin
-
 ARG PYTHON_USERNAME=admin
 ARG PYTHON_PASSWORD=1234
 ARG PYTHON_REPOSITORY=python
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
 
+ENV PATH=${PATH}:/opt/premiscale/.local/bin
+
 # Install and initialize PremiScale.
-RUN pip install --no-cache-dir --no-input --extra-index-url=${PYTHON_INDEX} premiscale==${PYTHON_PACKAGE_VERSION} && \
-    premiscale --version && \
-    premiscale
+RUN mkdir -p "$HOME"/.local/bin && \
+    . bin/activate && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./run.sh" ]

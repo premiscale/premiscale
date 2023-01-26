@@ -38,7 +38,9 @@ setup(
     url = 'https://github.com/premiscale/premiscale',
     install_requires=[],
     entry_points={
-        "console_scripts": ["premiscale = premiscale.premiscale:cli"]
+        'console_scripts': [
+            'premiscale = premiscale.premiscale:cli',
+        ]
     },
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/premiscale/premiscale/issues',
