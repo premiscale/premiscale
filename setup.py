@@ -39,7 +39,7 @@ setup(
     install_requires=[],
     entry_points={
         'console_scripts': [
-            'premiscale = premiscale.premiscale:cli',
+            'premiscale = premiscale:cli',
         ]
     },
     project_urls={  # Optional
