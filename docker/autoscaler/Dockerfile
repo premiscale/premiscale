@@ -31,7 +31,7 @@ COPY ./docker/autoscaler/scripts/cmd.sh /opt/premiscale/
 
 WORKDIR /opt/premiscale
 
-RUN chmod +x run.sh && chown -R premiscale:root .
+RUN chmod +x cmd.sh && chown -R premiscale:root .
 USER premiscale
 
 ARG PYTHON_USERNAME=admin
