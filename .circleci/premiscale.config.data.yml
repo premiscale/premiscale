@@ -15,4 +15,4 @@ workflows:
                 - tests/schema
                 - premiscale/config/data/default.yaml
             alias: yamale
-          schema-path: conf/schema.yaml
+          schema-path: premiscale/config/data/schema.yaml
