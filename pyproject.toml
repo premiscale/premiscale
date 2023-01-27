@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "premiscale"
-version = "0.0.358"
+version = "0.0.360"
 description = "PremiScale autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 maintainers = ["Emma Doyle <emma@premiscale.com>"]
@@ -8,6 +8,10 @@ license = "GPL-3.0-only"
 readme = "README.md"
 packages = [
   { include = "premiscale" }
+]
+include = [
+  "conf/",
+  "LICENSE"
 ]
 
 [tool.poetry.dependencies]

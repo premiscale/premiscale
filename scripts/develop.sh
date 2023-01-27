@@ -1,4 +1,5 @@
 #! /bin/bash
 # Run develop installation with setup.
 
-python setup.py develop
+# python setup.py develop
+poetry install
