@@ -9,9 +9,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from .config.utils import initialize, validate, parse
-from .daemon.daemon import PremiScaleDaemon
-from .version import __version__
+from config.utils import initialize, validate, parse
+from daemon.daemon import PremiScaleDaemon
+from version import __version__
 
 
 log = logging.getLogger(__name__)
