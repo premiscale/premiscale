@@ -147,7 +147,7 @@ def _make_default(path: Union[str, Path]) -> None:
             Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             log.debug(f'Creating default config file at \'{str(path)}\'')
-            with open(str(path), 'x', encoding='utf-8') as f, open('../../conf/default.yaml', 'r', encoding='utf-8') as conf:
+            with open(str(path), 'x', encoding='utf-8') as f, open('conf/default.yaml', 'r', encoding='utf-8') as conf:
                 f.write(conf.read().strip())
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
