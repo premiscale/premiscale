@@ -10,7 +10,6 @@ import yaml
 import logging
 import sys
 import importlib.resources as resources
-import importlib.resources.abc.Traversable as Traversable
 
 from .parse import Config_v1_alpha_1
 
@@ -69,8 +68,7 @@ def initialize(config: Union[Path, str]) -> str:
             return f.read().rstrip()
 
 
-
-def validate(config: Union[Path, str], schema: Traversable = 'data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: Union[Path, str], schema: str = 'data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 
@@ -111,7 +109,7 @@ def _config_exists(path: Union[str, Path]) -> bool:
         return False
 
 
-def _make_default(path: Traversable) -> None:
+def _make_default(path: Union[str, Path]) -> None:
     """
     Make a default config file if one does not exist.
 
