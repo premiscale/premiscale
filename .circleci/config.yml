@@ -16,7 +16,7 @@ workflows:
           context: circleci
           modules: |
             /scripts
-            /src
+            /premiscale
             /tests
             /docker/influxdb
             /docker/mysql

@@ -1,2 +1,2 @@
 recursive-include conf *.yaml
-recursive-include src *.py
+recursive-include premiscale *.py

@@ -55,7 +55,7 @@ jobs:
       modules_path:
         type: string
         description: Path to modules directory in package.
-        default: src
+        default: premiscale
       configuration_file:
         type: string
         description: Path to pylint configuration file
@@ -165,7 +165,7 @@ jobs:
 
 
 workflows:
-  src:
+  premiscale:
     jobs:
       # develop
 
