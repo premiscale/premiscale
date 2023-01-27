@@ -92,7 +92,7 @@ def initialize(config: Union[Path, str]) -> str:
 
 
 
-def validate(config: Union[Path, str], schema: Union[Path, str] = '../../conf/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: Union[Path, str], schema: Union[Path, str] = 'conf/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 
