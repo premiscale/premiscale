@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "premiscale"
-version = "0.0.1"
+version = "0.0.358"
 description = "PremiScale autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 maintainers = ["Emma Doyle <emma@premiscale.com>"]
@@ -31,4 +31,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-premiscale = "premiscale.premiscale:cli"
+premiscale = "premiscale:cli"
