@@ -9,35 +9,13 @@ import yamale
 import yaml
 import logging
 import sys
+import importlib.resources as resources
+import importlib.resources.abc.Traversable as Traversable
 
 from .parse import Config_v1_alpha_1
 
 
 log = logging.getLogger(__name__)
-
-
-# def read_credentials_env_prefix(env_prefix: str) -> Dict[str, str]:
-#     """_summary_
-
-#     Args:
-#         env_prefix (Optional[str], optional): _description_. Defaults to None.
-
-#     Returns:
-#         Dict[str, str]: _description_
-#     """
-#     return {}
-
-
-# def read_credential_env(variable: str) -> Dict[str, str]:
-#     """_summary_
-
-#     Args:
-#         variable (str): _description_
-
-#     Returns:
-#         Dict[str, str]: _description_
-#     """
-#     return {}
 
 
 def parse(config: str, check: bool = False) -> dict:
@@ -92,7 +70,7 @@ def initialize(config: Union[Path, str]) -> str:
 
 
 
-def validate(config: Union[Path, str], schema: Union[Path, str] = 'data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: Union[Path, str], schema: Traversable = 'data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 
@@ -104,7 +82,8 @@ def validate(config: Union[Path, str], schema: Union[Path, str] = 'data/schema.y
     Returns:
         bool: Whether or not the config conforms to our expected schema.
     """
-    schema = yamale.make_schema(schema)
+    with resources.as_file(Path(schema)) as f:
+        schema = yamale.make_schema(f)
     data = yamale.make_data(config)
 
     try:
@@ -132,7 +111,7 @@ def _config_exists(path: Union[str, Path]) -> bool:
         return False
 
 
-def _make_default(path: Union[str, Path]) -> None:
+def _make_default(path: Traversable) -> None:
     """
     Make a default config file if one does not exist.
 
@@ -147,8 +126,9 @@ def _make_default(path: Union[str, Path]) -> None:
             Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             log.debug(f'Creating default config file at \'{str(path)}\'')
-            with open(str(path), 'x', encoding='utf-8') as f, open('data/default.yaml', 'r', encoding='utf-8') as conf:
-                f.write(conf.read().strip())
+            with resources.as_file(Path('data/default.yaml')) as f_conf:
+                with open(str(path), 'x', encoding='utf-8') as f, open(f_conf, 'r', encoding='utf-8') as conf:
+                    f.write(conf.read().strip())
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
         log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}, must run as root.')
