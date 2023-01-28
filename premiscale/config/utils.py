@@ -80,7 +80,7 @@ def validate(config: Union[Path, str], schema: str = 'schema.yaml', strict: bool
     Returns:
         bool: Whether or not the config conforms to our expected schema.
     """
-    with resources.open_text('config.data', schema) as f:
+    with resources.open_text('data', schema) as f:
         schema = yamale.make_schema(f)
 
     data = yamale.make_data(config)
@@ -125,7 +125,7 @@ def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'de
             Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             log.debug(f'Creating default config file at \'{str(path)}\'')
-            with resources.open_text('config.data', default_config) as default_f, open(str(path), 'x', encoding='utf-8') as f:
+            with resources.open_text('data', default_config) as default_f, open(str(path), 'x', encoding='utf-8') as f:
                 f.write(default_f.read().strip())
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
