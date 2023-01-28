@@ -9,8 +9,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from config.parse import initialize, validate
-from version import __version__
+from .config.utils import initialize, validate, parse
+from .daemon.daemon import PremiScaleDaemon
+from .version import __version__
 
 
 log = logging.getLogger(__name__)
@@ -27,12 +28,12 @@ def cli() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true', default=False,
-        help='Start the autoscaling daemon.'
+        help='Start PremiScale as a daemon.'
     )
 
     parser.add_argument(
-        '-c', '--config', type=str, default='/opt/premiscale/premiscale.conf',
-        help='Configuration file to use.'
+        '-c', '--config', type=str, default='/opt/premiscale/config.yaml',
+        help='Configuration file path to use.'
     )
 
     parser.add_argument(
@@ -50,20 +51,25 @@ def cli() -> None:
         help='Log to stdout (for use in containerized deployments).'
     )
 
+    parser.add_argument(
+        '--debug', action='store_true', default=False,
+        help='Turn on logging debug mode.'
+    )
+
     args = parser.parse_args()
 
     # Configure logger.
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
-            format='%(asctime)s | %(levelname)s %(message)s',
-            level=logging.INFO
+            format='%(asctime)s | %(levelname)s | %(message)s',
+            level=(logging.DEBUG if args.debug else logging.INFO)
         )
     else:
         logging.basicConfig(
         stream=sys.stdout,
         format='%(message)s',
-        level=logging.INFO
+        level=(logging.DEBUG if args.debug else logging.INFO)
     )
 
     if args.version:
@@ -71,7 +77,13 @@ def cli() -> None:
         sys.exit(0)
     elif args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
-    elif args.daemon:
-        ...
 
-    initialize(args.config)
+    if args.daemon:
+        initialize(args.config)
+        # config = parse(args.config)
+        with PremiScaleDaemon() as d:
+            d.start()
+    else:
+        initialize(args.config)
+        print(parse(args.config))
+        log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')

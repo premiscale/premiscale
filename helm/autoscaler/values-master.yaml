@@ -1,0 +1,13 @@
+global:
+  imageRegistry: docker-master.ops.premiscale.com
+  imagePullSecrets:
+    - nexus-docker-registry
+  storageClass: longhorn
+
+image:
+  name: autoscaler
+  tag: 0.0.302
+  pullPolicy: Always
+
+annotations:
+  argocd-image-updater.argoproj.io/image-list: docker-master.ops.premiscale.com/autoscaler

@@ -1,16 +1,32 @@
 [tool.poetry]
 name = "premiscale"
-version = "0.0.1"
+version = "0.0.362"
 description = "PremiScale autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
-license = "GPLv3"
+maintainers = ["Emma Doyle <emma@premiscale.com>"]
+license = "GPL-3.0-only"
 readme = "README.md"
+packages = [
+  { include = "premiscale" }
+]
+include = [
+  "LICENSE"
+]
+keywords = [
+    "autoscaling",
+    "asg",
+    "kvm",
+    "libvirt"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 libvirt-python = "^9.0.0"
 yamale = "^4.0.4"
 Flask = "^2.2.2"
+websockets = "^10.4"
+sqlalchemy = "1.4.46"
+influxdb = "^5.3.1"
 
 [tool.poetry.group.dev.dependencies]
 setupext-janitor = "^1.1.2"
@@ -22,3 +38,6 @@ pre-commit = "^3.0.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+premiscale = "premiscale:cli"

@@ -1,5 +1,5 @@
 apiVersion: v2
-name: autoscaler
+name: premiscale
 description: Helm chart for deploying PremiScale, Inc. autoscaler
 type: application
 version: 0.0.1

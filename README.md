@@ -1,5 +1,23 @@
 # PremiScale
 
+```shell
+$ premiscale --help
+usage: premiscale [-h] [-d] [-c CONFIG] [--validate VALIDATE] [--version] [--log-stdout] [--debug]
+
+PremiScale autoscaler agent. © PremiScale, Inc. 2023
+
+options:
+  -h, --help            show this help message and exit
+  -d, --daemon          Start PremiScale as a daemon. (default: False)
+  -c CONFIG, --config CONFIG
+                        Configuration file path to use. (default: /opt/premiscale/config.yaml)
+  --validate VALIDATE   Validate the provided configuration file. (default: False)
+  --version             Show premiscale version. (default: False)
+  --log-stdout          Log to stdout (for use in containerized deployments). (default: False)
+  --debug               Turn on logging debug mode. (default: False)
+
+```
+
 This project is a PoC for autoscaling via [libvirt](https://libvirt.org/) virtual machines (primarily KVM-based).
 
 At the time I've started this project, while most public clouds offer autoscaling controllers, there don't appear to be _any_ open source initiatives, let alone one that utilizes the libvirt API. It's my opinion that many on-premise clouds may benefit from such a controller.

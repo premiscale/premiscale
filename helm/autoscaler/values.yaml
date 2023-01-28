@@ -6,7 +6,7 @@ global:
 
 image:
   name: autoscaler
-  tag: latest
+  tag: 0.0.315
   pullPolicy: Always
 
 resources:
@@ -26,6 +26,17 @@ service:
       targetPort: 8080
 
 securityContext: {}
+
+annotations:
+  argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/autoscaler
+  # argocd-image-updater.argoproj.io/write-back-method: git
+  # argocd-image-updater.argoproj.io/git-branch: master
+
+configMap:
+  enabled: false
+  config: |+
+    Your PremiScale config file.
+  mountPath: /opt/premiscale
 
 api:
   enabled: true

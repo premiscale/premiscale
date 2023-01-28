@@ -1,0 +1,11 @@
+global:
+  imageRegistry: docker-develop.ops.premiscale.com/influxdb
+  imagePullSecrets:
+    - nexus-docker-registry
+  storageClass: longhorn
+
+influxdb:
+  image:
+    repository: docker-develop.ops.premiscale.com/influxdb
+    tag: 0.0.301
+    pullPolicy: Always

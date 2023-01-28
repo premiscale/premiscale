@@ -1,5 +1,10 @@
 version: v1-alpha1
-agent: {}
+agent:
+  daemon:
+    check_interval: 10
+    timeout: 10
+    max_threads: 20
+    queue_max: 1000
 scaling:
   databases:
     # State is where the ASGs current state is stored so it can be queried without making additional calls to libvirt.

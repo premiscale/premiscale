@@ -6,7 +6,7 @@ global:
 
 image:
   name: mysql
-  tag: 0.0.306
+  tag: latest
   pullPolicy: Always
 
 auth:
@@ -16,6 +16,9 @@ auth:
 
 # Eventually I'll need these
 initdbScripts: {}
+
+annotations:
+  argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/mysql
 
 resources:
   requests:

@@ -1,0 +1,7 @@
+image:
+  name: mysql
+  tag: 0.0.305
+  pullPolicy: Always
+
+annotations:
+  argocd-image-updater.argoproj.io/image-list: docker-master.ops.premiscale.com/mysql

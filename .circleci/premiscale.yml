@@ -55,7 +55,7 @@ jobs:
       modules_path:
         type: string
         description: Path to modules directory in package.
-        default: src
+        default: premiscale
       configuration_file:
         type: string
         description: Path to pylint configuration file
@@ -77,9 +77,9 @@ jobs:
       - run:
           name: Pylint
           command: |
-            pylint --rcfile="$(pwd)"/<< parameters.configuration_file >> << parameters.modules_path >>
+            pylint --rcfile="$(pwd)"/<< parameters.configuration_file >> "$(pwd)"/<< parameters.modules_path >>
 
-  release-twine:
+  release-twine-setup-py:
     description: twine upload
     docker:
       - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
@@ -140,19 +140,19 @@ jobs:
                   fi
 
                   mv pyproject.toml.tmp pyproject.toml
-            - run:
-                name: Update setup.py version
-                command: |
-                  _VERSION="$(grep -oiP "(?<=version=\').*(?=\',)" setup.py)"
+            # - run:
+            #     name: Update setup.py version
+            #     command: |
+            #       _VERSION="$(grep -oiP "(?<=version=\').*(?=\',)" setup.py)"
 
-                  if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-                      sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
-                  elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
-                      _VERSION_A="${_VERSION%%a*}"
-                      sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
-                  fi
+            #       if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
+            #           sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
+            #       elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
+            #           _VERSION_A="${_VERSION%%a*}"
+            #           sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
+            #       fi
 
-                  mv setup.py.tmp setup.py
+            #       mv setup.py.tmp setup.py
       - run:
           name: Build package
           command: |
@@ -165,7 +165,7 @@ jobs:
 
 
 workflows:
-  src:
+  premiscale:
     jobs:
       # develop
 
@@ -177,7 +177,7 @@ workflows:
               ignore:
                 - master
 
-      - release-twine:
+      - release-twine-setup-py:
           name: twine upload [python-develop]
           context: nexus
           repository: python-develop
@@ -190,8 +190,8 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [autoscaler] [develop]
-          image-name: autoscaler
+          name: docker [premiscale] [develop]
+          image-name: premiscale
           context: nexus
           path: docker/autoscaler
           nexus-domain: $DOCKER_DEVELOP_DOMAIN
@@ -218,7 +218,7 @@ workflows:
               only:
                 - master
 
-      - release-twine:
+      - release-twine-setup-py:
           name: twine upload [python-master]
           context: nexus
           repository: python-master
@@ -231,8 +231,8 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [autoscaler] [master]
-          image-name: autoscaler
+          name: docker [premiscale] [master]
+          image-name: premiscale
           context: nexus
           path: docker/autoscaler
           nexus-domain: $DOCKER_MASTER_DOMAIN
