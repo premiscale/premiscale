@@ -12,6 +12,12 @@ packages = [
 include = [
   "LICENSE"
 ]
+keywords = [
+    "autoscaling",
+    "asg",
+    "kvm",
+    "libvirt"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
