@@ -81,7 +81,7 @@ def validate(config: Union[Path, str], schema: str = 'schema.yaml', strict: bool
         bool: Whether or not the config conforms to our expected schema.
     """
     with resources.open_text('premiscale.config.data', schema) as f:
-        schema = yamale.make_schema(f)
+        schema = yamale.make_schema(f.read().rstrip())
 
     data = yamale.make_data(config)
 
