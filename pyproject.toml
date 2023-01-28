@@ -10,7 +10,6 @@ packages = [
   { include = "premiscale" }
 ]
 include = [
-  "conf/*.yaml",
   "LICENSE"
 ]
 

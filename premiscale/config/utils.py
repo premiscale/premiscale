@@ -68,7 +68,7 @@ def initialize(config: Union[Path, str]) -> str:
             return f.read().rstrip()
 
 
-def validate(config: Union[Path, str], schema: str = 'data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: Union[Path, str], schema: str = 'config/data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 
@@ -109,7 +109,7 @@ def _config_exists(path: Union[str, Path]) -> bool:
         return False
 
 
-def _make_default(path: Union[str, Path]) -> None:
+def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'config/data/default.yaml') -> None:
     """
     Make a default config file if one does not exist.
 
@@ -124,7 +124,7 @@ def _make_default(path: Union[str, Path]) -> None:
             Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             log.debug(f'Creating default config file at \'{str(path)}\'')
-            with resources.as_file(Path('data/default.yaml')) as f_conf:
+            with resources.as_file(Path(default_config)) as f_conf:
                 with open(str(path), 'x', encoding='utf-8') as f, open(f_conf, 'r', encoding='utf-8') as conf:
                     f.write(conf.read().strip())
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
