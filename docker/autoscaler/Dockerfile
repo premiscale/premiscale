@@ -4,6 +4,7 @@ ARG TAG=3.10.8
 FROM ${IMAGE}:${TAG}
 
 ENV DOPPLER_TOKEN="notset"
+ENV PREMISCALE_DEBUG=false
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2023"
@@ -47,8 +48,6 @@ RUN mkdir -p "$HOME"/.local/bin && \
     . bin/activate && \
     pip install --upgrade pip && \
     pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
-
-ENV PREMISCALE_DEBUG=false
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
 CMD [ "./cmd.sh", "${PREMISCALE_DEBUG}" ]
