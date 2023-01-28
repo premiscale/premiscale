@@ -68,7 +68,7 @@ def initialize(config: Union[Path, str]) -> str:
             return f.read().rstrip()
 
 
-def validate(config: Union[Path, str], schema: str = 'config/data/schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(config: Union[Path, str], schema: str = 'schema.yaml', strict: bool = True) -> Tuple[str, bool]:
     """
     Validate users' config files against our schema.
 
@@ -80,8 +80,9 @@ def validate(config: Union[Path, str], schema: str = 'config/data/schema.yaml', 
     Returns:
         bool: Whether or not the config conforms to our expected schema.
     """
-    with resources.as_file(Path(schema)) as f:
+    with resources.open_text('config.data', schema) as f:
         schema = yamale.make_schema(f)
+
     data = yamale.make_data(config)
 
     try:
@@ -124,9 +125,8 @@ def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'co
             Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             log.debug(f'Creating default config file at \'{str(path)}\'')
-            with resources.as_file(Path(default_config)) as f_conf:
-                with open(str(path), 'x', encoding='utf-8') as f, open(f_conf, 'r', encoding='utf-8') as conf:
-                    f.write(conf.read().strip())
+            with resources.open_text('config.data', default_config) as default_f, open(str(path), 'x', encoding='utf-8') as f:
+                f.write(default_f.read().strip())
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
         log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}, must run as root.')
