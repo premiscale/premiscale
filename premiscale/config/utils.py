@@ -110,7 +110,7 @@ def _config_exists(path: Union[str, Path]) -> bool:
         return False
 
 
-def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'config/data/default.yaml') -> None:
+def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'default.yaml') -> None:
     """
     Make a default config file if one does not exist.
 
