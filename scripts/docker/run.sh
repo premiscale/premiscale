@@ -9,4 +9,5 @@ shift && shift
 # docker run -itd --name "$PROJECT" docker.ops.premiscale.com/"$PROJECT":"$VERSION" "$@"
 
 docker stop premiscale && docker rm premiscale
-docker run -itd --name premiscale -e DOPPLER_TOKEN="$(pass show premiscale/doppler/development-service-token)" docker-develop.ops.premiscale.com/"${PROJECT}":"${VERSION}" "$@"
+docker run -itd --name "${PROJECT}" -e DOPPLER_TOKEN="$(pass show premiscale/doppler/development-service-token)" docker-develop.ops.premiscale.com/"${PROJECT}":"${VERSION}" "$@"
+docker exec -it "${PROJECT}" /bin/bash

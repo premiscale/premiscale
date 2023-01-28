@@ -1,8 +1,6 @@
 #! /bin/bash
 # Start the backend api.
 
-PREMISCALE_DEBUG="${1:-false}"
-
 # shellcheck disable=SC1091
 source bin/activate
 

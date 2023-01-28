@@ -50,4 +50,4 @@ RUN mkdir -p "$HOME"/.local/bin && \
     pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
 
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
-CMD [ "./cmd.sh", "${PREMISCALE_DEBUG}" ]
+CMD [ "./cmd.sh" ]
