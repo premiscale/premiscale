@@ -198,8 +198,8 @@ class PremiScaleDaemon(AbstractContextManager):
         Let the daemons out.
         """
         log.info('Starting PremiScale daemon.')
-        self._platform_daemon.start()
-        self._metrics_daemon.start()
+        # self._platform_daemon.start()
+        # self._metrics_daemon.start()
         log.info('Successfully started daemon.')
 
     def stop(self, *args: Any) -> None:
