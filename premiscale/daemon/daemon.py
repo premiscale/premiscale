@@ -102,7 +102,7 @@ class PremiScaleThreadDaemon(AbstractContextManager):
                 q_size_start = self.metrics_queue.qsize()
                 threads = []
                 for _ in range(self._n_metrics_threads):
-                    new_thread = Thread(target=self._t_collect, args=())
+                    new_thread = Thread(target=self._t_metrics_collect, args=())
                     log.debug(f'Starting thread {new_thread.getName()}')
                     new_thread.start()
                     threads.append(new_thread)
@@ -113,7 +113,7 @@ class PremiScaleThreadDaemon(AbstractContextManager):
                 if self.metrics_queue.qsize() == q_size_start:
                     return
 
-    def _t_collect(self) -> None:
+    def _t_metrics_collect(self) -> None:
         """
         .
         """
@@ -144,7 +144,9 @@ class PremiScaleThreadDaemon(AbstractContextManager):
 
 
 def premiscale_daemon(pid_file: str, working_dir: str) -> None:
-    with PremiScaleThreadDaemon() as premiscale_daemon, DaemonContext(pidfile=pidfile.TimeoutPIDLockFile(pid_file), working_directory=working_dir) as _d:
+    with PremiScaleThreadDaemon() as premiscale_daemon, \
+         DaemonContext(pidfile=pidfile.TimeoutPIDLockFile(pid_file), working_directory=working_dir) as _d:
+        log.debug('Started daemon context.')
         _d.signal_map = {
             signal.SIGTERM: premiscale_daemon.stop,
             signal.SIGHUP: premiscale_daemon.stop,
