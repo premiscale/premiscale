@@ -86,6 +86,7 @@ def cli() -> None:
     if args.daemon:
         initialize(args.config)
         # config = parse(args.config)
+        log.debug('Entering daemon.')
         premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
 
     else:
