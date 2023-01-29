@@ -15,6 +15,7 @@ from typing import Any
 from queue import Queue
 from threading import Thread
 from time import sleep
+from contextlib import AbstractContextManager
 # from websockets import connect
 # from config.parse import Config
 
@@ -22,7 +23,7 @@ from time import sleep
 log = logging.getLogger(__name__)
 
 
-class PremiScaleDaemon:
+class PremiScaleDaemon(AbstractContextManager):
     """
     Daemon loops that periodically spawn threads to acquire and publish data from
     hosts to the platform.
@@ -68,6 +69,9 @@ class PremiScaleDaemon:
         self._metrics_daemon = Thread(target=self._d_metrics, daemon=True)
         self._n_metrics_threads = 0
 
+        self._platform_daemon.start()
+        self._metrics_daemon.start()
+
         # Create a client connection, with which we intend to publish measurements.
         # self._ws =
 
@@ -93,6 +97,7 @@ class PremiScaleDaemon:
             Nothing.
         """
         while True:
+            log.debug('Daemon waking up for processing.')
             if not self.metrics_queue.empty():
                 # No reason to create more threads than necessary, here.
                 if self.queue_max_size > self.metrics_queue.qsize():
@@ -156,7 +161,7 @@ class PremiScaleDaemon:
                 self._spawn_threads_platform(division, remainder)
             sleep(self.interval_metrics)
 
-    def _spawn_threads_platform(self, division: int, remainder: int =0) -> None:
+    def _spawn_threads_platform(self, division: int, remainder: int = 0) -> None:
         """
         Make publication threads, and return if there's an error during the request.
         Args:
@@ -184,6 +189,7 @@ class PremiScaleDaemon:
         """
         Publish a datum point to the platform.
         """
+        sleep(10)
 
     # CM
 
