@@ -10,7 +10,7 @@ import sys
 import logging
 
 from .config.utils import initialize, validate
-from .daemon.daemon import PremiScaleDaemon
+from .daemon.daemon import premiscale_daemon
 from .version import __version__
 
 
@@ -52,6 +52,11 @@ def cli() -> None:
     )
 
     parser.add_argument(
+        '--pidfile', type=str, default='/var/run/premiscale.pid',
+        help='Pidfile to use for the daemon.'
+    )
+
+    parser.add_argument(
         '--debug', action='store_true', default=False,
         help='Turn on logging debug mode.'
     )
@@ -81,8 +86,8 @@ def cli() -> None:
     if args.daemon:
         initialize(args.config)
         # config = parse(args.config)
-        with PremiScaleDaemon() as d:
-            d.start()
+        premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
+
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')
