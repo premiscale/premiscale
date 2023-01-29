@@ -63,7 +63,7 @@ repos:
       - id: helmlint
 
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.3.2
+    rev: 1.3.0
     hooks:
       - id: poetry-check
       - id: poetry-lock
@@ -71,7 +71,7 @@ repos:
         args: ["-f", "requirements.txt", "-o", "requirements.txt"]
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.15.10
+    rev: v2.16.0b1
     hooks:
       - id: pylint
         args:
@@ -79,6 +79,13 @@ repos:
           - premiscale/
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.10.1
+    rev: v0.12.1
     hooks:
       - id: validate-pyproject
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.237
+    hooks:
+      - id: ruff
+        args: [--fix]
+        exclude: ^resources
