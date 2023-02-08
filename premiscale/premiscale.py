@@ -10,7 +10,7 @@ import sys
 import logging
 
 from .config.utils import initialize, validate
-from .daemon.daemon import premiscale_daemon
+from .daemon import premiscale_daemon
 from .version import __version__
 
 

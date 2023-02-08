@@ -11,7 +11,7 @@ import signal
 
 from typing import Any
 from queue import Queue
-from threading import Thread, Event
+from threading import Thread
 from time import sleep
 from contextlib import AbstractContextManager
 from daemon import DaemonContext, pidfile
