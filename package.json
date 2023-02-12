@@ -1,5 +1,5 @@
 {
-  "name": "PremiScale autoscaler",
+  "name": "PremiScale",
   "description": "Autoscaling for virtual machines with libvirt",
   "repository": "git@github.com:premiscale/premiscale.git",
   "author": "Emma Doyle <emma@premiscale.com>",

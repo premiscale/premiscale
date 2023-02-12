@@ -9,9 +9,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 
-from .config.utils import initialize, validate
-from .daemon import premiscale_daemon
-from .version import __version__
+from config.utils import initialize, validate
+import daemon
+import version
 
 
 log = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ def cli() -> None:
     )
 
     if args.version:
-        log.info(f'premiscale v{__version__}')
+        log.info(f'premiscale v{version.__version__}')
         sys.exit(0)
     elif args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
@@ -87,7 +87,7 @@ def cli() -> None:
         initialize(args.config)
         # config = parse(args.config)
         log.debug('Entering daemon.')
-        premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
+        daemon.premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
 
     else:
         initialize(args.config)
