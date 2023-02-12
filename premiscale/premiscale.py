@@ -14,6 +14,10 @@ import daemon
 import version
 
 
+print(sys.path)
+print(__name__)
+
+
 log = logging.getLogger(__name__)
 
 
