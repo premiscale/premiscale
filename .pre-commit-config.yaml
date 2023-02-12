@@ -89,3 +89,8 @@ repos:
   #     - id: ruff
   #       args: [--fix]
   #       exclude: ^resources
+
+  - repo: https://github.com/avilaton/add-msg-issue-prefix-hook
+    rev: v0.0.6
+    hooks:
+    -   id: add-msg-issue-prefix
