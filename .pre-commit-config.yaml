@@ -90,7 +90,7 @@ repos:
   #       args: [--fix]
   #       exclude: ^resources
 
-  - repo: https://github.com/avilaton/add-msg-issue-prefix-hook
-    rev: v0.0.6
+  - repo: https://github.com/premiscale/pre-commit-hooks
+    rev: v0.0.1
     hooks:
-    -   id: add-msg-issue-prefix
+    -   id: msg-issue-prefix
