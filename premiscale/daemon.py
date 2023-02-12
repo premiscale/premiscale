@@ -146,9 +146,12 @@ class PremiScaleThreadDaemon(AbstractContextManager):
 def premiscale_daemon(pid_file: str, working_dir: str) -> None:
     with PremiScaleThreadDaemon() as premiscale_daemon, \
          DaemonContext(pidfile=pidfile.TimeoutPIDLockFile(pid_file), working_directory=working_dir) as _d:
+
         log.debug('Started daemon context.')
+
         _d.signal_map = {
             signal.SIGTERM: premiscale_daemon.stop,
             signal.SIGHUP: premiscale_daemon.stop,
         }
+
         premiscale_daemon.start()
