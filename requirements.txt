@@ -446,9 +446,9 @@ websockets==10.4 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:f5fc088b7a32f244c519a048c170f14cf2251b849ef0e20cbbb0fdf0fdaf556f \
     --hash=sha256:fe10ddc59b304cb19a1bdf5bd0a7719cbbc9fbdd57ac80ed436b709fcf889106 \
     --hash=sha256:ff64a1d38d156d429404aaa84b27305e957fd10c30e5880d1765c9480bea490f
-werkzeug==2.2.2 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:7ea2d48322cc7c0f8b3a215ed73eabd7b5d75d0b50e31ab006286ccff9e00b8f \
-    --hash=sha256:f979ab81f58d7318e064e99c4506445d60135ac5cd2e177a2de0089bfd4c9bd5
+Werkzeug==2.2.3; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe \
+    --hash=sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612
 yamale==4.0.4 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:04f914c0886bda03ac20f8468272cfd9374a634a062549490eff2beedeb30497 \
     --hash=sha256:e524caf71cbbbd15aa295e8bdda01688ac4b5edaf38dd60851ddff6baef383ba
