@@ -9,9 +9,8 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 import importlib.metadata as meta
-from time import sleep
 
-from premiscale.config.utils import initialize, validate
+from premiscale.config.utils import initialize, validate, parse
 from premiscale.premiscale.daemon import premiscale_daemon
 
 
@@ -89,8 +88,9 @@ def cli() -> None:
 
     if args.daemon:
         initialize(args.config)
-        # config = parse(args.config)
+        config = parse(args.config)
         log.info('Entering daemon')
+
         premiscale_daemon(working_dir='/opt/premiscale', pid_file=args.pidfile)
     else:
         initialize(args.config)
