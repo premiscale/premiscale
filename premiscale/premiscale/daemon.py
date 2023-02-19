@@ -8,6 +8,7 @@ Main agent daemon. There are 3 loops and queues at any given time to
 import logging
 # import asyncio
 import signal
+import sys
 
 from typing import Any
 from queue import Queue
@@ -125,16 +126,17 @@ class PremiScaleDaemon(AbstractContextManager):
         """
         Let the daemons out.
         """
-        log.info('Starting PremiScale daemon.')
-        self._metrics_daemon.start()
-        log.info('Successfully started daemon.')
+        log.info('Starting PremiScale daemon')
+        #self._metrics_daemon.start()
+        sleep(1000)
+        log.info('Successfully started daemon')
 
     def stop(self, *args: Any) -> None:
         """
         Stop daemons, close db connections gracefully.
         """
-        self._metrics_daemon.join()
-        log.info('Stopping PremiScale gracefully.')
+        #self._metrics_daemon.join()
+        log.info('Stopping PremiScale gracefully')
 
     def __enter__(self) -> 'PremiScaleDaemon':
         return self
@@ -143,15 +145,18 @@ class PremiScaleDaemon(AbstractContextManager):
         self.stop(*args)
 
 
-def premiscale_daemon(pid_file: str, working_dir: str) -> None:
-    with PremiScaleDaemon() as d, \
-         DaemonContext(pidfile=pidfile.TimeoutPIDLockFile(pid_file), working_directory=working_dir) as _d:
-
-        log.debug('Started daemon context.')
-
-        _d.signal_map = {
-            signal.SIGTERM: d.stop,
-            signal.SIGHUP: d.stop,
-        }
-
-        d.start()
+def premiscale_daemon(working_dir: str, pid_file: str) -> None:
+    with PremiScaleDaemon() as premiscale_d, DaemonContext(
+            stdin=sys.stdin,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            detach_process=False,
+            prevent_core=True,
+            pidfile=pidfile.TimeoutPIDLockFile(pid_file),
+            working_directory=working_dir,
+            signal_map={
+                signal.SIGTERM: premiscale_d.stop,
+                signal.SIGHUP: premiscale_d.stop,
+            }
+        ) as context:
+        premiscale_d.start()

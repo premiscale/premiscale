@@ -9,6 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 import logging
 import importlib.metadata as meta
+from time import sleep
 
 from premiscale.config.utils import initialize, validate
 from premiscale.premiscale.daemon import premiscale_daemon
@@ -55,7 +56,7 @@ def cli() -> None:
     )
 
     parser.add_argument(
-        '--pidfile', type=str, default='/var/run/premiscale.pid',
+        '--pidfile', type=str, default='/opt/premiscale/premiscale.pid',
         help='Pidfile to use for the daemon.'
     )
 
@@ -89,9 +90,8 @@ def cli() -> None:
     if args.daemon:
         initialize(args.config)
         # config = parse(args.config)
-        log.debug('Entering daemon.')
-        premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
-
+        log.info('Entering daemon')
+        premiscale_daemon(working_dir='/opt/premiscale', pid_file=args.pidfile)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')
