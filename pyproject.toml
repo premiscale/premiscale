@@ -42,4 +42,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-premiscale = "premiscale:cli"
+premiscale = "premiscale.premiscale.premiscale:cli"
