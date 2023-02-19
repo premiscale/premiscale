@@ -1,7 +1,7 @@
 {
-  "name": "libvirt-autoscaler",
-  "description": "Autoscaling for KVM virtual machines over the libvirt API",
-  "repository": "git@github.com:premiscale/autoscaler.git",
+  "name": "premiscale",
+  "description": "Autoscaling for virtual machines with libvirt",
+  "repository": "git@github.com:premiscale/premiscale.git",
   "author": "Emma Doyle <emma@premiscale.com>",
   "license": "GPLv3",
   "private": true,
@@ -12,6 +12,7 @@
     "develop": "./scripts/develop.sh",
     "clean": "./scripts/clean.sh",
     "freeze": "pip freeze | grep -v \"file:///\" | grep -v \"ssh://\" > \"$(git rev-parse --show-toplevel)\"/requirements.txt",
+    "strace": "sudo strace -p \"$(cat /opt/premiscale/premiscale.pid)\"",
     "docker:compose:up": "./scripts/docker/compose/up.sh",
     "docker:compose:build": "./scripts/docker/compose/build.sh",
     "docker:compose:down": "./scripts/docker/compose/down.sh",
