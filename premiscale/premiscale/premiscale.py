@@ -11,7 +11,7 @@ import logging
 import importlib.metadata as meta
 
 from premiscale.config.utils import initialize, validate
-import daemon
+from premiscale.premiscale.daemon import premiscale_daemon
 
 
 __version__ = meta.version('premiscale')
@@ -90,7 +90,7 @@ def cli() -> None:
         initialize(args.config)
         # config = parse(args.config)
         log.debug('Entering daemon.')
-        daemon.premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
+        premiscale_daemon(pid_file=args.pidfile, working_dir='/opt/premiscale')
 
     else:
         initialize(args.config)
