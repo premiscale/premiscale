@@ -22,7 +22,7 @@ from daemon import DaemonContext, pidfile
 log = logging.getLogger(__name__)
 
 
-class PremiScaleThreadDaemon(AbstractContextManager):
+class PremiScaleDaemon(AbstractContextManager):
     """
     Daemon loops that periodically spawn threads to acquire and publish data from
     hosts to the platform.
@@ -136,7 +136,7 @@ class PremiScaleThreadDaemon(AbstractContextManager):
         self._metrics_daemon.join()
         log.info('Stopping PremiScale gracefully.')
 
-    def __enter__(self) -> 'PremiScaleThreadDaemon':
+    def __enter__(self) -> 'PremiScaleDaemon':
         return self
 
     def __exit__(self, *args: Any) -> None:
@@ -144,14 +144,14 @@ class PremiScaleThreadDaemon(AbstractContextManager):
 
 
 def premiscale_daemon(pid_file: str, working_dir: str) -> None:
-    with PremiScaleThreadDaemon() as premiscale_daemon, \
+    with PremiScaleDaemon() as d, \
          DaemonContext(pidfile=pidfile.TimeoutPIDLockFile(pid_file), working_directory=working_dir) as _d:
 
         log.debug('Started daemon context.')
 
         _d.signal_map = {
-            signal.SIGTERM: premiscale_daemon.stop,
-            signal.SIGHUP: premiscale_daemon.stop,
+            signal.SIGTERM: d.stop,
+            signal.SIGHUP: d.stop,
         }
 
-        premiscale_daemon.start()
+        d.start()
