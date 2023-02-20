@@ -7,12 +7,12 @@ appVersion: "0.0.1"
 
 dependencies:
   - name: mysql
-    repository: "@helm-develop"
+    repository: "@premiscale"
     alias: mysql
-    version: 1.0.0
+    version: 0.0.x
     condition: mysql.enabled
   - name: influxdb
-    repository: "@helm-develop"
+    repository: "@premiscale"
     alias: influxdb
-    version: 1.0.0
+    version: 0.0.x
     condition: influxdb.enabled
