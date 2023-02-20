@@ -11,7 +11,7 @@ import logging
 import importlib.metadata as meta
 
 from premiscale.config.utils import initialize, validate, parse
-from premiscale.premiscale.daemon import premiscale_daemon
+from premiscale.premiscale.daemon import wrapper
 
 
 __version__ = meta.version('premiscale')
@@ -91,7 +91,7 @@ def cli() -> None:
         config = parse(args.config)
         log.info('Entering daemon')
 
-        premiscale_daemon(working_dir='/opt/premiscale', pid_file=args.pidfile)
+        wrapper(working_dir='/opt/premiscale', pid_file=args.pidfile)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')

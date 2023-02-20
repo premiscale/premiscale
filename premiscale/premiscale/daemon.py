@@ -128,7 +128,7 @@ class PremiScaleDaemon(AbstractContextManager):
         """
         log.info('Starting PremiScale daemon')
         #self._metrics_daemon.start()
-        sleep(1000)
+        sleep(100)
         log.info('Successfully started daemon')
 
     def stop(self, *args: Any) -> None:
@@ -145,7 +145,7 @@ class PremiScaleDaemon(AbstractContextManager):
         self.stop(*args)
 
 
-def premiscale_daemon(working_dir: str, pid_file: str) -> None:
+def wrapper(working_dir: str, pid_file: str) -> None:
     with PremiScaleDaemon() as premiscale_d, DaemonContext(
             stdin=sys.stdin,
             stdout=sys.stdout,
