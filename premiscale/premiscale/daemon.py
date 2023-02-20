@@ -159,5 +159,5 @@ def wrapper(working_dir: str, pid_file: str) -> None:
                 signal.SIGHUP: premiscale_d.stop,
                 signal.SIGINT: premiscale_d.stop,
             }
-        ) as context:
+        ):
         premiscale_d.start()
