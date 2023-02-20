@@ -28,7 +28,7 @@ RUN apt update && apt install -y libvirt-dev && \
 
 RUN useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
 
-COPY ./docker/autoscaler/scripts/cmd.sh /opt/premiscale/
+COPY ./docker/premiscale/scripts/cmd.sh /opt/premiscale/
 
 WORKDIR /opt/premiscale
 
