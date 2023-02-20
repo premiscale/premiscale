@@ -47,7 +47,11 @@ I'm thinking this tool should use at most two databases, including an influxdb t
 2. What does DR look like if the autoscaling daemon goes down. We should be able to start it up again, since
 all state is stored in a MySQL database.
 
-## Release checklist
+## Release
+
+The following sections outline the process for cutting a new release of PremiScale, Inc.'s autoscaling agent.
+
+### checklist
 
 - [ ] Bump version in [pyproject.toml](./pyproject.toml).
 - [ ] Bump version in Helm chart [helm/premiscale/Chart.yaml](helm/premiscale/Chart.yaml).
