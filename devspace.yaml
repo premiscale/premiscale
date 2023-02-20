@@ -1,57 +1,57 @@
-version: v1beta11
+# version: v1beta11
 
-images:
-  influxdb:
-    image: ghcr.io/bjd2385/influxdb
-    tags:
-      - latest
-    dockerfile: ./docker/influxdb/Dockerfile
-    context: ./docker/influxdb/
-  mysql:
-    image: ghcr.io/bjd2385/mysql
-    tags:
-      - latest
-    dockerfile: ./docker/mysql/Dockerfile
-    context: ./docker/mysql/
-  autoscaler:
-    image: ghcr.io/bjd2385/autoscaler
-    tags:
-      - latest
-    dockerfile: ./docker/autoscaler/Dockerfile
-    context: ./
+# images:
+#   influxdb:
+#     image: ghcr.io/bjd2385/influxdb
+#     tags:
+#       - latest
+#     dockerfile: ./docker/influxdb/Dockerfile
+#     context: ./docker/influxdb/
+#   mysql:
+#     image: ghcr.io/bjd2385/mysql
+#     tags:
+#       - latest
+#     dockerfile: ./docker/mysql/Dockerfile
+#     context: ./docker/mysql/
+#   premiscale:
+#     image: ghcr.io/bjd2385/autoscaler
+#     tags:
+#       - latest
+#     dockerfile: ./docker/premiscale/Dockerfile
+#     context: ./
 
-deployments:
-  - name: autoscaler-total
-    namespace: ""
-    disabled: false
-    helm:
-      chart:
-        name: autoscaler
-        version: "0.0.1"
-        repo: https://helm.aperiodicity.com/charts/development/autoscaler
-        git:
-          url: https://github.com/bjd2385/autoscaler
-          branch: master
-          subPath: helm/autoscaler
-      values: {}
-      valuesFiles:
-        - ./helm/autoscaler/values.yaml
-      atomic: true
-      cleanupOnFail: true
+# deployments:
+#   - name: premiscale-total
+#     namespace: ""
+#     disabled: false
+#     helm:
+#       chart:
+#         name: premiscale
+#         version: "0.0.1"
+#         repo: https://helm.aperiodicity.com/charts/development/premiscale
+#         git:
+#           url: https://github.com/bjd2385/autoscaler
+#           branch: master
+#           subPath: helm/autoscaler
+#       values: {}
+#       valuesFiles:
+#         - ./helm/autoscaler/values.yaml
+#       atomic: true
+#       cleanupOnFail: true
 
-dev:
-  ports:
-    - name: mysql
-      forward:
-        - port: 3306
-          remotePort: 3306
-    - name: influxdb
-      forward:
-        - port: 8086
-          remotePort: 8086
-  logs:
-    disabled: true
+# dev:
+#   ports:
+#     - name: mysql
+#       forward:
+#         - port: 3306
+#           remotePort: 3306
+#     - name: influxdb
+#       forward:
+#         - port: 8086
+#           remotePort: 8086
+#   logs:
+#     disabled: true
 
-profiles:
-  - name: autoscaler
-    parents: []
+# profiles:
+#   - name: autoscaler
+#     parents: []

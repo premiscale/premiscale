@@ -13,6 +13,6 @@ workflows:
             parameters:
               dir:
                 - scripts/
-                - docker/autoscaler/scripts/
+                - docker/premiscale/scripts/
             alias: shellcheck
           external_sources: true

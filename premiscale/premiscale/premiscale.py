@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 def cli() -> None:
     """
-    Set up the CLI for autoscaler.
+    Set up the CLI for PremiScale autoscaler.
     """
     parser = ArgumentParser(
         formatter_class=ArgumentDefaultsHelpFormatter,

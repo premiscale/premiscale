@@ -1,8 +1,8 @@
 [Unit]
-Description=KVM autoscaler
+Description=PremiScale autoscaler
 
 [Service]
-ExecStart=autoscaler --daemon
+ExecStart=premiscale --daemon --log-stdout
 
 [Install]
 WantedBy=multi-user.target

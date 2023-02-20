@@ -11,8 +11,8 @@ image:
 
 auth:
   existingSecret: mysql-passwords
-  database: autoscaler
-  username: autoscaler
+  database: premiscale
+  username: premiscale
 
 # Eventually I'll need these
 initdbScripts: {}
@@ -56,9 +56,9 @@ env:
         name: mysql-credentials
         key: mysql-password
   - name: MYSQL_DATABASE
-    value: autoscaler
+    value: premiscale
   - name: MYSQL_USER
-    value: autoscaler
+    value: premiscale
 
 service:
   enabled: true

@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: hadolint
         args:
-          - docker/autoscaler/Dockerfile
+          - docker/premiscale/Dockerfile
           - docker/influxdb/Dockerfile
           - docker/mysql/Dockerfile
           - --config

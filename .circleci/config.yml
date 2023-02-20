@@ -21,7 +21,7 @@ workflows:
             /tests
             /docker/influxdb
             /docker/mysql
-            /helm/autoscaler
+            /helm/premiscale
             /helm/influxdb
             /helm/mysql
 
@@ -35,7 +35,7 @@ workflows:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/python-release-twine:
-          name: pypi autoscaler upload [python]
+          name: pypi premiscale upload [python]
           context: nexus
           repository: python
           filters:
@@ -45,9 +45,9 @@ workflows:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/helm-release-nexus:
-          name: helm build and push [helm/autoscaler]
+          name: helm build and push [helm/premiscale]
           context: nexus
-          path: helm/autoscaler
+          path: helm/premiscale
           repo-name: premiscale
           filters:
             branches:

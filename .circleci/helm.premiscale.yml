@@ -6,7 +6,7 @@ orbs:
 
 
 workflows:
-  helm-autoscaler:
+  helm-premiscale:
     jobs:
       - general/helm-lint:
           name: helm lint [helm/premiscale]

@@ -7,11 +7,11 @@ asdf plugin-add devspace https://github.com/virtualstaticvoid/asdf-devspace.git
 
 asdf install
 
-if [ "$(conda info --envs --json | jq -r '.envs[]' | awk '/(autoscaler)$/')" = "" ]; then
-    conda create -y -n autoscaler python=3.10
+if [ "$(conda info --envs --json | jq -r '.envs[]' | awk '/(premiscale)$/')" = "" ]; then
+    conda create -y -n premiscale python=3.10
 fi
 
 sudo apt install -y bats libvirt-dev
 
-conda activate autoscaler
+conda activate premiscale
 pip install -r requirements.txt

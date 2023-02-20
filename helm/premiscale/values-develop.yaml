@@ -5,9 +5,9 @@ global:
   storageClass: longhorn
 
 image:
-  name: autoscaler
+  name: premiscale
   tag: 0.0.315
   pullPolicy: Always
 
 annotations:
-  argocd-image-updater.argoproj.io/image-list: docker-develop.ops.premiscale.com/autoscaler
+  argocd-image-updater.argoproj.io/image-list: docker-develop.ops.premiscale.com/premiscale
