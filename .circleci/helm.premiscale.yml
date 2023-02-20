@@ -16,7 +16,7 @@ workflows:
           name: helm build and push [helm/premiscale] [develop]
           context: nexus
           path: helm/premiscale
-          repo-name: premiscale
+          repo-name: helm-develop
           repo: $HELM_DEVELOP_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           image-tag: 0.0.<< pipeline.number >>
@@ -31,7 +31,7 @@ workflows:
           name: helm build and push [helm/premiscale] [master]
           context: nexus
           path: helm/premiscale
-          repo-name: premiscale
+          repo-name: helm-master
           repo: $HELM_MASTER_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           image-tag: 0.0.<< pipeline.number >>

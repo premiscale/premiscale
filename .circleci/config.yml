@@ -48,7 +48,7 @@ workflows:
           name: helm build and push [helm/premiscale]
           context: nexus
           path: helm/premiscale
-          repo-name: premiscale
+          repo-name: helm
           filters:
             branches:
               ignore: /.*/
