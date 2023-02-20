@@ -91,7 +91,7 @@ def cli() -> None:
         config = parse(args.config)
         log.info('Entering daemon')
 
-        wrapper(working_dir='/opt/premiscale', pid_file=args.pidfile)
+        wrapper(working_dir='/opt/premiscale', pid_file=args.pidfile, agent_config=config)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')

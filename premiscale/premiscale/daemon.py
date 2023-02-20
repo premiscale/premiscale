@@ -34,13 +34,14 @@ class PremiScaleDaemon(AbstractContextManager):
         queue_max_size (int > 0): maximum number of hosts to keep on the shared queue.
     """
     def __init__(self,
-                interval_metrics: int = 10,
-                queue_max_size: int = 10,
-                queue_timeout: int = 3600
-                ) -> None:
+            config: dict,
+            interval_metrics: int = 10,
+            queue_max_size: int = 10,
+            queue_timeout: int = 3600
+            ) -> None:
 
+        self.config = config
         self.interval_metrics = interval_metrics
-
         self.queue_max_size = queue_max_size
         self.queue_timeout = queue_timeout
 
@@ -145,8 +146,8 @@ class PremiScaleDaemon(AbstractContextManager):
         self.stop(*args)
 
 
-def wrapper(working_dir: str, pid_file: str) -> None:
-    with PremiScaleDaemon() as premiscale_d, DaemonContext(
+def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
+    with PremiScaleDaemon(agent_config) as premiscale_d, DaemonContext(
             stdin=sys.stdin,
             stdout=sys.stdout,
             stderr=sys.stderr,
