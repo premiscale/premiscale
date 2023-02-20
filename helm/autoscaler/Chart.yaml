@@ -4,3 +4,15 @@ description: Helm chart for deploying PremiScale, Inc. autoscaler
 type: application
 version: 0.0.1
 appVersion: "0.0.1"
+
+dependencies:
+  - name: mysql
+    repository: "@helm-develop"
+    alias: mysql
+    version: 1.0.0
+    condition: mysql.enabled
+  - name: influxdb
+    repository: "@helm-develop"
+    alias: influxdb
+    version: 1.0.0
+    condition: influxdb.enabled

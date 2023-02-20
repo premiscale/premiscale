@@ -48,3 +48,9 @@ env:
       secretKeyRef:
         name: doppler
         key: doppler_token
+
+# Enable / disable databases.
+influxdb:
+  enabled: false
+mysql:
+  enabled: false
