@@ -49,8 +49,8 @@ all state is stored in a MySQL database.
 
 ## Release checklist
 
-[ ] Bump version in [pyproject.toml](./pyproject.toml).
-[ ] Bump version in Helm chart [helm/premiscale/Chart.yaml](helm/premiscale/Chart.yaml).
-[ ] Create a release branch off master (e.g. named `release/0.1.0`).
-[ ] Tag release branch.
-[ ] Ensure all tagged builds occur properly.
+- [ ] Bump version in [pyproject.toml](./pyproject.toml).
+- [ ] Bump version in Helm chart [helm/premiscale/Chart.yaml](helm/premiscale/Chart.yaml).
+- [ ] Create a release branch off master (e.g. named `release/0.1.0`).
+- [ ] Tag release branch.
+- [ ] Ensure all tagged builds occur properly.
