@@ -102,7 +102,7 @@ docutils==0.19 ; python_version >= "3.10" and python_version < "4.0" \
 flask==2.2.3 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:7eb373984bf1c770023fce9db164ed0c3353cd0b53f130f4693da0ca756a2e6d \
     --hash=sha256:c0bec9477df1cb867e5a67c9e1ab758de9cb4a3e52dd70681f59fa40a62b3f2d
-greenlet==2.0.2 ; python_version >= "3.10" and (platform_machine == "aarch64" or platform_machine == "ppc64le" or platform_machine == "x86_64" or platform_machine == "amd64" or platform_machine == "AMD64" or platform_machine == "win32" or platform_machine == "WIN32") and python_version < "4.0" \
+greenlet==2.0.2 ; python_version >= "3.10" and python_version < "4.0" and platform_machine == "aarch64" or python_version >= "3.10" and python_version < "4.0" and platform_machine == "ppc64le" or python_version >= "3.10" and python_version < "4.0" and platform_machine == "x86_64" or python_version >= "3.10" and python_version < "4.0" and platform_machine == "amd64" or python_version >= "3.10" and python_version < "4.0" and platform_machine == "AMD64" or python_version >= "3.10" and python_version < "4.0" and platform_machine == "win32" or python_version >= "3.10" and python_version < "4.0" and platform_machine == "WIN32" \
     --hash=sha256:03a8f4f3430c3b3ff8d10a2a86028c660355ab637cee9333d63d66b56f09d52a \
     --hash=sha256:0bf60faf0bc2468089bdc5edd10555bab6e85152191df713e2ab1fcc86382b5a \
     --hash=sha256:18a7f18b82b52ee85322d7a7874e676f34ab319b9f8cce5de06067384aa8ff43 \
@@ -343,7 +343,7 @@ setuptools==67.3.2 ; python_version >= "3.10" and python_version < "4.0" \
 six==1.16.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
-SQLAlchemy==2.0.4; python_version >= "3.10" and python_version < "4.0" \
+sqlalchemy==2.0.4 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:011ef3c33f30bae5637c575f30647e0add98686642d237f0c3a1e3d9b35747fa \
     --hash=sha256:0adca8a3ca77234a142c5afed29322fb501921f13d1d5e9fa4253450d786c160 \
     --hash=sha256:1644c603558590f465b3fa16e4557d87d3962bc2c81fd7ea85b582ecf4676b31 \
@@ -385,6 +385,9 @@ SQLAlchemy==2.0.4; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:f342057422d6bcfdd4996e34cd5c7f78f7e500112f64b113f334cdfc6a0c593d \
     --hash=sha256:f696828784ab2c07b127bfd2f2d513f47ec58924c29cff5b19806ac37acee31c \
     --hash=sha256:fdb2686eb01f670cdc6c43f092e333ff08c1cf0b646da5256c1237dc4ceef4ae
+typing-extensions==4.5.0 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb \
+    --hash=sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4
 urllib3==1.26.14 ; python_version >= "3.10" and python_version < "4" \
     --hash=sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72 \
     --hash=sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1
