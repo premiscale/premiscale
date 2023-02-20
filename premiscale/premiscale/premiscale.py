@@ -6,9 +6,9 @@ PremiScale autoscaler agent.
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from importlib import metadata as meta
 import sys
 import logging
-import importlib.metadata as meta
 
 from premiscale.config.utils import initialize, validate, parse
 from premiscale.premiscale.daemon import wrapper

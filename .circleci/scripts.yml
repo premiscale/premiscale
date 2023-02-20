@@ -9,6 +9,7 @@ workflows:
   scripts:
     jobs:
       - shellcheck/check:
+          name: shellcheck [<< matrix.dir >>]
           matrix:
             parameters:
               dir:

@@ -35,7 +35,6 @@ twine = "^4.0.2"
 check-manifest = "^0.49"
 pylint = "^2.15.10"
 pre-commit = "^3.0.0"
-ruff = "^0.0.247"
 
 [build-system]
 requires = ["poetry-core"]
