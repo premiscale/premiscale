@@ -48,6 +48,8 @@ env:
       secretKeyRef:
         name: doppler
         key: doppler_token
+  - name: PREMISCALE_DEBUG
+    value: false
 
 # Enable / disable databases.
 influxdb:

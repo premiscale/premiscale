@@ -11,3 +11,7 @@ image:
 
 annotations:
   argocd-image-updater.argoproj.io/image-list: docker-master.ops.premiscale.com/premiscale
+
+env:
+  - name: PREMISCALE_DEBUG
+      value: true
