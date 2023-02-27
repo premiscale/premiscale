@@ -11,8 +11,9 @@ import signal
 import sys
 
 from typing import Any
-from queue import Queue
+#from queue import Queue
 from threading import Thread
+from multiprocessing import Process, Pool, Queue # this has all the equivalents of threading.Thread
 from time import sleep
 from contextlib import AbstractContextManager
 from daemon import DaemonContext, pidfile
