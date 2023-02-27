@@ -1,5 +1,5 @@
 """
-PremiScale autoscaler agent.
+PremiScale autoscaling agent.
 
 © PremiScale, Inc. 2023
 """
@@ -55,8 +55,8 @@ def cli() -> None:
     )
 
     parser.add_argument(
-        '--pidfile', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile to use for the daemon.'
+        '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
+        help='Pidfile name to use for daemon.'
     )
 
     parser.add_argument(
@@ -91,7 +91,7 @@ def cli() -> None:
         config = parse(args.config)
         log.info('Entering daemon')
 
-        wrapper(working_dir='/opt/premiscale', pid_file=args.pidfile, agent_config=config)
+        wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')

@@ -42,11 +42,17 @@ scaling:
       # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
       # managed as a separate group? But they should all be within reach of an ~/.ssh/config.
       - name: domain-1
-        address: qemu+ssh://domain-1/system
+        address: domain-1
+        protocol: ssh
+        port: 22
       - name: domain-2
-        address: qemu+ssh://domain-2/system
+        address: domain-2
+        protocol: ssh
+        port: 22
       - name: domain-3
-        address: qemu+ssh://domain-3/system
+        address: domain-3
+        protocol: ssh
+        port: 22
 
   autoscalingGroups:
     type: prefix

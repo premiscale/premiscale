@@ -97,6 +97,6 @@ repos:
   #       exclude: ^resources
 
   - repo: https://github.com/premiscale/pre-commit-hooks
-    rev: v0.0.3
+    rev: v0.0.7
     hooks:
     - id: msg-issue-prefix

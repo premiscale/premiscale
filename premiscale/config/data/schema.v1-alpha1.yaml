@@ -41,6 +41,8 @@ hostGroup: list(include('hostGroupMember'), min=1)
 hostGroupMember:
   name: str(min=1)
   address: str(min=1)
+  port: int(min=1, max=65535)
+  protocol: enum('ssh', 'SSH', 'tls', 'TLS')
 ---
 autoscalingGroups:
   type: enum('prefix', 'postfix', 'none')

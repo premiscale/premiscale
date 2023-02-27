@@ -146,6 +146,32 @@ class PremiScaleDaemon(AbstractContextManager):
         self.stop(*args)
 
 
+class Metrics(AbstractContextManager):
+    """
+    Handle metrics collection from hosts. Only one of these loops is created; metrics
+    are published to influxdb for retrieval and query by the ASG loop, which evaluates
+    on a per-ASG basis whether Actions need to be taken.
+    """
+
+
+class ASG(AbstractContextManager):
+    """
+    Handle actions. E.g., if a new VM needs to be created or deleted on some host,
+    handle that action, and all relevant side-effects (e.g. updating MySQL state).
+
+    One of these classes gets instantiated for every autoscaling group defined in
+    the config.
+    """
+
+
+class Platform(AbstractContextManager):
+    """
+    Handle communication to and from the platform. Maintains an async websocket
+    connection and calls setters and getters on the other daemon threads' objects to
+    configure them.
+    """
+
+
 def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
     with PremiScaleDaemon(agent_config) as premiscale_d, DaemonContext(
             stdin=sys.stdin,
