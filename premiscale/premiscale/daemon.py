@@ -151,7 +151,7 @@ class PremiScaleDaemon(AbstractContextManager):
 ## Each of these classes is its own subprocess of the main daemon process.
 
 
-class Reconcile:
+class Reconcile(Process):
     """
     Similar to metrics - a reconciliation loop that queries influxdb for the list of VMs
     metrics came from and compares these data to state stored in MySQL. If they don't match,
@@ -161,7 +161,7 @@ class Reconcile:
         pass
 
 
-class Metrics:
+class Metrics(Process):
     """
     Handle metrics collection from hosts. Only one of these loops is created; metrics
     are published to influxdb for retrieval and query by the ASG loop, which evaluates
@@ -171,7 +171,8 @@ class Metrics:
         pass
 
 
-class Action:
+# Instances of Action are shorter-lived processes than the other 4.
+class Action(Process):
     """
     Encapsulate the various actions that the autoscaler can take. These get queued up.
     """
@@ -197,7 +198,7 @@ class Action:
         return ''
 
 
-class ASG:
+class ASG(Process):
     """
     Handle actions. E.g., if a new VM needs to be created or deleted on some host,
     handle that action, and all relevant side-effects (e.g. updating MySQL state).
@@ -207,7 +208,7 @@ class ASG:
     """
 
 
-class Platform:
+class Platform(Process):
     """
     Handle communication to and from the platform. Maintains an async websocket
     connection and calls setters and getters on the other daemon threads' objects to
@@ -248,6 +249,9 @@ def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
     """
 
     # We need one of these process trees for every ASG.
+
+    autoscaling_action_queue: Queue = Queue()
+    platform_message_queue: Queue = Queue()
 
     with PremiScaleDaemon(agent_config) as premiscale_d, DaemonContext(
             stdin=sys.stdin,
