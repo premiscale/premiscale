@@ -8,5 +8,5 @@ appVersion: "2.6.1"
 dependencies:
   - name: influxdb
     repository: https://helm.influxdata.com/
-    version: 4.12.0
+    version: 4.12.1
     alias: influxdb
