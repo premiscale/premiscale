@@ -5,7 +5,7 @@ global:
   storageClass: longhorn
 
 image:
-  name: autoscaler
+  name: premiscale
   tag: 0.0.315
   pullPolicy: Always
 
@@ -28,7 +28,7 @@ service:
 securityContext: {}
 
 annotations:
-  argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/autoscaler
+  argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/premiscale
   # argocd-image-updater.argoproj.io/write-back-method: git
   # argocd-image-updater.argoproj.io/git-branch: master
 
@@ -48,3 +48,11 @@ env:
       secretKeyRef:
         name: doppler
         key: doppler_token
+  - name: PREMISCALE_DEBUG
+    value: false
+
+# Enable / disable databases.
+influxdb:
+  enabled: false
+mysql:
+  enabled: false

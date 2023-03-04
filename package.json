@@ -3,7 +3,7 @@
   "description": "Autoscaling for virtual machines with libvirt",
   "repository": "git@github.com:premiscale/premiscale.git",
   "author": "Emma Doyle <emma@premiscale.com>",
-  "license": "GPLv3",
+  "license": "Proprietary",
   "private": true,
   "scripts": {
     "install:dependencies": "./scripts/dependencies.sh",
@@ -24,12 +24,13 @@
     "helm:dependency:update": "for p in helm/*; do echo \"$p\" && helm dependency update \"$p\"/; done",
     "helm:install:influxdb": "./scripts/helm/influxdb-install.sh",
     "helm:uninstall:influxdb": "helm uninstall influxdb -n platform-develop",
-    "helm:install:autoscaler": "./scripts/helm/autoscaler-install.sh",
-    "helm:install:as": "yarn helm:install:autoscaler",
-    "helm:uninstall:autoscaler": "helm uninstall autoscaler -n platform-develop",
-    "helm:uninstall:as": "yarn helm:uninstall:autoscaler",
+    "helm:install:premiscale": "./scripts/helm/premiscale-install.sh",
+    "helm:install:as": "yarn helm:install:premiscale",
+    "helm:uninstall:premiscale": "helm uninstall premiscale -n platform-develop",
+    "helm:uninstall:as": "yarn helm:uninstall:premiscale",
     "helm:install:mysql": "./scripts/helm/mysql-install.sh",
     "helm:uninstall:mysql": "helm uninstall -n platform-develop mysql",
+    "helm:repo:add": "./scripts/helm/repo-add.sh",
     "poetry:lock": "poetry lock"
   }
 }

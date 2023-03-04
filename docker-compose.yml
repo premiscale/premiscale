@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   state:
-    image: docker.ops.premiscale.com/mysql-doppler:latest
+    image: docker-develop.ops.premiscale.com/mysql-doppler:latest
     build: ./docker/mysql
     depends_on: []
     privileged: false
@@ -26,7 +26,7 @@ services:
       - DOPPLER_TOKEN
 
   metrics:
-    image: docker.ops.premiscale.com/influxdb-doppler:latest
+    image: docker-develop.ops.premiscale.com/influxdb-doppler:latest
     build: ./docker/influxdb
     depends_on: []
     privileged: false
@@ -50,14 +50,14 @@ services:
     environment:
       - DOPPLER_TOKEN
 
-  autoscaler:
-    image: docker.ops.premiscale.com/autoscaler:latest
-    build: ./docker/autoscaler
+  premiscale:
+    image: docker-develop.ops.premiscale.com/premiscale:latest
+    build: ./docker/premiscale
     depends_on:
       - metrics
       - state
     privileged: true
-    container_name: autoscaler
+    container_name: premiscale
     ports: []
     deploy:
       replicas: 1

@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: hadolint
         args:
-          - docker/autoscaler/Dockerfile
+          - docker/premiscale/Dockerfile
           - docker/influxdb/Dockerfile
           - docker/mysql/Dockerfile
           - --config
@@ -97,6 +97,6 @@ repos:
   #       exclude: ^resources
 
   - repo: https://github.com/premiscale/pre-commit-hooks
-    rev: v0.0.3
+    rev: v0.0.7
     hooks:
     - id: msg-issue-prefix

@@ -1,10 +1,16 @@
 version: v1-alpha1
 agent:
   daemon:
-    check_interval: 10
-    timeout: 10
-    max_threads: 20
-    queue_max: 1000
+    # How often metrics collection is performed from every host.
+    metrics:
+      collection_interval: 60
+      max_threads: 10
+    # How often reconciliation of collected metrics is performed.
+    reconciliation:
+      evaluation_interval: 60
+    # How often the autoscaler should wait after taking an action in each ASG.
+    asg:
+      action_cooldown: 60
 scaling:
   databases:
     # State is where the ASGs current state is stored so it can be queried without making additional calls to libvirt.
@@ -42,11 +48,21 @@ scaling:
       # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
       # managed as a separate group? But they should all be within reach of an ~/.ssh/config.
       - name: domain-1
-        address: qemu+ssh://domain-1/system
+        address: domain-1
+        protocol: ssh
+        port: 22
+        overprovision:
+          # Percentages to go over collected max for scheduling host resources.
+          cpu: 0
+          memory: 0
       - name: domain-2
-        address: qemu+ssh://domain-2/system
+        address: domain-2
+        protocol: tls
+        port: 6910
       - name: domain-3
-        address: qemu+ssh://domain-3/system
+        address: domain-3
+        protocol: ssh
+        port: 22
 
   autoscalingGroups:
     type: prefix
@@ -92,8 +108,15 @@ scaling:
           # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics evaluation.
           cooldown: 60
 
+          # linear-random: don't reuse server racks immediately once drained, but once a VM is scheduled on a host, prioritize scheduling to that host.
+          # linear: reuse server racks immediately once drained,
+          # vacancy: prioritize hosts with the most vacancy.
+          #
+          method: linear
+
         metrics:
           # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
           io: 80
           cpu: 80
           memory: 80
+      # asg-2: {}

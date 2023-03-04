@@ -1,18 +1,17 @@
 """
-PremiScale autoscaler agent.
+PremiScale autoscaling agent.
 
 © PremiScale, Inc. 2023
 """
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from importlib import metadata as meta
 import sys
 import logging
-import importlib.metadata as meta
-from time import sleep
 
-from premiscale.config.utils import initialize, validate
-from premiscale.premiscale.daemon import premiscale_daemon
+from premiscale.config.utils import initialize, validate, parse
+from premiscale.premiscale.daemon import wrapper
 
 
 __version__ = meta.version('premiscale')
@@ -23,7 +22,7 @@ log = logging.getLogger(__name__)
 
 def cli() -> None:
     """
-    Set up the CLI for autoscaler.
+    Set up the CLI for PremiScale autoscaler.
     """
     parser = ArgumentParser(
         formatter_class=ArgumentDefaultsHelpFormatter,
@@ -56,8 +55,8 @@ def cli() -> None:
     )
 
     parser.add_argument(
-        '--pidfile', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile to use for the daemon.'
+        '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
+        help='Pidfile name to use for daemon.'
     )
 
     parser.add_argument(
@@ -89,9 +88,10 @@ def cli() -> None:
 
     if args.daemon:
         initialize(args.config)
-        # config = parse(args.config)
+        config = parse(args.config)
         log.info('Entering daemon')
-        premiscale_daemon(working_dir='/opt/premiscale', pid_file=args.pidfile)
+
+        wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')
