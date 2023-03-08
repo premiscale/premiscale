@@ -284,9 +284,9 @@ msgpack==1.0.4 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:f5d869c18f030202eb412f08b28d2afeea553d6613aee89e200d7aca7ef01f5f \
     --hash=sha256:fb62ea4b62bfcb0b380d5680f9a4b3f9a2d166d9394e9bbd9666c0ee09a3645c \
     --hash=sha256:fcb8a47f43acc113e24e910399376f7277cf8508b27e5b88499f053de6b115a8
-python-daemon==3.0.0 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:244d97f57567d1a2da53840b4ef59946c9837b7790403d82ac6f846466dd73ec \
-    --hash=sha256:62dedf6026ba939288936de15fbfec2d802f0aa731df60c3f2c17e49463d351d
+python-daemon==3.0.1; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:42bb848a3260a027fa71ad47ecd959e471327cb34da5965962edd5926229f341 \
+    --hash=sha256:6c57452372f7eaff40934a1c03ad1826bf5e793558e87fef49131e6464b4dae5
 python-dateutil==2.8.2 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
     --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
