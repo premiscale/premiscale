@@ -14,12 +14,11 @@ from typing import Any
 #from queue import Queue
 from threading import Thread
 from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import Process, Pool, Queue # this has all the equivalents of threading.Thread
+from multiprocessing import Process, Pool, Queue
 from time import sleep
 from contextlib import AbstractContextManager
 from daemon import DaemonContext, pidfile
 # from websockets import connect
-# from config.parse import Config
 
 
 log = logging.getLogger(__name__)
@@ -155,7 +154,7 @@ class Reconcile(Process):
     """
     Similar to metrics - a reconciliation loop that queries influxdb for the list of VMs
     metrics came from and compares these data to state stored in MySQL. If they don't match,
-    actions are added to the queue.
+    actions to correct are added to the queue.
     """
     def __init__(self) -> None:
         pass
