@@ -14,16 +14,7 @@ workflows:
     jobs:
       - dynamic/continue:
           context: circleci
-          modules: |
-            /scripts
-            /premiscale
-            /premiscale/config/data
-            /tests
-            /docker/influxdb
-            /docker/mysql
-            /helm/premiscale
-            /helm/influxdb
-            /helm/mysql
+          auto-detect: true
 
       - general/github-release:
           name: Create GitHub release from tag
