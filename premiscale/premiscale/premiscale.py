@@ -95,7 +95,7 @@ def cli() -> None:
     if args.version:
         log.info(f'premiscale v{__version__}')
         sys.exit(0)
-    elif args.validate:
+    if args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
 
     if args.daemon:
