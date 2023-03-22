@@ -19,6 +19,7 @@ __version__ = meta.version('premiscale')
 
 
 log = logging.getLogger(__name__)
+log.info(__doc__)
 
 
 def cli() -> None:
