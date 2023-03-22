@@ -9,6 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
 import sys
 import logging
+import os
 
 from premiscale.config.utils import initialize, validate, parse
 from premiscale.premiscale.daemon import wrapper
@@ -37,6 +38,11 @@ def cli() -> None:
     parser.add_argument(
         '-c', '--config', type=str, default='/opt/premiscale/config.yaml',
         help='Configuration file path to use.'
+    )
+
+    parser.add_argument(
+        '--token', type=str, default='',
+        help='Token for registering agent on first start.'
     )
 
     parser.add_argument(
@@ -79,6 +85,11 @@ def cli() -> None:
         format='%(message)s',
         level=(logging.DEBUG if args.debug else logging.INFO)
     )
+
+    if args.debug:
+        log.info('Agent started in debug mode.')
+    if not args.token and not os.getenv('PREMISCALE_TOKEN'):
+        log.info('Platform registration token neither set as argument nor environment variable \'PREMISCALE_TOKEN\', starting agent in standalone mode.')
 
     if args.version:
         log.info(f'premiscale v{__version__}')
