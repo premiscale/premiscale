@@ -50,6 +50,8 @@ env:
         key: doppler_token
   - name: PREMISCALE_DEBUG
     value: false
+  - name: PREMISCALE_TOKEN
+    value: ''
 
 # Enable / disable databases.
 influxdb:

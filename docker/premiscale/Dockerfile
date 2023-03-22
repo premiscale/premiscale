@@ -3,8 +3,9 @@ ARG TAG=3.10.8
 
 FROM ${IMAGE}:${TAG}
 
-ENV DOPPLER_TOKEN="notset"
+ENV DOPPLER_TOKEN=""
 ENV PREMISCALE_DEBUG=false
+ENV PREMISCALE_TOKEN=""
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2023"
