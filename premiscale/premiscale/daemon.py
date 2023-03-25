@@ -1,153 +1,23 @@
 """
-Main agent daemon. There are 3 loops and queues at any given time to
-
-    1) collect host metrics about VMs under management.
+Define subprocesses encapsulating each control loop.
 """
 
 
+from typing import Any
+
 import logging
-# import asyncio
+import asyncio
 import signal
 import sys
+import websockets
+import concurrent
 
-from typing import Any
-#from queue import Queue
 from threading import Thread
-from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import Process, Pool, Queue
-from time import sleep
-from contextlib import AbstractContextManager
+from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
-# from websockets import connect
 
 
 log = logging.getLogger(__name__)
-
-
-class PremiScaleDaemon(AbstractContextManager):
-    """
-    Daemon loops that periodically spawn threads to acquire and publish data from
-    hosts to the platform.
-
-    Args:
-        interval_metrics (int > 0): interval that the metrics collection daemon thread should
-            wake up to spawn threads that acquire data from the list of hosts.
-        queue_max_size (int > 0): maximum number of hosts to keep on the shared queue.
-    """
-    def __init__(self,
-            config: dict,
-            interval_metrics: int = 10,
-            queue_max_size: int = 10,
-            queue_timeout: int = 3600
-            ) -> None:
-
-        self.config = config
-        self.interval_metrics = interval_metrics
-        self.queue_max_size = queue_max_size
-        self.queue_timeout = queue_timeout
-
-        # Start a non-blocking daemon thread that periodically writes to the queue.
-        self.metrics_queue: Queue = Queue(maxsize=queue_max_size)
-        self._metrics_daemon = Thread(target=self._d_metrics, daemon=True)
-        self._n_metrics_threads = 0
-
-        # Create a client connection, with which we intend to publish measurements.
-        # self._ws =
-
-    def publish(self, js: dict) -> None:
-        """
-        Add a metric to the queue for the daemon to flush periodically. I've kept the
-        interface the same as `publish` on `InfluxPublisher`, above.
-        Args:
-            js: the data to publish (a list of measurements).
-        Returns:
-            Nothing.
-        """
-        self.metrics_queue.put(js, timeout=self.queue_timeout)
-
-    # Host metrics collection daemon thread.
-
-    def _d_metrics(self) -> None:
-        """
-        'Daemonized' collector that has the ability to spin up other threads.
-        Periodically wakes up and tries to empty its queue of measurements.
-        This method is not meant to be called directly.
-        Returns:
-            Nothing.
-        """
-        while True:
-            log.debug('Daemon waking up for processing.')
-            if not self.metrics_queue.empty():
-                # No reason to create more threads than necessary, here.
-                if self.queue_max_size > self.metrics_queue.qsize():
-                    self._n_metrics_threads = self.metrics_queue.qsize()
-                    division = 1
-                    remainder = 0
-                else:
-                    self._n_metrics_threads = self.queue_max_size
-                    division = self.metrics_queue.qsize() // self._n_metrics_threads
-                    remainder = self.metrics_queue.qsize() % self._n_metrics_threads
-
-                self._spawn_threads_metrics(division, remainder)
-            sleep(self.interval_metrics)
-
-    def _spawn_threads_metrics(self, division: int, remainder: int =0) -> None:
-        """
-        Make publication threads, and return if there's an error during the request.
-        Args:
-            division: number of thread creation/join cycles to make during drain.
-            remainder: number of threads to create in the very last cycle.
-        Returns:
-            Nothing.
-        """
-        for _i in [division, remainder]:
-            for _ in range(_i):
-                q_size_start = self.metrics_queue.qsize()
-                threads = []
-                for _ in range(self._n_metrics_threads):
-                    new_thread = Thread(target=self._t_metrics_collect, args=())
-                    log.debug(f'Starting thread {new_thread.getName()}')
-                    new_thread.start()
-                    threads.append(new_thread)
-                for thread in threads:
-                    thread.join()
-                # If the ending queue size is the same as we started, just wait until
-                # the next publish cycle to try again, they're obviously failing.
-                if self.metrics_queue.qsize() == q_size_start:
-                    return
-
-    def _t_metrics_collect(self) -> None:
-        """
-        .
-        """
-        sleep(3)
-
-    # CM
-
-    def start(self) -> None:
-        """
-        Let the daemons out.
-        """
-        log.info('Starting PremiScale daemon')
-        #self._metrics_daemon.start()
-        sleep(100)
-        log.info('Successfully started daemon')
-
-    def stop(self, *args: Any) -> None:
-        """
-        Stop daemons, close db connections gracefully.
-        """
-        #self._metrics_daemon.join()
-        log.info('Stopping PremiScale gracefully')
-
-    def __enter__(self) -> 'PremiScaleDaemon':
-        return self
-
-    def __exit__(self, *args: Any) -> None:
-        self.stop(*args)
-
-
-## Each of these classes is its own subprocess of the main daemon process.
 
 
 class Reconcile(Process):
@@ -205,6 +75,8 @@ class ASG(Process):
     One of these classes gets instantiated for every autoscaling group defined in
     the config.
     """
+    def __init__(self) -> None:
+        pass
 
 
 class Platform(Process):
@@ -216,8 +88,9 @@ class Platform(Process):
     def __init__(self, url: str, token: str) -> None:
         self.url = url
         self.token = token
+        self.websocket = None
 
-    def sync_actions(self) -> bool:
+    async def sync_actions(self) -> bool:
         """
         Sync actions taken by the agent for auditing.
 
@@ -226,7 +99,7 @@ class Platform(Process):
         """
         return False
 
-    def sync_metrics(self) -> bool:
+    async def sync_metrics(self) -> bool:
         """
         Sync metrics to the platform.
 
@@ -235,6 +108,33 @@ class Platform(Process):
         """
         return False
 
+    async def send_message(self, msg: str) -> bool:
+        """
+        Send an arbitrary message to the platform.
+
+        Args:
+            msg (str): Message to send.
+
+        Returns:
+            bool: True if the send was successful.
+        """
+        if not self.websocket:
+            log.error('Cannot submit arbitrary message to platform, connection has not been established.')
+            return False
+        else:
+            self.websocket.send(msg)
+
+    async def set_up_connection(self) -> None:
+        """
+        Establish websocket connection to PremiScale's platform.
+        """
+        async with websockets.connect(self.url) as self.websocket:
+            while True:
+                try:
+                    await asyncio.Future()
+                except websockets.ConnectionClosed:
+                    log.error(f'Websocket connection to {self.url} closed unexpectedly, reconnecting...')
+                    continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
 def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
@@ -252,7 +152,7 @@ def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
     autoscaling_action_queue: Queue = Queue()
     platform_message_queue: Queue = Queue()
 
-    with PremiScaleDaemon(agent_config) as premiscale_d, DaemonContext(
+    with concurrent.futures.Executor() as executor, DaemonContext(
             stdin=sys.stdin,
             stdout=sys.stdout,
             stderr=sys.stderr,
@@ -261,9 +161,12 @@ def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
             pidfile=pidfile.TimeoutPIDLockFile(pid_file),
             working_directory=working_dir,
             signal_map={
-                signal.SIGTERM: premiscale_d.stop,
-                signal.SIGHUP: premiscale_d.stop,
-                signal.SIGINT: premiscale_d.stop,
+                signal.SIGTERM: executor.shutdown,
+                signal.SIGHUP: executor.shutdown,
+                signal.SIGINT: executor.shutdown,
             }
         ):
-        premiscale_d.start()
+        executor.submit(Platform, platform_message_queue)
+        executor.submit(ASG, autoscaling_action_queue)
+        executor.submit(Metrics)
+        executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
