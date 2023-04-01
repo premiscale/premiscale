@@ -16,15 +16,11 @@ from threading import Thread
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import Process, Pool, Queue
 from time import sleep
-from contextlib import AbstractContextManager
 from daemon import DaemonContext, pidfile
 # from websockets import connect
 
 
 log = logging.getLogger(__name__)
-
-
-## Each of these classes is its own subprocess of the main daemon process.
 
 
 class Reconcile(Process):
