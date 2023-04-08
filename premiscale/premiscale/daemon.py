@@ -166,7 +166,8 @@ def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
                 signal.SIGINT: executor.shutdown,
             }
         ):
-        executor.submit(Platform, platform_message_queue)
-        executor.submit(ASG, autoscaling_action_queue)
-        executor.submit(Metrics)
-        executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
+        ...
+        # executor.submit(Platform, platform_message_queue)
+        # executor.submit(ASG, autoscaling_action_queue)
+        # executor.submit(Metrics)
+        # executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)

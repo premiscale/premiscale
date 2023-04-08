@@ -17,7 +17,7 @@ from .parse import Config_v1_alpha_1
 log = logging.getLogger(__name__)
 
 
-def parse(config: str, check: bool = False) -> dict:
+def configparse(config: str, check: bool = False) -> dict:
     """
     Parse a config file and return it as a dictionary (JSON).
 

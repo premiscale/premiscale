@@ -10,7 +10,7 @@ from importlib import metadata as meta
 import sys
 import logging
 
-from premiscale.config.utils import initialize, validate, parse
+from premiscale.config.utils import initialize, validate, configparse
 from premiscale.premiscale.daemon import wrapper
 
 
@@ -88,7 +88,7 @@ def cli() -> None:
 
     if args.daemon:
         initialize(args.config)
-        config = parse(args.config)
+        config = configparse(args.config)
         log.info('Entering daemon')
 
         wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config)
