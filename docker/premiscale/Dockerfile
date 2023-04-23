@@ -29,11 +29,9 @@ python -m venv /opt/premiscale
 
 RUN useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
 
-COPY ./docker/premiscale/scripts/cmd.sh /opt/premiscale/
-
 WORKDIR /opt/premiscale
 
-RUN chmod +x cmd.sh && chown -R premiscale:root .
+RUN chown -R premiscale:root .
 USER premiscale
 
 ARG PYTHON_USERNAME
@@ -50,5 +48,9 @@ RUN mkdir -p "$HOME"/.local/bin && \
 pip install --upgrade pip && \
 pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
 
+RUN ls -lash /opt/premiscale/bin/
+
+ENV PATH="/opt/premiscale/bin:$PATH"
+
 ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
-CMD [ "./cmd.sh" ]
+CMD [ "premiscale", "--log-stdout", "--daemon" ]

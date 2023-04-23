@@ -1,5 +1,9 @@
 """
-PremiScale autoscaling agent.
+
+,---.               o,---.          |
+|---',---.,---.,-.-..`---.,---.,---.|    ,---.
+|    |    |---'| | ||    ||    ,---||    |---'
+`    `    `---'` ' '``---'`---'`---^`---'`---'
 
 © PremiScale, Inc. 2023
 """
@@ -77,7 +81,7 @@ def main() -> None:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(asctime)s | %(levelname)s | %(message)s',
-            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') else logging.INFO)
+            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is not None else logging.INFO)
         )
     else:
         logging.basicConfig(
