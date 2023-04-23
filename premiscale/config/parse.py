@@ -2,130 +2,131 @@
 Parse a configuration file, or create a default one.
 """
 
-from typing import Optional, Any
+from typing import Optional, Any, Union, Tuple
+from pathlib import Path
 
+import yamale
+import yaml
 import logging
+import sys
+import importlib.resources as resources
 
 
 log = logging.getLogger(__name__)
 
 
-__all__ = [
-    'Config_v1_alpha_1'
-]
-
-
-class Config(dict):
+def configparse(config: str, check: bool = False) -> dict:
     """
-    Parse a config dictionary into an object with methods to interact with the config.
+    Parse a config file and return it as a dictionary (JSON).
+
+    Args:
+        config (str): path to the config file.
+        check (bool): whether or not to validate the provided config file.
+
+    Returns:
+        dict: The parsed config file.
     """
-    def __init__(self, config: dict):
-        self.config = config
+    with open(config, 'r', encoding='utf-8') as f:
+        config_json = yaml.safe_load(f.read().rstrip())
 
-    def __getattr__(self, *args, **kwargs):
-        val = Config.get(*args, **kwargs)
-        return Config(val) if isinstance(val, dict) else val
+    match config_json['version']:
+        case 'v1alpha1':
+            if check:
+                msg, valid = validate(config, f'schema.{config_json["version"]}.yaml')
+                if not valid:
+                    log.error(msg)
+                    sys.exit(1)
+                else:
+                    log.info(f'Config \'{config}\' is valid against schema version {config_json["version"]}')
 
-    def __setattr__(self, *args, **kwargs) -> Any:
-        return self.__setitem__(*args, **kwargs)
+            from premiscale.config.v1alpha1 import Config_v1_alpha_1
 
-    def __delattr__(self, *args, **kwargs) -> Any:
-        return self.__delitem__(*args, **kwargs)
-
-    def version(self) -> str:
-        """
-        Get the version of the config.
-        """
-        return self.config.config.version  # type: ignore
+            conf = Config_v1_alpha_1(config_json)
+            log.debug(f'Successfully parsed config {conf.version}: {conf}')
+            return conf
+        case _:
+            log.error(f'Cannot parse config version, supplied \'{config_json["version"]}\'')
+            sys.exit(1)
 
 
-class Config_v1_alpha_1(Config):
+def initialize(config: Union[Path, str]) -> str:
     """
-    Config parser for v1a1.
+    If the config file does not exist, create a default one. This is just a side-effect function that handles
+    the case where a config file is not mounted in the container.
+
+    Args:
+        config_path: path to config file to either create or validate.
+
+    Returns:
+        the contents of the config file for further processing.
     """
+    if not Path.exists(Path(config)):
+        _make_default(config)
 
-    # Top-level config items.
+    with open(config, 'r', encoding='utf-8') as f:
+        return f.read().rstrip()
 
-    def agent(self) -> 'Config_v1_alpha_1':
-        """
-        Get the agent top-level item.
-        """
-        return self.config.agent    # type: ignore
 
-    def scaling(self) -> 'Config_v1_alpha_1':
-        """
-        Get the scaling top-level item.
-        """
-        return self.config.scaling  # type: ignore
+def validate(config: Union[Path, str], schema: str = 'schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+    """
+    Validate users' config files against our schema.
 
-    # hostGroups
+    Args:
+        config: config file path/name to validate against the schema.
+        schema: schema file to use with config validation.
+        strict: whether or not to use strict mode on yamale.
 
-    def hostGroups(self) -> 'Config_v1_alpha_1':
-        """
-        Retrieve a map of hostgroups.
-        """
-        return self.config.scaling.hostGroups  # type: ignore
+    Returns:
+        bool: Whether or not the config conforms to our expected schema.
+    """
+    with resources.open_text('premiscale.config.data', schema) as schema_f:
+        schema = yamale.make_schema(schema_f.name)
 
-    def hostGroupLookup(self, name: str) -> Optional['Config_v1_alpha_1']:
-        """
-        Perform a host group lookup. Return the group if it's found, None otherwise.
-        """
-        for group in self.hostGroups():
-            if group == name:
-                return self.hostGroups()[group]
-        return None
+    data = yamale.make_data(config)
 
-    # ASGs
+    try:
+        yamale.validate(schema, data, strict=strict)
+        return '', True
+    except ValueError as msg:
+        return str(msg), False
 
-    def autoscalingGroups(self) -> 'Config_v1_alpha_1':
-        """
-        Retrieve autoscaling groups configuration.
-        """
-        return self.scaling.autoscalingGroups  # type: ignore
 
-    def autoscalingGroupLookup(self, name: str) -> Optional['Config_v1_alpha_1']:
-        """
-        Perform an ASG lookup. Return the group if it's found, None otherwise.
-        """
-        for asg in self.autoscalingGroups():
-            if asg == name:
-                return self.autoscalingGroups()[asg]
-        return None
+def _config_exists(path: Union[str, Path]) -> bool:
+    """
+    Determine if a configuration file exists.
 
-    # Databases
+    Args:
+        path (Union[str, Path]): path to config file.
 
-    def stateDatabase(self) -> 'Config_v1_alpha_1':
-        """
-        Retrieve info about the state (MySQL) database.
-        """
-        return self.scaling.databases.state    # type: ignore
+    Returns:
+        bool: Whether the config exists.
+    """
+    if Path.exists(Path(path)):
+        log.debug(f'Config file at {str(path)} exists.')
+        return True
+    else:
+        log.debug(f'Config file at {str(path)} does not exist.')
+        return False
 
-    def stateDatabaseCredentials(self) -> 'Config_v1_alpha_1':
-        """
-        Retrieve info about the state (MySQL) database credentials.
-        """
-        return self.scaling.databases.state.connection.credentials.env    # type: ignore
 
-    def stateDatabaseConnection(self) -> str:
-        """
-        Get the connection string for the state database.
-        """
-        return str(self.scaling.databases.state.connection.url)    # type: ignore
+def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'default.yaml') -> None:
+    """
+    Make a default config file if one does not exist.
 
-    def metricsDatabase(self) -> 'Config_v1_alpha_1':
-        """
-        Retrieve info about the metrics (InfluxDB) database.
-        """
-        return self.scaling.databases.metrics  # type: ignore
+    Args:
+        path (Union[str, Path]): The default location to create an autoscale configuration file, if it doesn't exist.
 
-    def metricsDatabaseCredentials(self) -> 'Config_v1_alpha_1':
-        """
-        Retrieve info about the metrics (InfluxDB) database.
-        """
-        return self.scaling.databases.metrics.connection.credentials.env  # type: ignore
-
-    def metricsDatabaseConnection(self) -> str:
-        """
-        Get the connection string for the metrics database.
-        """
-        return str(self.scaling.databases.metrics.connection.url)  # type: ignore
+    Raises:
+        PermissionError: If the daemon doesn't have the required permissions to create the default conf.
+    """
+    try:
+        if not Path.exists(Path(path).parent):
+            Path.mkdir(Path(path).parent, parents=True)
+        if not _config_exists(path):
+            log.debug(f'Creating default config file at \'{str(path)}\'')
+            with resources.open_text('premiscale.config.data', default_config) as default_f, open(str(path), 'x', encoding='utf-8') as f:
+                f.write(default_f.read().strip())
+            log.debug(f'Successfully created default config file at \'{str(path)}\'')
+    except PermissionError:
+        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}, must run as root.')
+        sys.exit(1)

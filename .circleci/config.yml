@@ -7,6 +7,7 @@ setup: true
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.6.6
   general: bjd2385/general@0.6.1
+  slack: circleci/slack@4.12.1
 
 
 workflows:
@@ -16,9 +17,31 @@ workflows:
           context: circleci
           auto-detect: true
 
+      - slack/on-hold:
+          requires:
+            - dynamic/continue
+          context: slack
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - request-approval:
+          requires:
+            - slack/on-hold
+          type: approval
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
       - general/github-release:
           name: Create GitHub release from tag
           context: github
+          requires:
+            - request-approval
           filters:
             branches:
               ignore: /.*/
@@ -29,6 +52,8 @@ workflows:
           name: pypi premiscale upload [python]
           context: nexus
           repository: python
+          requires:
+            - request-approval
           filters:
             branches:
               ignore: /.*/
@@ -40,6 +65,8 @@ workflows:
           context: nexus
           path: helm/premiscale
           repo-name: premiscale
+          requires:
+            - request-approval
           filters:
             branches:
               ignore: /.*/

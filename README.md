@@ -1,4 +1,4 @@
-# PremiScale autoscaler
+# PremiScale autoscaler agent
 
 ```shell
 $ premiscale --help

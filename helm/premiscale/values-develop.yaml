@@ -15,3 +15,8 @@ annotations:
 env:
   - name: PREMISCALE_DEBUG
     value: true
+
+influxdb:
+  enabled: true
+mysql:
+  enabled: true

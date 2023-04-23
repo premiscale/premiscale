@@ -4,9 +4,9 @@ metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
-  {{- with $.Values.annotations }}
+  {{- with .Values.annotations }}
   annotations:
-    {{- toYaml $.Values.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   replicas: 1
@@ -20,13 +20,13 @@ spec:
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
-        {{- range $.Values.global.imagePullSecrets }}
+        {{- range . }}
         - name: {{ . }}
         {{- end }}
       {{- end }}
       {{- with .Values.securityContext }}
       securityContext:
-        {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- toYaml . | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Values.image.name }}
@@ -34,7 +34,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.resources }}
           resources:
-            {{- toYaml $.Values.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- if .Values.api.enabled }}
           ports:
@@ -43,11 +43,11 @@ spec:
           {{- end }}
           {{- with .Values.securityContext }}
           securityContext:
-            {{- toYaml $.Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.env }}
+          {{- with .Values.env }}
           env:
-            {{- toYaml $.Values.env | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
           {{- if .Values.configMap.enabled }}
