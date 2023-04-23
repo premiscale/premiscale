@@ -96,8 +96,10 @@ def main() -> None:
 
     if args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
+
     if not args.token and not os.getenv('PREMISCALE_TOKEN'):
         log.info('Platform registration token not present, starting agent in standalone mode.')
+
     if args.daemon:
         initialize(args.config)
         config = configparse(args.config, check=args.validate)
