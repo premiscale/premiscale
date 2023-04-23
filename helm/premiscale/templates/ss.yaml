@@ -3,6 +3,7 @@ apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
   name: nexus-docker-registry
+  namespace: {{ .Release.Namespace }}
   annotations:
     sealedsecrets.bitnami.com/cluster-wide: "true"
 spec:
@@ -17,6 +18,7 @@ apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
   name: doppler
+  namespace: {{ .Release.Namespace }}
   annotations:
     sealedsecrets.bitnami.com/cluster-wide: "true"
 spec:
