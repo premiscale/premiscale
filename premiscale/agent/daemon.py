@@ -1,23 +1,20 @@
 """
-Main agent daemon. There are 3 loops and queues at any given time to
-
-    1) collect host metrics about VMs under management.
+Define subprocesses encapsulating each control loop.
 """
 
 
+from typing import Any
+
 import logging
-# import asyncio
+import asyncio
 import signal
 import sys
+import websockets
+import concurrent
 
-from typing import Any
-#from queue import Queue
 from threading import Thread
-from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import Process, Pool, Queue
-from time import sleep
+from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
-# from websockets import connect
 
 
 log = logging.getLogger(__name__)
@@ -78,6 +75,8 @@ class ASG(Process):
     One of these classes gets instantiated for every autoscaling group defined in
     the config.
     """
+    def __init__(self) -> None:
+        pass
 
 
 class Platform(Process):
@@ -89,8 +88,9 @@ class Platform(Process):
     def __init__(self, url: str, token: str) -> None:
         self.url = url
         self.token = token
+        self.websocket = None
 
-    def sync_actions(self) -> bool:
+    async def sync_actions(self) -> bool:
         """
         Sync actions taken by the agent for auditing.
 
@@ -99,7 +99,7 @@ class Platform(Process):
         """
         return False
 
-    def sync_metrics(self) -> bool:
+    async def sync_metrics(self) -> bool:
         """
         Sync metrics to the platform.
 
@@ -108,6 +108,33 @@ class Platform(Process):
         """
         return False
 
+    async def send_message(self, msg: str) -> bool:
+        """
+        Send an arbitrary message to the platform.
+
+        Args:
+            msg (str): Message to send.
+
+        Returns:
+            bool: True if the send was successful.
+        """
+        if not self.websocket:
+            log.error('Cannot submit arbitrary message to platform, connection has not been established.')
+            return False
+        else:
+            self.websocket.send(msg)
+
+    async def set_up_connection(self) -> None:
+        """
+        Establish websocket connection to PremiScale's platform.
+        """
+        async with websockets.connect(self.url) as self.websocket:
+            while True:
+                try:
+                    await asyncio.Future()
+                except websockets.ConnectionClosed:
+                    log.error(f'Websocket connection to {self.url} closed unexpectedly, reconnecting...')
+                    continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
 def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
@@ -125,18 +152,22 @@ def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
     autoscaling_action_queue: Queue = Queue()
     platform_message_queue: Queue = Queue()
 
-    # with PremiScaleDaemon(agent_config) as premiscale_d, DaemonContext(
-    #         stdin=sys.stdin,
-    #         stdout=sys.stdout,
-    #         stderr=sys.stderr,
-    #         detach_process=False,
-    #         prevent_core=True,
-    #         pidfile=pidfile.TimeoutPIDLockFile(pid_file),
-    #         working_directory=working_dir,
-    #         signal_map={
-    #             signal.SIGTERM: premiscale_d.stop,
-    #             signal.SIGHUP: premiscale_d.stop,
-    #             signal.SIGINT: premiscale_d.stop,
-    #         }
-    #     ):
-    #     premiscale_d.start()
+    with concurrent.futures.Executor() as executor, DaemonContext(
+            stdin=sys.stdin,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            detach_process=False,
+            prevent_core=True,
+            pidfile=pidfile.TimeoutPIDLockFile(pid_file),
+            working_directory=working_dir,
+            signal_map={
+                signal.SIGTERM: executor.shutdown,
+                signal.SIGHUP: executor.shutdown,
+                signal.SIGINT: executor.shutdown,
+            }
+        ):
+        ...
+        # executor.submit(Platform, platform_message_queue)
+        # executor.submit(ASG, autoscaling_action_queue)
+        # executor.submit(Metrics)
+        # executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)

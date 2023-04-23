@@ -11,7 +11,7 @@ import sys
 import logging
 import os
 
-from premiscale.config.parse import initialize, validate, parse
+from premiscale.config.parse import initialize, validate, configparse
 from premiscale.agent.daemon import wrapper
 
 
@@ -102,7 +102,7 @@ def main() -> None:
 
     if args.daemon:
         initialize(args.config)
-        config = parse(args.config, check=args.validate)
+        config = configparse(args.config, check=args.validate)
         log.info('Starting daemon')
 
         wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config)
