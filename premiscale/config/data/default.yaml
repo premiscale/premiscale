@@ -13,6 +13,10 @@ agent:
           username: $MYSQL_USERNAME
           password: $MYSQL_PASSWORD
 
+      # How often the agent compares collected metrics against current state of the database (leads to Actions the
+      # autoscaler needs to take on infrastructure being added to a queue)
+      reconcileInterval: 60
+
     # How often metrics collection is performed from every host.
     metrics:
       type: influxdb
@@ -24,20 +28,16 @@ agent:
           password: $INFLUXDB_PASSWORD
 
       # How often the agent retrieves metrics from all of the connected hosts.
-      collection_interval: 60
-
-      # How often the agent retrieves collected metrics for evaluation (leads to Actions the autoscaler
-      # needs to take on infrastructure being added to a queue)
-      reconcile_interval: 60
+      collectionInterval: 60
 
       # Establishes connection in max_threads-batches. This value indicates how many threads to spawn in a batch.
-      max_threads: 10
-      host_connection_timeout: 60
+      maxThreads: 10
+      hostConnectionTimeout: 60
 
       # Seconds of collected metrics to keep and evaluate upon (must be >=interval)
       trailing: 1260
   daemon:
-    actions_queue_max: 0
+    actionsQueueMax: 0
 
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:

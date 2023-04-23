@@ -39,9 +39,9 @@ def configparse(config: str, check: bool = False) -> dict:
                 else:
                     log.info(f'Config \'{config}\' is valid against schema version {config_json["version"]}')
 
-            from premiscale.config.v1alpha1 import Config_v1_alpha_1
+            from premiscale.config.v1alpha1 import Config_v1alpha1
 
-            conf = Config_v1_alpha_1(config_json)
+            conf = Config_v1alpha1(config_json)
             log.debug(f'Successfully parsed config {conf.version}: {conf}')
             return conf
         case _:

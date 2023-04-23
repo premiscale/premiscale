@@ -14,7 +14,7 @@ import sys
 log = logging.getLogger(__name__)
 
 
-class Config_v1_alpha_1(Config):
+class Config_v1alpha1(Config):
     """
     Class that encapsulates access methods and parsing config version v1alpha1.
     """
@@ -93,7 +93,8 @@ class Config_v1_alpha_1(Config):
                     'url': mysql_connect['url'],
                     'database': mysql_connect['database'],
                     'username': os.getenv(mysql_connect['credentials']['username']),
-                    'password': os.getenv(mysql_connect['credentials']['password'])
+                    'password': os.getenv(mysql_connect['credentials']['password']),
+                    'reconcile_interval': state['reconcileInterval']
                 }
             case _:
                 log.error(f'State database type \'{self.databases()["state"]["type"]}\' unsupported')
@@ -113,7 +114,11 @@ class Config_v1_alpha_1(Config):
                     'url': influxdb_connect['url'],
                     'database': influxdb_connect['database'],
                     'username': os.getenv(influxdb_connect['credentials']['username']),
-                    'password': os.getenv(influxdb_connect['credentials']['password'])
+                    'password': os.getenv(influxdb_connect['credentials']['password']),
+                    'collection_interval': metrics['collectionInterval'],
+                    'max_threads': metrics['maxThreads'],
+                    'host_connection_timeout': metrics['hostConnectionTimeout'],
+                    'trailing': metrics['trailing']
                 }
             case _:
                 log.error(f'Metrics database type \'{self.databases()["metrics"]["type"]}\' unsupported')

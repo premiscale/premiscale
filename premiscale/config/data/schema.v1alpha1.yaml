@@ -7,7 +7,7 @@ autoscale:
   groups: include('groups')
 ---
 daemon:
-  actions_queue_max: int(min=0)
+  actionsQueueMax: int(min=0)
 ---
 databases:
   state: include('state')
@@ -16,15 +16,15 @@ databases:
 state:
   type: enum('mysql')
   connection: include('connection')
+  reconcileInterval: int(min=5)
 ---
 metrics:
   type: enum('influxdb')
   connection: include('connection')
   trailing: int(min=0)
-  collection_interval: int(min=5)
-  host_connection_timeout: int(min=1)
-  reconcile_interval: int(min=5)
-  max_threads: int(min=0)
+  collectionInterval: int(min=5)
+  hostConnectionTimeout: int(min=1)
+  maxThreads: int(min=0)
 ---
 connection:
   url: str(min=1)
