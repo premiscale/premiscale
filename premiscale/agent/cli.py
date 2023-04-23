@@ -12,7 +12,7 @@ import logging
 import os
 
 from premiscale.config.utils import initialize, validate, parse
-from premiscale.premiscale.daemon import wrapper
+from premiscale.agent.daemon import wrapper
 
 
 __version__ = meta.version('premiscale')
@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 log.info(__doc__)
 
 
-def cli() -> None:
+def main() -> None:
     """
     Set up the CLI for PremiScale autoscaler.
     """

@@ -11,7 +11,7 @@ import logging
 import sys
 import importlib.resources as resources
 
-from .parse import Config_v1_alpha_1
+from premiscale.config.v1alpha1 import Config_v1_alpha_1
 
 
 log = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def parse(config: str, check: bool = False) -> dict:
         config_json = yaml.safe_load(f.read().rstrip())
 
     match config_json['version']:
-        case 'v1-alpha1':
+        case 'v1alpha1':
             conf = Config_v1_alpha_1(config_json)
             log.debug(f'Successfully parsed config {conf.version}: {conf}')
             return conf
