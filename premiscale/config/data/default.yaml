@@ -119,7 +119,7 @@ autoscale:
         # vacancy: prioritize hosts with the most vacancy.
         method: vacancy
 
-        overprovision:
+        overProvision:
           # Percentages to go over collected host max while scheduling host resources.
           io: 0
           cpu: 0

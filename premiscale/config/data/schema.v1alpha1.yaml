@@ -1,4 +1,4 @@
-version: enum('v1-alpha1')
+version: enum('v1alpha1')
 agent:
   daemon: include('daemon')
   databases: include('databases')
@@ -20,8 +20,6 @@ state:
 metrics:
   type: enum('influxdb')
   connection: include('connection')
-  interval: int(min=0)
-  evaluate: int(min=0)
   trailing: int(min=0)
   collection_interval: int(min=5)
   host_connection_timeout: int(min=1)
@@ -66,12 +64,13 @@ group:
     subnet: str(min=1)
     gateway: str(min=1)
   scaling:
+    method: enum('random', 'vacancy', 'linear', 'linear-random')
     maxNodes: int(min=0)
     minNodes: int(min=0)
     increment: int(min=0)
     cooldown: int(min=0)
-    overprovision: include('resources')
-  target_metrics: include('resources')
+    overProvision: include('resources')
+    resourceTarget: include('resources')
 ---
 resources:
   cpu: int(min=0, max=100)
