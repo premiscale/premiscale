@@ -1,15 +1,12 @@
 version: enum('v1-alpha1')
 agent:
   daemon: include('daemon')
-autoscale:
   databases: include('databases')
+autoscale:
   hosts: include('hosts')
   groups: include('groups')
 ---
 daemon:
-  check_interval: int(min=0)
-  timeout: int(min=0)
-  max_threads: int(min=0)
   queue_max: int(min=0)
 ---
 databases:
@@ -26,6 +23,10 @@ metrics:
   interval: int(min=0)
   evaluate: int(min=0)
   trailing: int(min=0)
+  collection_interval: int(min=5)
+  host_connection_timeout: int(min=1)
+  reconcile_interval: int(min=5)
+  max_threads: int(min=0)
 ---
 connection:
   url: str(min=1)
@@ -56,7 +57,8 @@ group:
   hosts: any(include('hosts'), list(min=1))
   replacement:
     strategy: enum('rollingUpdate')
-    maxUnavailable: int(min=1)
+    maxUnavailable: int(min=0)
+    maxSurge: int(min=0)
   networking:
     # Ignore in the case that the users' cloud-init scripts perform the networking.
     type: enum('static', 'dynamic', 'ignore')
@@ -68,7 +70,10 @@ group:
     minNodes: int(min=0)
     increment: int(min=0)
     cooldown: int(min=0)
-  metrics:
-    io: int(min=0)
-    cpu: int(min=0, max=100)
-    memory: int(min=0, max=100)
+    overprovision: include('resources')
+  target_metrics: include('resources')
+---
+resources:
+  cpu: int(min=0, max=100)
+  memory: int(min=0, max=100)
+  io: int(min=0, max=100)

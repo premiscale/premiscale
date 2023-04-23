@@ -10,9 +10,8 @@ agent:
         url: 'localhost:3306'
         database: premiscale
         credentials:
-          env:
-            username: $MYSQL_USERNAME
-            password: $MYSQL_PASSWORD
+          username: $MYSQL_USERNAME
+          password: $MYSQL_PASSWORD
 
     # How often metrics collection is performed from every host.
     metrics:
@@ -21,9 +20,8 @@ agent:
         url: 'localhost:8086'
         database: premiscale
         credentials:
-          env:
-            username: $INFLUXDB_USERNAME
-            password: $INFLUXDB_PASSWORD
+          username: $INFLUXDB_USERNAME
+          password: $INFLUXDB_PASSWORD
 
       # How often the agent retrieves metrics from all of the connected hosts.
       collection_interval: 60
@@ -32,10 +30,14 @@ agent:
       # needs to take on infrastructure being added to a queue)
       reconcile_interval: 60
 
+      # Establishes connection in max_threads-batches. This value indicates how many threads to spawn in a batch.
       max_threads: 10
+      host_connection_timeout: 60
 
       # Seconds of collected metrics to keep and evaluate upon (must be >=interval)
       trailing: 1260
+  daemon:
+    queue_max: 0
 
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:
@@ -47,10 +49,14 @@ autoscale:
         address: domain-1
         protocol: ssh
         port: 22
-        overprovision:
-          # Percentages to go over collected max for scheduling host resources.
-          cpu: 0
-          memory: 0
+        # # Override collected resource metrics, or allow the setting of resources, instead of relying on the agent to determine what the values are.
+        # resources:
+        #   # MiB/s
+        #   io: 100
+        #   # Number of CPUs
+        #   cpu: 2
+        #   # GiB of memory
+        #   memory: 96
       - name: domain-2
         address: domain-2
         protocol: tls
@@ -68,12 +74,16 @@ autoscale:
       image: root.qcow
       name: template-ubuntu20.04-server
 
-      # Options could be 'migrate' - migrate a copy of the domain to every host, or 'centralized' - hosts are using a centralized block store.
+      # Options could be
+      #   'migrate' - migrate a copy of the domain to every host, or
+      #   'centralized' - hosts are using a centralized block store over a share. In other words, don't attempt to migrate any disks to individual hosts.
       imageMigration: migrate
 
       cloud-init:
         inline: |
-          # Should contain an inline cloud-init script by which to customize VMs in this group, or you can specify a "file: "-keyword to read it from some location on-disk. All environment variables should be evaluated and replaced before bundling with the domains' disks?
+          # Should contain an inline cloud-init script by which to customize VMs in this group, or you can
+          # specify a "file: "-keyword to read it from some location on-disk. All environment variables are
+          # evaluated and replaced before copying to hosts.
         file: <path-to-file-instead>
 
       # Group of hosts on which to provision VMs.
@@ -83,7 +93,8 @@ autoscale:
       replacement:
         strategy: rollingUpdate
         # replace one VM at a time if there's an image update in a group in this file, etc.
-        maxUnavailable: 1
+        maxUnavailable: 0
+        maxSurge: 1
 
       networking:
         # A static IP range or list of IPs should be given to a group.
@@ -97,7 +108,7 @@ autoscale:
         # maxNodes should not be larger than the number of IP addresses determined to be available in the range.
         maxNodes: 10
         minNodes: 3
-        # Increment up or down by this many nodes any time a change is required to state.
+        # Increment by up-to or down-by this many nodes any time a change is required to state. Limits how large of an action the ASG can make every cooldown period.
         increment: 1
         # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics reconciliation once an action has been taken.
         cooldown: 60
@@ -108,9 +119,15 @@ autoscale:
         # vacancy: prioritize hosts with the most vacancy.
         method: vacancy
 
-      metrics:
-        # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
-        io: 80
-        cpu: 80
-        memory: 80
+        overprovision:
+          # Percentages to go over collected host max while scheduling host resources.
+          io: 0
+          cpu: 0
+          memory: 0
+
+        resourceTarget:
+          # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
+          io: 80
+          cpu: 80
+          memory: 80
     # asg-2: {}
