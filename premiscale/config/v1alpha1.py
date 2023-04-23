@@ -77,7 +77,9 @@ class Config_v1alpha1(Config):
         """
         return self.autoscale()['groups']
 
-    ### Databases.
+    ### Databases
+
+    #### state
 
     def agent_databases_state_connection(self) -> Dict:
         """
@@ -90,11 +92,11 @@ class Config_v1alpha1(Config):
             case 'mysql':
                 mysql_connect = state['connection']
                 return {
+                    'type': 'mysql',
                     'url': mysql_connect['url'],
                     'database': mysql_connect['database'],
                     'username': os.path.expandvars(mysql_connect['credentials']['username']),
-                    'password': os.path.expandvars(mysql_connect['credentials']['password']),
-                    'reconcile_interval': state['reconcileInterval']
+                    'password': os.path.expandvars(mysql_connect['credentials']['password'])
                 }
             case _:
                 log.error(f'State database type \'{state["type"]}\' unsupported')
@@ -110,11 +112,14 @@ class Config_v1alpha1(Config):
         match (state := self.agent_databases()['state'])['type']:
             case 'mysql':
                 return {
+                    'type': 'mysql',
                     'reconcile_interval': state['reconcileInterval']
                 }
             case _:
                 log.error(f'State database type \'{state["type"]}\' unsupported')
                 sys.exit(1)
+
+    #### metrics
 
     def agent_databases_metrics_connection(self) -> Dict:
         """
@@ -127,6 +132,7 @@ class Config_v1alpha1(Config):
             case 'influxdb':
                 influxdb_connect = metrics['connection']
                 return {
+                    'type': 'influxdb',
                     'url': influxdb_connect['url'],
                     'database': influxdb_connect['database'],
                     'username': os.path.expandvars(influxdb_connect['credentials']['username']),
@@ -146,6 +152,7 @@ class Config_v1alpha1(Config):
         match (metrics := self.agent_databases()['metrics'])['type']:
             case 'influxdb':
                 return {
+                    'type': 'influxdb',
                     'collection_interval': metrics['collectionInterval'],
                     'max_threads': metrics['maxThreads'],
                     'host_connection_timeout': metrics['hostConnectionTimeout'],

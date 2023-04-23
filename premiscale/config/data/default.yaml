@@ -39,6 +39,9 @@ agent:
   daemon:
     actionsQueueMax: 0
 
+  platform:
+    domain: https://chelsea.ops.premiscale.com/agent/echo
+
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:
   # Groups of hosts to assign to ASGs.

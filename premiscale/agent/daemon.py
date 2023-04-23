@@ -15,7 +15,8 @@ import concurrent
 from threading import Thread
 from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
-from premiscale.config._config import Config
+
+from premiscale.config.v1alpha1 import Config_v1alpha1
 
 
 log = logging.getLogger(__name__)
@@ -25,9 +26,16 @@ class Reconcile(Process):
     """
     Similar to metrics - a reconciliation loop that queries influxdb for the list of VMs
     metrics came from and compares these data to state stored in MySQL. If they don't match,
-    actions to correct are added to the queue.
+    actions to correct the state drift are added to the queue.
     """
-    def __init__(self) -> None:
+    def __init__(self, connection: dict) -> None:
+        match connection['type']:
+            case 'mysql':
+                from premiscale.state.mysql import MySQL
+
+                self.state_database = MySQL(**connection)
+
+    def __call__(self) -> None:
         pass
 
 
@@ -37,12 +45,19 @@ class Metrics(Process):
     are published to influxdb for retrieval and query by the ASG loop, which evaluates
     on a per-ASG basis whether Actions need to be taken.
     """
-    def __init__(self) -> None:
+    def __init__(self, connection: dict) -> None:
+        match connection['type']:
+            case 'influxdb':
+                from premiscale.metrics.influxdb import InfluxDB
+
+                self.metrics_database = InfluxDB(**connection)
+
+    def __call__(self) -> None:
         pass
 
 
-# Instances of Action are shorter-lived processes than the other 4.
-class Action(Process):
+# Instances of Action are intended to execute in a thread on the ASG process.
+class Action:
     """
     Encapsulate the various actions that the autoscaler can take. These get queued up.
     """
@@ -90,6 +105,13 @@ class Platform(Process):
         self.url = url
         self.token = token
         self.websocket = None
+        self.queue: Queue
+
+    def __call__(self, queue: Queue) -> None:
+        self.queue = queue
+
+        # This should never exit. Process should stay open forever.
+        asyncio.run(self.set_up_connection())
 
     async def sync_actions(self) -> bool:
         """
@@ -138,7 +160,7 @@ class Platform(Process):
                     continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '') -> None:
+def wrapper(working_dir: str, pid_file: str, agent_config: Config_v1alpha1, token: str = '') -> None:
     """
     Wrap our three daemon processes and pass along relevant data.
 
@@ -164,12 +186,11 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
             working_directory=working_dir,
             signal_map={
                 signal.SIGTERM: executor.shutdown,
-                signal.SIGHUP: executor.shutdown,
-                signal.SIGINT: executor.shutdown,
+                # signal.SIGHUP: executor.shutdown,
+                # signal.SIGINT: executor.shutdown,
             }
         ):
-        ...
-        # executor.submit(Platform, platform_message_queue)
+        # platform_future = executor.submit(Platform, platform_message_queue)
         # executor.submit(ASG, autoscaling_action_queue)
-        # executor.submit(Metrics)
+        metrics_future: concurrent.futures.Future = executor.submit(Metrics(**agent_config.agent_databases_metrics_connection()))
         # executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
