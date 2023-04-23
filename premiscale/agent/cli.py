@@ -87,7 +87,7 @@ def main() -> None:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(message)s',
-            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') else logging.INFO)
+            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is not None else logging.INFO)
         )
 
     if args.debug:
