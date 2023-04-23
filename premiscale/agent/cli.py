@@ -1,12 +1,4 @@
-"""
-
-,---.               o,---.          |
-|---',---.,---.,-.-..`---.,---.,---.|    ,---.
-|    |    |---'| | ||    ||    ,---||    |---'
-`    `    `---'` ' '``---'`---'`---^`---'`---'
-
-© PremiScale, Inc. 2023
-"""
+""" © PremiScale, Inc. 2023 """
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -77,6 +69,8 @@ def main() -> None:
     args = parser.parse_args()
 
     # Configure logger.
+    if args.debug or os.getenv('PREMISCALE_DEBUG') is True:
+        log.info('Agent starting in debug mode.')
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
@@ -89,9 +83,6 @@ def main() -> None:
             format='%(message)s',
             level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is True else logging.INFO)
         )
-
-    if args.debug:
-        log.info('Agent started in debug mode.')
 
     if args.version:
         log.info(f'premiscale v{__version__}')
