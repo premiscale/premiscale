@@ -17,7 +17,7 @@ from premiscale.config.v1alpha1 import Config_v1_alpha_1
 log = logging.getLogger(__name__)
 
 
-def parse(config: str, check: bool = False, schema: str = 'schema.yaml') -> dict:
+def parse(config: str, check: bool = False) -> dict:
     """
     Parse a config file and return it as a dictionary (JSON).
 
@@ -28,14 +28,13 @@ def parse(config: str, check: bool = False, schema: str = 'schema.yaml') -> dict
     Returns:
         dict: The parsed config file.
     """
-    if check:
-        validate(config, schema)
-
     with open(config, 'r', encoding='utf-8') as f:
         config_json = yaml.safe_load(f.read().rstrip())
 
     match config_json['version']:
         case 'v1alpha1':
+            if check:
+                validate(config, f'schema.{config_json["version"]}.yaml')
             conf = Config_v1_alpha_1(config_json)
             log.debug(f'Successfully parsed config {conf.version}: {conf}')
             return conf

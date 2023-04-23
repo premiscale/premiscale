@@ -1,4 +1,4 @@
-version: v1-alpha1
+version: v1alpha1
 agent:
   daemon:
     # How often metrics collection is performed from every host.
