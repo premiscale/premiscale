@@ -58,3 +58,7 @@ influxdb:
   enabled: false
 mysql:
   enabled: false
+
+# Deploy the kubernetes autoscaler for PremiScale to connect to.
+kubernetesAutoscaler:
+  enabled: false
