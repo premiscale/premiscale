@@ -29,7 +29,7 @@ def parse(config: str, check: bool = False, schema: str = 'schema.yaml') -> dict
         dict: The parsed config file.
     """
     if check:
-        validate(config, )
+        validate(config, schema)
 
     with open(config, 'r', encoding='utf-8') as f:
         config_json = yaml.safe_load(f.read().rstrip())
