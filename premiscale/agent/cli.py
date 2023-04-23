@@ -103,7 +103,7 @@ def main() -> None:
     if args.daemon:
         initialize(args.config)
         config = parse(args.config, check=args.validate)
-        log.info('Entering daemon')
+        log.info('Starting daemon')
 
         wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config)
     else:
