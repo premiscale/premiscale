@@ -11,11 +11,13 @@ import logging
 import sys
 import importlib.resources as resources
 
+from premiscale.config._config import Config
+
 
 log = logging.getLogger(__name__)
 
 
-def configparse(config: str, check: bool = False) -> dict:
+def configparse(config: str, check: bool = False) -> Config:
     """
     Parse a config file and return it as a dictionary (JSON).
 

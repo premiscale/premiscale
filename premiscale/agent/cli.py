@@ -19,7 +19,6 @@ __version__ = meta.version('premiscale')
 
 
 log = logging.getLogger(__name__)
-log.info(__doc__)
 
 
 def main() -> None:
@@ -78,14 +77,14 @@ def main() -> None:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(asctime)s | %(levelname)s | %(message)s',
-            level=(logging.DEBUG if args.debug else logging.INFO)
+            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') else logging.INFO)
         )
     else:
         logging.basicConfig(
-        stream=sys.stdout,
-        format='%(message)s',
-        level=(logging.DEBUG if args.debug else logging.INFO)
-    )
+            stream=sys.stdout,
+            format='%(message)s',
+            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') else logging.INFO)
+        )
 
     if args.debug:
         log.info('Agent started in debug mode.')
@@ -98,6 +97,7 @@ def main() -> None:
         sys.exit(0 if validate(args.config)[1] else 1)
 
     if args.daemon:
+        log.info(__doc__)
         if not args.token and not os.getenv('PREMISCALE_TOKEN'):
             log.warn('Platform registration token not present, starting agent in standalone mode.')
         initialize(args.config)
