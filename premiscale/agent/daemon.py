@@ -15,6 +15,7 @@ import concurrent
 from threading import Thread
 from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
+from premiscale.config._config import Config
 
 
 log = logging.getLogger(__name__)
@@ -137,14 +138,14 @@ class Platform(Process):
                     continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: dict, token: str = '') -> None:
+def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '') -> None:
     """
     Wrap our three daemon processes and pass along relevant data.
 
     Args:
         working_dir (str): working directory for this daemon.
         pid_file (str): PID file to use for the main daemon process.
-        agent_config (dict): Agent config object.
+        agent_config (Config): Agent config object.
         token (str): Agent registration token.
     """
 
