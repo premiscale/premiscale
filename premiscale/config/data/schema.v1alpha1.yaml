@@ -1,10 +1,10 @@
 version: enum('v1-alpha1')
 agent:
   daemon: include('daemon')
-scaling:
+autoscale:
   databases: include('databases')
-  hostGroups: include('hostGroups')
-  autoscalingGroups: include('autoscalingGroups')
+  hosts: include('hosts')
+  groups: include('groups')
 ---
 daemon:
   check_interval: int(min=0)
@@ -29,26 +29,20 @@ metrics:
 ---
 connection:
   url: str(min=1)
+  database: str(min=1)
   credentials:
-    env:
-      username: str(min=1)
-      password: str(min=1)
+    username: str(min=1)
+    password: str(min=1)
 ---
-hostGroups: map(include('hostGroup'), min=1)
+hosts: map(include('host'), min=1)
 ---
-hostGroup: list(include('hostGroupMember'), min=1)
+host: list(include('hostMember'), min=1)
 ---
-hostGroupMember:
+hostMember:
   name: str(min=1)
   address: str(min=1)
   port: int(min=1, max=65535)
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
----
-autoscalingGroups:
-  type: enum('prefix', 'postfix', 'none')
-  # Create new VMs prefix- or postfixed with numbers or hashes.
-  enumerate: enum('numerical', 'hash')
-  groups: include('groups')
 ---
 groups: map(include('group'), min=1)
 ---
@@ -59,7 +53,7 @@ group:
   cloud-init:
     inline: str(min=1)
     file: str(min=1)
-  hostGroups: any(include('hostGroups'), list(min=1))
+  hosts: any(include('hosts'), list(min=1))
   replacement:
     strategy: enum('rollingUpdate')
     maxUnavailable: int(min=1)

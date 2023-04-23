@@ -11,13 +11,14 @@ agent:
     # How often the autoscaler should wait after taking an action in each ASG.
     asg:
       action_cooldown: 60
-scaling:
+autoscale:
   databases:
     # State is where the ASGs current state is stored so it can be queried without making additional calls to libvirt.
     state:
       type: mysql
       connection:
         url: 'localhost:3306'
+        database: premiscale
         credentials:
           env:
             username: $MYSQL_USERNAME
@@ -29,6 +30,7 @@ scaling:
       type: influxdb
       connection:
         url: 'localhost:8086'
+        database: premiscale
         credentials:
           env:
             username: $INFLUXDB_USERNAME
@@ -43,7 +45,7 @@ scaling:
       # Seconds of collected metrics to cache and evaluate upon (must be >=interval)
       trailing: 1260
 
-  hostGroups:
+  hosts:
     group-1:
       # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
       # managed as a separate group? But they should all be within reach of an ~/.ssh/config.
@@ -64,59 +66,56 @@ scaling:
         protocol: ssh
         port: 22
 
-  autoscalingGroups:
-    type: prefix
-    enumerate: numerical
-    groups:
-      # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
-      asg-1:
-        # This image and an associated libvirt template should exist on one of the hosts.
-        image: root.qcow
-        name: template-ubuntu20.04-server
+  groups:
+    # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
+    asg-1:
+      # This image and an associated libvirt template should exist on one of the hosts.
+      image: root.qcow
+      name: template-ubuntu20.04-server
 
-        # Options could be 'migrate' - migrate a copy of the domain to every host, or 'centralized' - hosts are using a centralized block store.
-        imageMigration: migrate
+      # Options could be 'migrate' - migrate a copy of the domain to every host, or 'centralized' - hosts are using a centralized block store.
+      imageMigration: migrate
 
-        cloud-init:
-          inline: |
-            # Should contain an inline cloud-init script by which to customize VMs in this group, or you can specify a "file: "-keyword to read it from some location on-disk. All environment variables should be evaluated and replaced before bundling with the domains' disks?
-          file: <path-to-file-instead>
+      cloud-init:
+        inline: |
+          # Should contain an inline cloud-init script by which to customize VMs in this group, or you can specify a "file: "-keyword to read it from some location on-disk. All environment variables should be evaluated and replaced before bundling with the domains' disks?
+        file: <path-to-file-instead>
 
-        # Group of hosts on which to provision VMs.
-        hostGroups:
-          - group-1
+      # Group of hosts on which to provision VMs.
+      hosts:
+        - group-1
 
-        replacement:
-          strategy: rollingUpdate
-          # replace one VM at a time if there's an image update in a group in this file, etc.
-          maxUnavailable: 1
+      replacement:
+        strategy: rollingUpdate
+        # replace one VM at a time if there's an image update in a group in this file, etc.
+        maxUnavailable: 1
 
-        networking:
-          # A static IP range or list of IPs should be given to a group.
-          type: dynamic
-          addresses:
-            - 192.168.5.2-192.168.5.254
-          subnet: 255.255.255.0
-          gateway: 192.168.1.1
+      networking:
+        # A static IP range or list of IPs should be given to a group.
+        type: dynamic
+        addresses:
+          - 192.168.5.2-192.168.5.254
+        subnet: 255.255.255.0
+        gateway: 192.168.1.1
 
-        scaling:
-          # maxNodes should not be larger than the number of IP addresses determined to be available in the range.
-          maxNodes: 10
-          minNodes: 3
-          # Increment up or down by this many nodes any time a change is required to state.
-          increment: 1
-          # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics evaluation.
-          cooldown: 60
+      scaling:
+        # maxNodes should not be larger than the number of IP addresses determined to be available in the range.
+        maxNodes: 10
+        minNodes: 3
+        # Increment up or down by this many nodes any time a change is required to state.
+        increment: 1
+        # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics evaluation.
+        cooldown: 60
 
-          # linear-random: don't reuse server racks immediately once drained, but once a VM is scheduled on a host, prioritize scheduling to that host.
-          # linear: reuse server racks immediately once drained,
-          # vacancy: prioritize hosts with the most vacancy.
-          #
-          method: linear
+        # linear-random: don't reuse server racks immediately once drained, but once a VM is scheduled on a host, prioritize scheduling to that host.
+        # linear: reuse server racks immediately once drained,
+        # vacancy: prioritize hosts with the most vacancy.
+        #
+        method: linear
 
-        metrics:
-          # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
-          io: 80
-          cpu: 80
-          memory: 80
-      # asg-2: {}
+      metrics:
+        # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
+        io: 80
+        cpu: 80
+        memory: 80
+    # asg-2: {}
