@@ -92,8 +92,8 @@ class Config_v1alpha1(Config):
                 return {
                     'url': mysql_connect['url'],
                     'database': mysql_connect['database'],
-                    'username': os.getenv(mysql_connect['credentials']['username']),
-                    'password': os.getenv(mysql_connect['credentials']['password']),
+                    'username': os.path.expandvars(mysql_connect['credentials']['username']),
+                    'password': os.path.expandvars(mysql_connect['credentials']['password']),
                     'reconcile_interval': state['reconcileInterval']
                 }
             case _:
@@ -129,8 +129,8 @@ class Config_v1alpha1(Config):
                 return {
                     'url': influxdb_connect['url'],
                     'database': influxdb_connect['database'],
-                    'username': os.getenv(influxdb_connect['credentials']['username']),
-                    'password': os.getenv(influxdb_connect['credentials']['password'])
+                    'username': os.path.expandvars(influxdb_connect['credentials']['username']),
+                    'password': os.path.expandvars(influxdb_connect['credentials']['password'])
                 }
             case _:
                 log.error(f'Metrics database type \'{metrics["type"]}\' unsupported')
