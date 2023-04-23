@@ -1,17 +1,7 @@
 version: v1alpha1
+
+# Configure the agent, such as databases and how often to take certain actions.
 agent:
-  daemon:
-    # How often metrics collection is performed from every host.
-    metrics:
-      collection_interval: 60
-      max_threads: 10
-    # How often reconciliation of collected metrics is performed.
-    reconciliation:
-      evaluation_interval: 60
-    # How often the autoscaler should wait after taking an action in each ASG.
-    asg:
-      action_cooldown: 60
-autoscale:
   databases:
     # State is where the ASGs current state is stored so it can be queried without making additional calls to libvirt.
     state:
@@ -24,9 +14,8 @@ autoscale:
             username: $MYSQL_USERNAME
             password: $MYSQL_PASSWORD
 
-    # Metrics is the database where hosts' VM metrics are stored. The database does not need to be very large.
+    # How often metrics collection is performed from every host.
     metrics:
-      # Define where to store metrics: either in-memory or influxdb, since that's a time-series db I'm familiar with for now.
       type: influxdb
       connection:
         url: 'localhost:8086'
@@ -36,15 +25,20 @@ autoscale:
             username: $INFLUXDB_USERNAME
             password: $INFLUXDB_PASSWORD
 
-      # Seconds between collecting metrics from all hosts on their VMs.
-      interval: 30
+      # How often the agent retrieves metrics from all of the connected hosts.
+      collection_interval: 60
 
-      # How often to evaluate all 'trailing' metrics.
-      evaluate: 60
+      # How often the agent retrieves collected metrics for evaluation (leads to Actions the autoscaler
+      # needs to take on infrastructure being added to a queue)
+      reconcile_interval: 60
 
-      # Seconds of collected metrics to cache and evaluate upon (must be >=interval)
+      max_threads: 10
+
+      # Seconds of collected metrics to keep and evaluate upon (must be >=interval)
       trailing: 1260
 
+# Configure hosts and autoscaling groups on those hosts.
+autoscale:
   hosts:
     group-1:
       # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
@@ -65,6 +59,7 @@ autoscale:
         address: domain-3
         protocol: ssh
         port: 22
+    # group-2
 
   groups:
     # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
@@ -104,14 +99,14 @@ autoscale:
         minNodes: 3
         # Increment up or down by this many nodes any time a change is required to state.
         increment: 1
-        # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics evaluation.
+        # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics reconciliation once an action has been taken.
         cooldown: 60
 
+        # random: schedule VMs anywhere on any host.
         # linear-random: don't reuse server racks immediately once drained, but once a VM is scheduled on a host, prioritize scheduling to that host.
-        # linear: reuse server racks immediately once drained,
+        # linear: reuse server racks immediately once drained.
         # vacancy: prioritize hosts with the most vacancy.
-        #
-        method: linear
+        method: vacancy
 
       metrics:
         # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.

@@ -19,7 +19,7 @@ class Config_v1_alpha_1(Config):
     Class that encapsulates access methods and parsing config version v1alpha1.
     """
 
-    ## Top-level.
+    # Top-level.
 
     def agent(self) -> Dict:
         """
@@ -57,7 +57,7 @@ class Config_v1_alpha_1(Config):
         Returns:
             Dict: The autoscale.databases config map.
         """
-        return self.autoscale()['databases']
+        return self.agent()['databases']
 
     def hosts(self) -> Dict:
         """
@@ -77,7 +77,7 @@ class Config_v1_alpha_1(Config):
         """
         return self.autoscale()['groups']
 
-    ## Databases.
+    ### Databases.
 
     def mysql_database_connection(self) -> Dict:
         """
@@ -116,3 +116,11 @@ class Config_v1_alpha_1(Config):
         else:
             log.error(f'Metrics database type \'{self.databases()["metrics"]["type"]}\' unsupported')
             sys.exit(1)
+
+    # def metrics_database_configuration(self) -> Dict:
+    #     """
+    #     Get the metrics
+
+    #     Returns:
+    #         Dict: _description_
+    #     """
