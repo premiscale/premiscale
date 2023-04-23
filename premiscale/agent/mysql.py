@@ -15,8 +15,9 @@ class MySQL:
     """
     Provide a clean interface to the MySQL database.
     """
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, database: str, username: str, password: str) -> None:
         self.url = url
+        self.database = database
 
     def __enter__(self) -> 'MySQL':
         return self
