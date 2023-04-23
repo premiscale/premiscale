@@ -89,12 +89,14 @@ def main() -> None:
 
     if args.debug:
         log.info('Agent started in debug mode.')
+
     if not args.token and not os.getenv('PREMISCALE_TOKEN'):
-        log.info('Platform registration token neither set as argument nor environment variable \'PREMISCALE_TOKEN\', starting agent in standalone mode.')
+        log.info('Platform registration token not present, starting agent in standalone mode.')
 
     if args.version:
         log.info(f'premiscale v{__version__}')
         sys.exit(0)
+
     if args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
 
@@ -106,4 +108,4 @@ def main() -> None:
         wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config)
     else:
         initialize(args.config)
-        log.info('PremiScale successfully initialized. Use \'--daemon\' to enter the main control loop.')
+        log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')

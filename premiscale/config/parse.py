@@ -32,7 +32,12 @@ def parse(config: str, check: bool = False) -> dict:
     match config_json['version']:
         case 'v1alpha1':
             if check:
-                validate(config, f'schema.{config_json["version"]}.yaml')
+                msg, valid = validate(config, f'schema.{config_json["version"]}.yaml')
+                if not valid:
+                    log.error(msg)
+                    sys.exit(1)
+                else:
+                    log.info(f'Config \'{config}\' is valid against schema version {config_json["version"]}')
 
             from premiscale.config.v1alpha1 import Config_v1_alpha_1
 
