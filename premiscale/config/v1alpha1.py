@@ -97,7 +97,7 @@ class Config_v1alpha1(Config):
                     'reconcile_interval': state['reconcileInterval']
                 }
             case _:
-                log.error(f'State database type \'{self.agent_databases()["state"]["type"]}\' unsupported')
+                log.error(f'State database type \'{state["type"]}\' unsupported')
                 sys.exit(1)
 
     def agent_databases_state_configuration(self) -> Dict:
@@ -113,7 +113,7 @@ class Config_v1alpha1(Config):
                     'reconcile_interval': state['reconcileInterval']
                 }
             case _:
-                log.error(f'State database type \'{self.agent_databases()["state"]["type"]}\' unsupported')
+                log.error(f'State database type \'{state["type"]}\' unsupported')
                 sys.exit(1)
 
     def agent_databases_metrics_connection(self) -> Dict:
@@ -133,7 +133,7 @@ class Config_v1alpha1(Config):
                     'password': os.getenv(influxdb_connect['credentials']['password'])
                 }
             case _:
-                log.error(f'Metrics database type \'{self.agent_databases()["metrics"]["type"]}\' unsupported')
+                log.error(f'Metrics database type \'{metrics["type"]}\' unsupported')
                 sys.exit(1)
 
     def agent_databases_metrics_configuration(self) -> Dict:
@@ -152,5 +152,5 @@ class Config_v1alpha1(Config):
                     'trailing': metrics['trailing']
                 }
             case _:
-                log.error(f'Metrics database type \'{self.agent_databases()["metrics"]["type"]}\' unsupported')
+                log.error(f'Metrics database type \'{metrics["type"]}\' unsupported')
                 sys.exit(1)
