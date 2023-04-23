@@ -1,5 +1,5 @@
 ARG IMAGE=influxdb
-ARG TAG=2.6.1
+ARG TAG=2.7.0
 
 FROM ${IMAGE}:${TAG}
 
