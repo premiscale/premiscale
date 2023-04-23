@@ -43,11 +43,11 @@ def main() -> None:
 
     parser.add_argument(
         '--token', type=str, default='',
-        help='Token for registering agent on first start.'
+        help='Token for registering the agent with the PremiScale platform on first start.'
     )
 
     parser.add_argument(
-        '--validate', type=str, default=False,
+        '--validate', action='store_true', default=False,
         help='Validate the provided configuration file.'
     )
 
