@@ -41,7 +41,7 @@ class Config_v1alpha1(Config):
 
     ## Secondary-level.
 
-    def daemon(self) -> Dict:
+    def agent_daemon(self) -> Dict:
         """
         Get the daemon configuration options as a flat map.
 
@@ -50,7 +50,7 @@ class Config_v1alpha1(Config):
         """
         return self.agent()['daemon']
 
-    def databases(self) -> Dict:
+    def agent_databases(self) -> Dict:
         """
         Get the autoscaling databases configuration map.
 
@@ -59,7 +59,7 @@ class Config_v1alpha1(Config):
         """
         return self.agent()['databases']
 
-    def hosts(self) -> Dict:
+    def autoscale_hosts(self) -> Dict:
         """
         Get the host groups list from the autoscaling map.
 
@@ -68,7 +68,7 @@ class Config_v1alpha1(Config):
         """
         return self.autoscale()['hosts']
 
-    def groups(self) -> Dict:
+    def autoscale_groups(self) -> Dict:
         """
         Get the autoscaling groups list from the autoscaling map.
 
@@ -79,14 +79,14 @@ class Config_v1alpha1(Config):
 
     ### Databases.
 
-    def state_database_connection(self) -> Dict:
+    def agent_databases_state_connection(self) -> Dict:
         """
         Get the state database credentials (MySQL).
 
         Returns:
             Dict: MySQL configuration and credentials.
         """
-        match (state := self.databases()['state'])['type']:
+        match (state := self.agent_databases()['state'])['type']:
             case 'mysql':
                 mysql_connect = state['connection']
                 return {
@@ -97,37 +97,60 @@ class Config_v1alpha1(Config):
                     'reconcile_interval': state['reconcileInterval']
                 }
             case _:
-                log.error(f'State database type \'{self.databases()["state"]["type"]}\' unsupported')
+                log.error(f'State database type \'{self.agent_databases()["state"]["type"]}\' unsupported')
                 sys.exit(1)
 
-    def metrics_database_connection(self) -> Dict:
+    def agent_databases_state_configuration(self) -> Dict:
+        """
+        Get the state database credentials (MySQL).
+
+        Returns:
+            Dict: MySQL configuration and credentials.
+        """
+        match (state := self.agent_databases()['state'])['type']:
+            case 'mysql':
+                return {
+                    'reconcile_interval': state['reconcileInterval']
+                }
+            case _:
+                log.error(f'State database type \'{self.agent_databases()["state"]["type"]}\' unsupported')
+                sys.exit(1)
+
+    def agent_databases_metrics_connection(self) -> Dict:
         """
         Get the metrics database credentials (InfluxDB).
 
         Returns:
-            Dict: InfluxDB configuration and credentials.
+            Dict: Metrics database credentials.
         """
-        match (metrics := self.databases()['metrics'])['type']:
+        match (metrics := self.agent_databases()['metrics'])['type']:
             case 'influxdb':
                 influxdb_connect = metrics['connection']
                 return {
                     'url': influxdb_connect['url'],
                     'database': influxdb_connect['database'],
                     'username': os.getenv(influxdb_connect['credentials']['username']),
-                    'password': os.getenv(influxdb_connect['credentials']['password']),
+                    'password': os.getenv(influxdb_connect['credentials']['password'])
+                }
+            case _:
+                log.error(f'Metrics database type \'{self.agent_databases()["metrics"]["type"]}\' unsupported')
+                sys.exit(1)
+
+    def agent_databases_metrics_configuration(self) -> Dict:
+        """
+        Get the metrics database configuration (whereas the last method retrieved the credentials/auth data).
+
+        Returns:
+            Dict: configuration instead of credentials.
+        """
+        match (metrics := self.agent_databases()['metrics'])['type']:
+            case 'influxdb':
+                return {
                     'collection_interval': metrics['collectionInterval'],
                     'max_threads': metrics['maxThreads'],
                     'host_connection_timeout': metrics['hostConnectionTimeout'],
                     'trailing': metrics['trailing']
                 }
             case _:
-                log.error(f'Metrics database type \'{self.databases()["metrics"]["type"]}\' unsupported')
+                log.error(f'Metrics database type \'{self.agent_databases()["metrics"]["type"]}\' unsupported')
                 sys.exit(1)
-
-    # def metrics_database_configuration(self) -> Dict:
-    #     """
-    #     Get the metrics
-
-    #     Returns:
-    #         Dict: _description_
-    #     """

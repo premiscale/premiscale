@@ -41,6 +41,7 @@ agent:
 
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:
+  # Groups of hosts to assign to ASGs.
   hosts:
     group-1:
       # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
@@ -67,6 +68,7 @@ autoscale:
         port: 22
     # group-2
 
+  # Autoscaling groups.
   groups:
     # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
     asg-1:
@@ -86,7 +88,7 @@ autoscale:
           # evaluated and replaced before copying to hosts.
         file: <path-to-file-instead>
 
-      # Group of hosts on which to provision VMs.
+      # Groups of hosts on which to provision VMs.
       hosts:
         - group-1
 
