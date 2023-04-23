@@ -11,8 +11,6 @@ import logging
 import sys
 import importlib.resources as resources
 
-from premiscale.config.v1alpha1 import Config_v1_alpha_1
-
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +33,9 @@ def parse(config: str, check: bool = False) -> dict:
         case 'v1alpha1':
             if check:
                 validate(config, f'schema.{config_json["version"]}.yaml')
+
+            from premiscale.config.v1alpha1 import Config_v1_alpha_1
+
             conf = Config_v1_alpha_1(config_json)
             log.debug(f'Successfully parsed config {conf.version}: {conf}')
             return conf
@@ -124,17 +125,3 @@ def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'de
     except PermissionError:
         log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}, must run as root.')
         sys.exit(1)
-
-
-class Config(dict):
-    """
-    Parse a config dictionary into an object with methods to interact with the config.
-    """
-    def __init__(self, config: dict):
-        self.config = config
-
-    def version(self) -> str:
-        """
-        Get the version of the config.
-        """
-        return self.config.config.version  # type: ignore
