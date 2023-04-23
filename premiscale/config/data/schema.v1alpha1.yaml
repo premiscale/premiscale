@@ -7,7 +7,7 @@ autoscale:
   groups: include('groups')
 ---
 daemon:
-  queue_max: int(min=0)
+  actions_queue_max: int(min=0)
 ---
 databases:
   state: include('state')

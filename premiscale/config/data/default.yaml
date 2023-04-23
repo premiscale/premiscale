@@ -37,7 +37,7 @@ agent:
       # Seconds of collected metrics to keep and evaluate upon (must be >=interval)
       trailing: 1260
   daemon:
-    queue_max: 0
+    actions_queue_max: 0
 
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:

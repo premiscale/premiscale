@@ -79,24 +79,25 @@ class Config_v1_alpha_1(Config):
 
     ### Databases.
 
-    def mysql_database_connection(self) -> Dict:
+    def state_database_connection(self) -> Dict:
         """
         Get the state database credentials (MySQL).
 
         Returns:
             Dict: MySQL configuration and credentials.
         """
-        if self.databases()['state']['type'] == 'mysql':
-            mysql_connect = self.databases()['state']['connection']
-            return {
-                'url': mysql_connect['url'],
-                'database': mysql_connect['database'],
-                'username': os.getenv(mysql_connect['credentials']['username']),
-                'password': os.getenv(mysql_connect['credentials']['password'])
-            }
-        else:
-            log.error(f'State database type \'{self.databases()["state"]["type"]}\' unsupported')
-            sys.exit(1)
+        match (state := self.databases()['state'])['type']:
+            case 'mysql':
+                mysql_connect = state['connection']
+                return {
+                    'url': mysql_connect['url'],
+                    'database': mysql_connect['database'],
+                    'username': os.getenv(mysql_connect['credentials']['username']),
+                    'password': os.getenv(mysql_connect['credentials']['password'])
+                }
+            case _:
+                log.error(f'State database type \'{self.databases()["state"]["type"]}\' unsupported')
+                sys.exit(1)
 
     def metrics_database_connection(self) -> Dict:
         """
@@ -105,17 +106,18 @@ class Config_v1_alpha_1(Config):
         Returns:
             Dict: InfluxDB configuration and credentials.
         """
-        if self.databases()['metrics']['type'] == 'influxdb':
-            influxdb_connect = self.databases()['metrics']['connection']
-            return {
-                'url': influxdb_connect['url'],
-                'database': influxdb_connect['database'],
-                'username': os.getenv(influxdb_connect['credentials']['username']),
-                'password': os.getenv(influxdb_connect['credentials']['password'])
-            }
-        else:
-            log.error(f'Metrics database type \'{self.databases()["metrics"]["type"]}\' unsupported')
-            sys.exit(1)
+        match (metrics := self.databases()['metrics'])['type']:
+            case 'influxdb':
+                influxdb_connect = metrics['connection']
+                return {
+                    'url': influxdb_connect['url'],
+                    'database': influxdb_connect['database'],
+                    'username': os.getenv(influxdb_connect['credentials']['username']),
+                    'password': os.getenv(influxdb_connect['credentials']['password'])
+                }
+            case _:
+                log.error(f'Metrics database type \'{self.databases()["metrics"]["type"]}\' unsupported')
+                sys.exit(1)
 
     # def metrics_database_configuration(self) -> Dict:
     #     """
