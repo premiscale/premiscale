@@ -96,8 +96,8 @@ class Platform:
         self.url = url
         self.websocket = None
         self.queue: Queue
+        self._auth: Dict = dict()
         self._register(token)
-        self.auth: Dict = {}
 
     def _register(self, token: str) -> None:
         """

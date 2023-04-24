@@ -8,6 +8,7 @@ PremiScale autoscaler agent.
 import sys
 import logging
 import os
+import asyncio
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
@@ -87,9 +88,7 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # Configure logger.
-    if args.debug or os.getenv('PREMISCALE_DEBUG') is True:
-        log.info('Agent starting in debug mode.')
+    # Configure logger
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
@@ -102,6 +101,9 @@ def main() -> None:
             format='%(message)s',
             level=(logging.DEBUG if args.debug or debug() else logging.INFO)
         )
+    if args.debug or debug():
+        log.info('Agent started in debug mode.')
+        logging.getLogger('asyncio').setLevel(logging.WARNING)
 
     if args.version:
         log.info(f'premiscale v{__version__}')
