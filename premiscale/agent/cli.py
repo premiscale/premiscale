@@ -13,7 +13,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
 
 from premiscale.config.parse import initialize, validate, configparse
-from premiscale.agent.daemon import wrapper
+from premiscale.agent.daemon import start
 
 
 __version__ = meta.version('premiscale')
@@ -114,7 +114,7 @@ def main() -> None:
             log.warning('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
-        wrapper('/opt/premiscale', args.pid_file, config, token, args.host)
+        start('/opt/premiscale', args.pid_file, config, token, args.host)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')
