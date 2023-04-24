@@ -51,7 +51,7 @@ class Action:
         """
         return self.action
 
-    def __enter__(self) -> Action:
+    def __enter__(self) -> 'Action':
         return self
 
     def __exit__(self, *args: Any) -> None:
