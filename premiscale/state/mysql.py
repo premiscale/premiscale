@@ -3,7 +3,8 @@ Methods for interacting with the MySQL database.
 """
 
 import logging
-import mysql.connect as mysql
+
+
 from premiscale.state._base import State
 
 
@@ -26,12 +27,12 @@ class MySQL(State):
         """
         Open a connection to the MySQL database.
         """
-        self.connection = mysql.connect(
-            self._username,
-            self._password,
-            self.url,
-            self.database
-        )
+        # self.connection = mysql.connect(
+        #     self._username,
+        #     self._password,
+        #     self.url,
+        #     self.database
+        # )
         self._username = ''
         self._password = ''
         return self
@@ -40,7 +41,7 @@ class MySQL(State):
         """
         Close the connection with the database.
         """
-        self.connection.close()
+        # self._connection.close()
 
     ## Hosts
 
