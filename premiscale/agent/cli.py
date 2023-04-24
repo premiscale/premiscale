@@ -19,6 +19,7 @@ __version__ = meta.version('premiscale')
 
 
 log = logging.getLogger(__name__)
+log.info(__doc__)
 
 
 def main() -> None:
@@ -96,7 +97,6 @@ def main() -> None:
         sys.exit(0 if validate(args.config)[1] else 1)
 
     if args.daemon:
-        log.info(__doc__)
         if not args.token and not os.getenv('PREMISCALE_TOKEN'):
             log.warn('Platform registration token not present, starting agent in standalone mode.')
         initialize(args.config)
