@@ -30,7 +30,7 @@ agent:
       # How often the agent retrieves metrics from all of the connected hosts.
       collectionInterval: 60
 
-      # Establishes connection in max_threads-batches. This value indicates how many threads to spawn in a batch.
+      # Establish connections to hosts in max_threads-batches.
       maxThreads: 10
       hostConnectionTimeout: 60
 

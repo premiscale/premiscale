@@ -48,6 +48,8 @@ class Reconcile:
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
 
+        # Open database connections
+
 
 class Metrics:
     """
@@ -177,11 +179,11 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
             prevent_core=True,
             pidfile=pidfile.TimeoutPIDLockFile(pid_file),
             working_directory=working_dir,
-            signal_map={
-                signal.SIGTERM: executor.shutdown,
-                signal.SIGHUP: executor.shutdown,
-                signal.SIGINT: executor.shutdown,
-            }
+            # signal_map={
+            #     signal.SIGTERM: executor.shutdown,
+            #     signal.SIGHUP: executor.shutdown,
+            #     signal.SIGINT: executor.shutdown,
+            # }
         ):
 
         processes = [
