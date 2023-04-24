@@ -42,6 +42,7 @@ hostMember:
   address: str(min=1)
   port: int(min=1, max=65535)
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
+  hypervisor: enum('kvm')
 ---
 groups: map(include('group'), min=1)
 ---

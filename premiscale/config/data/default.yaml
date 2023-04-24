@@ -53,6 +53,7 @@ autoscale:
         address: domain-1
         protocol: ssh
         port: 22
+        hypervisor: kvm
         # # Override collected resource metrics, or allow the setting of resources, instead of relying on the agent to determine what the values are.
         # resources:
         #   # MiB/s
@@ -65,10 +66,12 @@ autoscale:
         address: domain-2
         protocol: tls
         port: 6910
+        hypervisor: kvm
       - name: domain-3
         address: domain-3
         protocol: ssh
         port: 22
+        hypervisor: kvm
     # group-2
 
   # Autoscaling groups.
