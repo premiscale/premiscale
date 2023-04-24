@@ -22,6 +22,15 @@ __version__ = meta.version('premiscale')
 log = logging.getLogger(__name__)
 
 
+def debug() -> bool:
+    """
+    Determine if the agent should be in debug based on an environment variable.
+
+    https://stackoverflow.com/a/65407083
+    """
+    return os.getenv('PREMISCALE_DEBUG', 'False').lower() in ('true', '1', 't')
+
+
 def main() -> None:
     """
     Set up the CLI for PremiScale autoscaler.
@@ -85,13 +94,13 @@ def main() -> None:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(asctime)s | %(levelname)s | %(message)s',
-            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is True else logging.INFO)
+            level=(logging.DEBUG if args.debug or debug() else logging.INFO)
         )
     else:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(message)s',
-            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is True else logging.INFO)
+            level=(logging.DEBUG if args.debug or debug() else logging.INFO)
         )
 
     if args.version:
