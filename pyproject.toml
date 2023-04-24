@@ -27,6 +27,7 @@ websockets = "^11.0"
 influxdb = "^5.3.1"
 python-daemon = "3.0.1"
 libvirt-python = "^9.0.0"
+mysqlclient = "2.1.1"
 
 [tool.poetry.group.dev.dependencies]
 twine = "^4.0.2"

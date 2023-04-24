@@ -221,6 +221,14 @@ msgpack==1.0.5 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:ef8108f8dedf204bb7b42994abf93882da1159728a2d4c5e82012edd92c9da9f \
     --hash=sha256:f933bbda5a3ee63b8834179096923b094b76f0c7a73c1cfe8f07ad608c58844b \
     --hash=sha256:fe5c63197c55bce6385d9aee16c4d0641684628f63ace85f73571e65ad1c1e8d
+mysqlclient==2.1.1 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:0d1cd3a5a4d28c222fa199002810e8146cffd821410b67851af4cc80aeccd97c \
+    --hash=sha256:828757e419fb11dd6c5ed2576ec92c3efaa93a0f7c39e263586d1ee779c3d782 \
+    --hash=sha256:996924f3483fd36a34a5812210c69e71dea5a3d5978d01199b78b7f6d485c855 \
+    --hash=sha256:b355c8b5a7d58f2e909acdbb050858390ee1b0e13672ae759e5e784110022994 \
+    --hash=sha256:c1ed71bd6244993b526113cca3df66428609f90e4652f37eb51c33496d478b37 \
+    --hash=sha256:c812b67e90082a840efb82a8978369e6e69fc62ce1bda4ca8f3084a9d862308b \
+    --hash=sha256:dea88c8d3f5a5d9293dfe7f087c16dd350ceb175f2f6631c9cf4caf3e19b7a96
 python-daemon==3.0.1 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:42bb848a3260a027fa71ad47ecd959e471327cb34da5965962edd5926229f341 \
     --hash=sha256:6c57452372f7eaff40934a1c03ad1826bf5e793558e87fef49131e6464b4dae5
