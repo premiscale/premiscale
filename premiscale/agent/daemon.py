@@ -169,11 +169,11 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
             stdin=sys.stdin,
             stdout=sys.stdout,
             stderr=sys.stderr,
-            files_preserve=(
+            files_preserve=[
                 sys.stdin,
                 sys.stdout,
                 sys.stderr
-            ),
+            ],
             detach_process=False,
             prevent_core=True,
             pidfile=pidfile.TimeoutPIDLockFile(pid_file),
