@@ -165,15 +165,18 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
         token (str): Agent registration token.
         host (str): PremiScale platform host.
     """
+    mp.set_start_method('spawn')
+
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor, mp.Manager() as manager, DaemonContext(
             stdin=sys.stdin,
             stdout=sys.stdout,
             stderr=sys.stderr,
-            files_preserve=[
-                sys.stdin,
-                sys.stdout,
-                sys.stderr
-            ],
+            # These are already preserved, looking over the source code.
+            # files_preserve=[
+            #     sys.stdin,
+            #     sys.stdout,
+            #     sys.stderr
+            # ],
             detach_process=False,
             prevent_core=True,
             pidfile=pidfile.TimeoutPIDLockFile(pid_file),
