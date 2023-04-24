@@ -196,11 +196,12 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         platform_message_queue: Queue = cast(Queue, manager.Queue())
 
         processes = [
-            # Platform websocket connection subprocess (maintains connection and data stream -> premiscale platform)
+            # Platform websocket connection subprocess (maintains connection and data stream -> premiscale platform).
+            # If no registration token or platform host is provided, this process is not spawned.
             executor.submit(
                 Platform(host, token),
                 platform_message_queue
-            ),
+            ) if token and host else None,
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
                 ASG(),
@@ -224,4 +225,5 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         ]
 
         for process in processes:
-            process.result()
+            if process is not None:
+                process.result()
