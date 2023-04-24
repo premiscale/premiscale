@@ -74,11 +74,11 @@ workflows:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/docker-nexus:
-          name: docker [premiscale] [master]
+          name: docker [premiscale] [tag]
           image-name: premiscale
           context: nexus
           path: docker/premiscale
-          nexus-domain: $DOCKER_MASTER_DOMAIN
+          nexus-domain: $DOCKER_DOMAIN
           args: >-
             --build-arg=PYTHON_PACKAGE_VERSION=$CIRCLE_TAG
             --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
