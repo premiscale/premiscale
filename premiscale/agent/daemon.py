@@ -16,7 +16,7 @@ from threading import Thread
 from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
 
-from premiscale.config.v1alpha1 import Config_v1alpha1
+from premiscale.config._config import Config
 
 
 log = logging.getLogger(__name__)
@@ -160,7 +160,7 @@ class Platform(Process):
                     continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: Config_v1alpha1, token: str = '') -> None:
+def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '') -> None:
     """
     Wrap our three daemon processes and pass along relevant data.
 
@@ -190,7 +190,7 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config_v1alpha1, toke
                 # signal.SIGINT: executor.shutdown,
             }
         ):
-        # platform_future = executor.submit(Platform, platform_message_queue)
-        # executor.submit(ASG, autoscaling_action_queue)
-        metrics_future: concurrent.futures.Future = executor.submit(Metrics(**agent_config.agent_databases_metrics_connection()))
-        # executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
+        # platform_future: concurrent.futures.Future = executor.submit(Platform, platform_message_queue)
+        # asg_future: concurrent.futures.Future = executor.submit(ASG, autoscaling_action_queue)
+        metrics_future: concurrent.futures.Future = executor.submit(Metrics(agent_config.agent_databases_metrics_connection())) # type: ignore
+        # reconciliation_future: concurrent.futures.Future = executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)

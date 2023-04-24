@@ -1,4 +1,8 @@
-""" © PremiScale, Inc. 2023 """
+"""
+PremiScale autoscaler agent.
+
+© PremiScale, Inc. 2023
+"""
 
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -97,8 +101,7 @@ def main() -> None:
             log.warn('Platform registration token not present, starting agent in standalone mode.')
         initialize(args.config)
         config = configparse(args.config)
-        log.info('Starting daemon')
-
+        log.info(f'Starting premiscale agent v{__version__}')
         wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config, token=args.token)
     else:
         initialize(args.config)
