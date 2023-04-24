@@ -171,20 +171,21 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
     autoscaling_action_queue: Queue = Queue()
     platform_message_queue: Queue = Queue()
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor, DaemonContext(
-            stdin=sys.stdin,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            detach_process=False,
-            prevent_core=True,
-            pidfile=pidfile.TimeoutPIDLockFile(pid_file),
-            working_directory=working_dir,
-            # signal_map={
-            #     signal.SIGTERM: executor.shutdown,
-            #     signal.SIGHUP: executor.shutdown,
-            #     signal.SIGINT: executor.shutdown,
-            # }
-        ):
+    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
+        # , DaemonContext(
+        #     stdin=sys.stdin,
+        #     stdout=sys.stdout,
+        #     stderr=sys.stderr,
+        #     detach_process=False,
+        #     prevent_core=True,
+        #     pidfile=pidfile.TimeoutPIDLockFile(pid_file),
+        #     working_directory=working_dir,
+        #     signal_map={
+        #         signal.SIGTERM: executor.shutdown,
+        #         signal.SIGHUP: executor.shutdown,
+        #         signal.SIGINT: executor.shutdown,
+        #     }
+        # ):
 
         processes = [
             executor.submit(
