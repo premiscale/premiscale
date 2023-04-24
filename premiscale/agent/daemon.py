@@ -11,6 +11,7 @@ import sys
 import websockets as ws
 import concurrent
 import time
+import socket
 
 from multiprocessing.queues import Queue
 from typing import Dict, cast
@@ -154,7 +155,7 @@ class Platform:
                     except ws.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
                         continue
-            except ws.gaierror as msg:
+            except socket.gaierror as msg:
                 log.error(f'Could not connect to \'{self.url}\', retrying: {msg}')
                 time.sleep(1)
                 continue
