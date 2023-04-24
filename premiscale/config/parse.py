@@ -45,7 +45,7 @@ def configparse(config: str, check: bool = False) -> Config:
             from premiscale.config.v1alpha1 import Config_v1alpha1
 
             conf = Config_v1alpha1(config_json)
-            log.debug(f'Successfully parsed config {conf.version}: {conf}')
+            log.debug(f'Successfully parsed config {conf.version()}: {conf.json()}')
             return conf
         case _:
             log.error(f'Cannot parse config version, supplied \'{config_json["version"]}\'')
