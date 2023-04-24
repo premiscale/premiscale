@@ -12,16 +12,17 @@ import sys
 import websockets
 import concurrent
 
-from multiprocessing import Process, Queue
+from multiprocessing import Queue
 from daemon import DaemonContext, pidfile
 
 from premiscale.config._config import Config
+from premiscale.agent.actions import Action, Verb
 
 
 log = logging.getLogger(__name__)
 
 
-class Reconcile(Process):
+class Reconcile:
     """
     Similar to metrics - a reconciliation loop that queries influxdb for the list of VMs
     metrics came from and compares these data to state stored in MySQL. If they don't match,
@@ -49,7 +50,7 @@ class Reconcile(Process):
         self.platform_queue = platform_queue
 
 
-class Metrics(Process):
+class Metrics:
     """
     Handle metrics collection from hosts. Only one of these loops is created; metrics
     are published to influxdb for retrieval and query by the ASG loop, which evaluates
@@ -67,34 +68,7 @@ class Metrics(Process):
         pass
 
 
-# Instances of Action are intended to execute in a thread on the ASG process.
-class Action:
-    """
-    Encapsulate the various actions that the autoscaler can take. These get queued up.
-    """
-    def __init__(self, typ: str) -> None:
-        self.typ = typ
-
-    def audit_trail_msg(self) -> dict:
-        """
-        Return a dictionary (JSON) object containing audit data about the action taken.
-
-        Returns:
-            _type_: _description_
-        """
-        return {}
-
-    def get(self) -> str:
-        """
-        Return the type of action.
-
-        Returns:
-            str: _description_
-        """
-        return ''
-
-
-class ASG(Process):
+class ASG:
     """
     Handle actions. E.g., if a new VM needs to be created or deleted on some host,
     handle that action, and all relevant side-effects (e.g. updating MySQL state).
@@ -110,7 +84,7 @@ class ASG(Process):
         self.queue = asg_queue
 
 
-class Platform(Process):
+class Platform:
     """
     Handle communication to and from the platform. Maintains an async websocket
     connection and calls setters and getters on the other daemon threads' objects to
@@ -121,10 +95,10 @@ class Platform(Process):
         self.url = url
         self.websocket = None
         self.queue: Queue
-        self.register(token)
+        self._register(token)
         self.auth: Dict = {}
 
-    def register(self, token: str) -> None:
+    def _register(self, token: str) -> None:
         """
         Register the agent with the platform.
         """
@@ -184,13 +158,14 @@ class Platform(Process):
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
 def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '', host: str = '') -> None:
     """
-    Wrap our three daemon processes and pass along relevant data.
+    Wrap our four daemon processes and pass along relevant data.
 
     Args:
         working_dir (str): working directory for this daemon.
         pid_file (str): PID file to use for the main daemon process.
         agent_config (Config): Agent config object.
         token (str): Agent registration token.
+        host (str): PremiScale platform host.
     """
 
     # We need one of these process trees for every ASG.

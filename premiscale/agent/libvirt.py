@@ -1,6 +1,14 @@
 """
-Provide high level methods to interact with the Libvirt API, even cross-hosts.
+Provide methods to interact with the Libvirt API.
 """
 
 
-# import libvirt as lv
+import libvirt as lv
+
+
+class Libvirt:
+    """
+    Connect to hosts and provide an interface for interacting with VMs on them.
+    """
+    def __init__(self) -> None:
+        pass
