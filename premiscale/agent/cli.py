@@ -5,11 +5,12 @@ PremiScale autoscaler agent.
 """
 
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from importlib import metadata as meta
 import sys
 import logging
 import os
+
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from importlib import metadata as meta
 
 from premiscale.config.parse import initialize, validate, configparse
 from premiscale.agent.daemon import wrapper
@@ -110,7 +111,7 @@ def main() -> None:
         elif (token := os.getenv('PREMISCALE_TOKEN')) is not None:
             log.debug('Registering agent with provided token environment variable')
         else:
-            log.warn('Platform registration token not present, starting agent in standalone mode')
+            log.warning('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
         wrapper('/opt/premiscale', args.pid_file, config, token, args.host)

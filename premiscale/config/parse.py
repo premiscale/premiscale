@@ -2,14 +2,15 @@
 Parse a configuration file, or create a default one.
 """
 
-from typing import Optional, Any, Union, Tuple
-from pathlib import Path
 
 import yamale
 import yaml
 import logging
 import sys
-import importlib.resources as resources
+
+from typing import Optional, Any, Union, Tuple
+from pathlib import Path
+from importlib import resources
 
 from premiscale.config._config import Config
 

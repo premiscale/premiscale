@@ -3,14 +3,15 @@ Define subprocesses encapsulating each control loop.
 """
 
 
+import multiprocessing as mp
 import logging
 import asyncio
 import signal
 import sys
 import websockets
 import concurrent
-import multiprocessing as mp
 
+from multiprocessing.queues import Queue
 from typing import Dict, cast
 from daemon import DaemonContext, pidfile
 
@@ -40,10 +41,10 @@ class Reconcile:
                 del(metrics_connection['type'])
                 self.metrics_database = InfluxDB(**metrics_connection)
 
-        self.platform_queue: mp.queues.Queue
-        self.asg_queue: mp.queues.Queue
+        self.platform_queue: Queue
+        self.asg_queue: Queue
 
-    def __call__(self, asg_queue: mp.queues.Queue, platform_queue: mp.queues.Queue) -> None:
+    def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
 
@@ -76,9 +77,9 @@ class ASG:
     the config.
     """
     def __init__(self) -> None:
-        self.queue: mp.queues.Queue
+        self.queue: Queue
 
-    def __call__(self, asg_queue: mp.queues.Queue) -> None:
+    def __call__(self, asg_queue: Queue) -> None:
         self.queue = asg_queue
 
 
@@ -91,7 +92,7 @@ class Platform:
     def __init__(self, url: str, token: str) -> None:
         self.url = url
         self.websocket = None
-        self.queue: mp.queues.Queue
+        self.queue: Queue
         self._register(token)
         self.auth: Dict = {}
 
@@ -100,7 +101,7 @@ class Platform:
         Register the agent with the platform.
         """
 
-    def __call__(self, platform_queue: mp.queues.Queue) -> None:
+    def __call__(self, platform_queue: Queue) -> None:
         self.queue = platform_queue
 
         # This should never exit. Process should stay open forever.
@@ -180,8 +181,8 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
         #     }
         # ):
 
-        autoscaling_action_queue: mp.queues.Queue = cast(mp.queues.Queue, manager.Queue())
-        platform_message_queue: mp.queues.Queue = cast(mp.queues.Queue, manager.Queue())
+        autoscaling_action_queue: Queue = cast(Queue, manager.Queue())
+        platform_message_queue: Queue = cast(Queue, manager.Queue())
 
         processes = [
             executor.submit(
