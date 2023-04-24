@@ -3,7 +3,7 @@ Methods for interacting with the MySQL database.
 """
 
 import logging
-
+import sqlalchemy as sqla
 
 from premiscale.state._base import State
 

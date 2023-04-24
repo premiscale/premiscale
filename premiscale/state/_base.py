@@ -12,6 +12,8 @@ class State(ABC):
     An abstract base class with a skeleton interface for state class types.
     """
 
+    ## Boilerplate
+
     def open(self) -> 'State':
         """
         Open a connection to the state backend these methods interact with.
@@ -23,6 +25,12 @@ class State(ABC):
         Close the connection to the state backend.
 
         This method should also dereference any secrets that may be stored in memory.
+        """
+        raise NotImplementedError
+
+    def commit(self) -> None:
+        """
+        Commit any changes.
         """
         raise NotImplementedError
 
