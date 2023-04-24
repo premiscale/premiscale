@@ -3,7 +3,7 @@ Define subprocesses encapsulating each control loop.
 """
 
 
-from typing import Any
+from typing import Dict
 
 import logging
 import asyncio
@@ -12,10 +12,8 @@ import sys
 import websockets
 import concurrent
 
-from threading import Thread
 from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
-from time import sleep
 
 from premiscale.config._config import Config
 
@@ -29,15 +27,26 @@ class Reconcile(Process):
     metrics came from and compares these data to state stored in MySQL. If they don't match,
     actions to correct the state drift are added to the queue.
     """
-    def __init__(self, connection: dict) -> None:
-        match connection['type']:
+    def __init__(self, state_connection: dict, metrics_connection: dict) -> None:
+        super().__init__()
+        match state_connection['type']:
             case 'mysql':
                 from premiscale.state.mysql import MySQL
-                del(connection['type'])
-                self.state_database = MySQL(**connection)
+                del(state_connection['type'])
+                self.state_database = MySQL(**state_connection)
 
-    def __call__(self) -> None:
-        pass
+        match metrics_connection['type']:
+            case 'influxdb':
+                from premiscale.metrics.influxdb import InfluxDB
+                del(metrics_connection['type'])
+                self.metrics_database = InfluxDB(**metrics_connection)
+
+        self.platform_queue: Queue
+        self.asg_queue: Queue
+
+    def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
+        self.asg_queue = asg_queue
+        self.platform_queue = platform_queue
 
 
 class Metrics(Process):
@@ -47,6 +56,7 @@ class Metrics(Process):
     on a per-ASG basis whether Actions need to be taken.
     """
     def __init__(self, connection: dict) -> None:
+        super().__init__()
         match connection['type']:
             case 'influxdb':
                 from premiscale.metrics.influxdb import InfluxDB
@@ -93,7 +103,11 @@ class ASG(Process):
     the config.
     """
     def __init__(self) -> None:
-        pass
+        super().__init__()
+        self.queue: Queue
+
+    def __call__(self, asg_queue: Queue) -> None:
+        self.queue = asg_queue
 
 
 class Platform(Process):
@@ -103,13 +117,20 @@ class Platform(Process):
     configure them.
     """
     def __init__(self, url: str, token: str) -> None:
+        super().__init__()
         self.url = url
-        self.token = token
         self.websocket = None
         self.queue: Queue
+        self.register(token)
+        self.auth: Dict = {}
 
-    def __call__(self, queue: Queue) -> None:
-        self.queue = queue
+    def register(self, token: str) -> None:
+        """
+        Register the agent with the platform.
+        """
+
+    def __call__(self, platform_queue: Queue) -> None:
+        self.queue = platform_queue
 
         # This should never exit. Process should stay open forever.
         asyncio.run(self.set_up_connection())
@@ -161,7 +182,7 @@ class Platform(Process):
                     continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '') -> None:
+def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '', host: str = '') -> None:
     """
     Wrap our three daemon processes and pass along relevant data.
 
@@ -187,19 +208,30 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
             working_directory=working_dir,
             signal_map={
                 signal.SIGTERM: executor.shutdown,
-                # signal.SIGHUP: executor.shutdown,
-                # signal.SIGINT: executor.shutdown,
+                signal.SIGHUP: executor.shutdown,
+                signal.SIGINT: executor.shutdown,
             }
         ):
-        # platform_future: concurrent.futures.Future = executor.submit(Platform, platform_message_queue)
 
-        # asg_future: concurrent.futures.Future = executor.submit(ASG, autoscaling_action_queue)
+        platform_future: concurrent.futures.Future = executor.submit(
+            Platform(host, token),
+            platform_message_queue
+        )
+
+        asg_future: concurrent.futures.Future = executor.submit(
+            ASG(),
+            autoscaling_action_queue
+        )
 
         metrics_future: concurrent.futures.Future = executor.submit(
             Metrics(agent_config.agent_databases_metrics_connection()) # type: ignore
         )
 
-        # reconciliation_future: concurrent.futures.Future = executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
-
-        while metrics_future.running():
-            sleep(1)
+        reconciliation_future: concurrent.futures.Future = executor.submit(
+            Reconcile(
+                agent_config.agent_databases_state_connection(), # type: ignore
+                agent_config.agent_databases_metrics_connection() # type: ignore
+            ),
+            autoscaling_action_queue,
+            platform_message_queue
+        )

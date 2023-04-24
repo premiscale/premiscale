@@ -41,6 +41,11 @@ def main() -> None:
     )
 
     parser.add_argument(
+        '--host', type=str, default='https://app.premiscale.com',
+        help='URL of your PremiScale host.'
+    )
+
+    parser.add_argument(
         '--token', type=str, default='',
         help='Token for registering the agent with the PremiScale platform on first start.'
     )
@@ -108,7 +113,7 @@ def main() -> None:
             log.warn('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
-        wrapper('/opt/premiscale', args.pid_file, config, token)
+        wrapper('/opt/premiscale', args.pid_file, config, token, args.host)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')
