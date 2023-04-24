@@ -184,27 +184,29 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
             }
         ):
 
-        platform_future: concurrent.futures.Future = executor.submit(
-            Platform(host, token),
-            platform_message_queue
-        )
-
-        asg_future: concurrent.futures.Future = executor.submit(
-            ASG(),
-            autoscaling_action_queue
-        )
-
-        metrics_future: concurrent.futures.Future = executor.submit(
-            Metrics(
-                agent_config.agent_databases_metrics_connection() # type: ignore
-            )
-        )
-
-        reconciliation_future: concurrent.futures.Future = executor.submit(
-            Reconcile(
-                agent_config.agent_databases_state_connection(), # type: ignore
-                agent_config.agent_databases_metrics_connection() # type: ignore
+        processes = [
+            executor.submit(
+                Platform(host, token),
+                platform_message_queue
             ),
-            autoscaling_action_queue,
-            platform_message_queue
-        )
+            executor.submit(
+                ASG(),
+                autoscaling_action_queue
+            ),
+            executor.submit(
+                Metrics(
+                    agent_config.agent_databases_metrics_connection() # type: ignore
+                )
+            ),
+            executor.submit(
+                Reconcile(
+                    agent_config.agent_databases_state_connection(), # type: ignore
+                    agent_config.agent_databases_metrics_connection() # type: ignore
+                ),
+                autoscaling_action_queue,
+                platform_message_queue
+            )
+        ]
+
+        for process in processes:
+            process.result()
