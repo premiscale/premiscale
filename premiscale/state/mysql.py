@@ -2,13 +2,14 @@
 Methods for interacting with the MySQL database.
 """
 
-from typing import Any
+
 from premiscale.state._base import State
 from sqlalchemy.dialects.mysql import (
     insert,
 )
 
 import logging
+log = logging.getLogger(__name__)
 
 
 # url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'

@@ -6,8 +6,8 @@ Define subprocesses encapsulating each control loop.
 import multiprocessing as mp
 import logging
 import asyncio
-import signal
-import sys
+# import signal
+# import sys
 import websockets as ws
 import concurrent
 import time
@@ -15,7 +15,7 @@ import socket
 
 from multiprocessing.queues import Queue
 from typing import Dict, cast
-from daemon import DaemonContext, pidfile
+# from daemon import DaemonContext, pidfile
 
 from premiscale.config._config import Config
 from premiscale.agent.actions import Action, Verb
