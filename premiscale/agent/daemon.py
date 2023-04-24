@@ -32,7 +32,7 @@ class Reconcile(Process):
         match connection['type']:
             case 'mysql':
                 from premiscale.state.mysql import MySQL
-
+                del(connection['type'])
                 self.state_database = MySQL(**connection)
 
     def __call__(self) -> None:
@@ -49,7 +49,7 @@ class Metrics(Process):
         match connection['type']:
             case 'influxdb':
                 from premiscale.metrics.influxdb import InfluxDB
-
+                del(connection['type'])
                 self.metrics_database = InfluxDB(**connection)
 
     def __call__(self) -> None:
