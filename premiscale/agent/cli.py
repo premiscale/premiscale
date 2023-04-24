@@ -101,9 +101,9 @@ def main() -> None:
         log.info(f'Starting premiscale agent v{__version__}')
 
         if (token := args.token):
-            log.info('Registering agent with provided token')
+            log.debug('Registering agent with provided token')
         elif (token := os.getenv('PREMISCALE_TOKEN')) is not None:
-            log.info('Registering agent with provided token environment variable')
+            log.debug('Registering agent with provided token environment variable')
         else:
             log.warn('Platform registration token not present, starting agent in standalone mode')
             token = ''
