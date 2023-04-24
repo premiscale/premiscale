@@ -2,16 +2,12 @@
 Methods for interacting with the MySQL database.
 """
 
-
-from premiscale.state._base import State
-from sqlalchemy.dialects.mysql import (
-    insert,
-)
-
 import logging
+import mysql.connect as mysql
+from premiscale.state._base import State
+
+
 log = logging.getLogger(__name__)
-
-
 # url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
 
 
@@ -22,6 +18,15 @@ class MySQL(State):
     def __init__(self, url: str, database: str, username: str, password: str) -> None:
         self.url = url
         self.database = database
+
+        # Connect to MySQL database.
+        self.connection = mysql.connect(
+            username,
+            password,
+            url,
+            database
+        )
+
 
     ## Hosts
 
