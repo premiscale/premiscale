@@ -8,8 +8,9 @@ import logging
 import asyncio
 import signal
 import sys
-import websockets
+import websockets as ws
 import concurrent
+import time
 
 from multiprocessing.queues import Queue
 from typing import Dict, cast
@@ -145,13 +146,18 @@ class Platform:
         """
         Establish websocket connection to PremiScale's platform.
         """
-        async with websockets.connect(self.url) as self.websocket:
-            while True:
-                try:
-                    await asyncio.Future()
-                except websockets.ConnectionClosed:
-                    log.error(f'Websocket connection to {self.url} closed unexpectedly, reconnecting...')
-                    continue
+        while True:
+            try:
+                async with ws.connect(self.url) as self.websocket:
+                    try:
+                        await asyncio.Future()
+                    except ws.ConnectionClosed:
+                        log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
+                        continue
+            except ws.gaierror as msg:
+                log.error(f'Could not connect to \'{self.url}\', retrying: {msg}')
+                time.sleep(1)
+                continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
 def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '', host: str = '') -> None:
