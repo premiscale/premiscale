@@ -19,7 +19,6 @@ __version__ = meta.version('premiscale')
 
 
 log = logging.getLogger(__name__)
-log.info(__doc__)
 
 
 def main() -> None:
@@ -97,12 +96,19 @@ def main() -> None:
         sys.exit(0 if validate(args.config)[1] else 1)
 
     if args.daemon:
-        if not args.token and not os.getenv('PREMISCALE_TOKEN'):
-            log.warn('Platform registration token not present, starting agent in standalone mode.')
         initialize(args.config)
         config = configparse(args.config)
         log.info(f'Starting premiscale agent v{__version__}')
-        wrapper(working_dir='/opt/premiscale', pid_file=args.pid_file, agent_config=config, token=args.token)
+
+        if (token := args.token):
+            log.info('Registering agent with provided token')
+        elif (token := os.getenv('PREMISCALE_TOKEN')) is not None:
+            log.info('Registering agent with provided token environment variable')
+        else:
+            log.warn('Platform registration token not present, starting agent in standalone mode')
+            token = ''
+
+        wrapper('/opt/premiscale', args.pid_file, config, token)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')
