@@ -49,7 +49,7 @@ class Reconcile:
     def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
-
+        log.debug('Starting reconciliation subprocess')
         # Open database connections
 
 
@@ -67,7 +67,7 @@ class Metrics:
                 self.metrics_database = InfluxDB(**connection)
 
     def __call__(self) -> None:
-        pass
+        log.debug('Starting metrics collection subprocess')
 
 
 class ASG:
@@ -83,6 +83,7 @@ class ASG:
 
     def __call__(self, asg_queue: Queue) -> None:
         self.queue = asg_queue
+        log.debug('Starting autoscaling subprocess')
 
 
 class Platform:
@@ -105,7 +106,7 @@ class Platform:
 
     def __call__(self, platform_queue: Queue) -> None:
         self.queue = platform_queue
-
+        log.debug('Starting platform connection subprocess')
         # This should never exit. Process should stay open forever.
         asyncio.run(self.set_up_connection())
 
