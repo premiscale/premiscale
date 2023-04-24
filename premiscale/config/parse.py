@@ -2,20 +2,23 @@
 Parse a configuration file, or create a default one.
 """
 
-from typing import Optional, Any, Union, Tuple
-from pathlib import Path
 
 import yamale
 import yaml
 import logging
 import sys
-import importlib.resources as resources
+
+from typing import Optional, Any, Union, Tuple
+from pathlib import Path
+from importlib import resources
+
+from premiscale.config._config import Config
 
 
 log = logging.getLogger(__name__)
 
 
-def configparse(config: str, check: bool = False) -> dict:
+def configparse(config: str, check: bool = False) -> Config:
     """
     Parse a config file and return it as a dictionary (JSON).
 
@@ -39,9 +42,9 @@ def configparse(config: str, check: bool = False) -> dict:
                 else:
                     log.info(f'Config \'{config}\' is valid against schema version {config_json["version"]}')
 
-            from premiscale.config.v1alpha1 import Config_v1_alpha_1
+            from premiscale.config.v1alpha1 import Config_v1alpha1
 
-            conf = Config_v1_alpha_1(config_json)
+            conf = Config_v1alpha1(config_json)
             log.debug(f'Successfully parsed config {conf.version}: {conf}')
             return conf
         case _:

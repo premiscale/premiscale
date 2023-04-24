@@ -1,24 +1,18 @@
 """
-Methods for interacting with the MySQL database.
+ABCs for state storage methods.
 """
 
+
 from typing import Any
-from sqlalchemy.dialects.mysql import (
-    insert,
-)
+from abc import ABC
 
 
-url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
-
-
-class MySQL:
+class State(ABC):
     """
-    Provide a clean interface to the MySQL database.
+    An abstract base class with a skeleton interface for state class types.
     """
-    def __init__(self, url: str) -> None:
-        self.url = url
 
-    def __enter__(self) -> 'MySQL':
+    def __enter__(self) -> 'State':
         return self
 
     def __exit__(self, *args: Any) -> None:
@@ -36,7 +30,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def host_delete(self, hostname: str) -> bool:
         """
@@ -48,7 +42,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def host_report(self) -> bool:
         """
@@ -57,7 +51,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     ## VMs
 
@@ -72,7 +66,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def vm_delete(self, host: str, vm_name: str) -> bool:
         """
@@ -85,7 +79,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def vm_report(self, host: str) -> bool:
         """
@@ -97,7 +91,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     ## ASGs
 
@@ -111,7 +105,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def asg_delete(self, name: str) -> bool:
         """
@@ -123,7 +117,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def asg_add_vm(self, host: str, vm_name: str) -> bool:
         """
@@ -136,7 +130,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def asg_remove_vm(self, host: str, vm_name: str) -> bool:
         """
@@ -149,7 +143,7 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError
 
     def asg_report(self, vm_enabled: bool = False) -> bool:
         """
@@ -161,4 +155,4 @@ class MySQL:
         Returns:
             bool: True if action completed successfully.
         """
-        return True
+        raise NotImplementedError

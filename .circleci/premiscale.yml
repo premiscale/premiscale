@@ -50,6 +50,7 @@ jobs:
           - large
           - xlarge
           - 2xlarge
+          - premiscale/on-premise
         default: small
         description: Resource class to run as.
       modules_path:
@@ -98,6 +99,7 @@ jobs:
           - large
           - xlarge
           - 2xlarge
+          - premiscale/on-premise
         default: small
         description: Resource class to run as.
       user:
@@ -171,6 +173,7 @@ workflows:
 
       - pylint:
           name: pylint [python-develop]
+          resource-class: premiscale/on-premise
           context: nexus
           filters:
             branches:
@@ -179,6 +182,7 @@ workflows:
 
       - release-twine-setup-py:
           name: twine upload [python-develop]
+          resource-class: premiscale/on-premise
           context: nexus
           repository: python-develop
           version: << pipeline.number >>
@@ -212,6 +216,7 @@ workflows:
 
       - pylint:
           name: pylint [python-master]
+          resource-class: premiscale/on-premise
           context: nexus
           filters:
             branches:
@@ -220,6 +225,7 @@ workflows:
 
       - release-twine-setup-py:
           name: twine upload [python-master]
+          resource-class: premiscale/on-premise
           context: nexus
           repository: python-master
           version: << pipeline.number >>

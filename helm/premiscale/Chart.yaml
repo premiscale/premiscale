@@ -7,12 +7,12 @@ appVersion: "0.0.1"
 
 dependencies:
   - name: mysql
-    repository: "@premiscale-master"
+    repository: "@premiscale"
     alias: mysql
     version: 0.0.x
     condition: mysql.enabled
   - name: influxdb
-    repository: "@premiscale-master"
+    repository: "@premiscale"
     alias: influxdb
     version: 0.0.x
     condition: influxdb.enabled

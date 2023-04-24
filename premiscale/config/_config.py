@@ -14,4 +14,4 @@ class Config(dict):
         """
         Get the version of the config.
         """
-        return self.config.config.version  # type: ignore
+        return self.config['version']

@@ -3,71 +3,74 @@ Define subprocesses encapsulating each control loop.
 """
 
 
-from typing import Any
-
+import multiprocessing as mp
 import logging
 import asyncio
 import signal
 import sys
-import websockets
+import websockets as ws
 import concurrent
+import time
+import socket
 
-from threading import Thread
-from multiprocessing import Process, Queue
+from multiprocessing.queues import Queue
+from typing import Dict, cast
 from daemon import DaemonContext, pidfile
+
+from premiscale.config._config import Config
+from premiscale.agent.actions import Action, Verb
 
 
 log = logging.getLogger(__name__)
 
 
-class Reconcile(Process):
+class Reconcile:
     """
     Similar to metrics - a reconciliation loop that queries influxdb for the list of VMs
     metrics came from and compares these data to state stored in MySQL. If they don't match,
-    actions to correct are added to the queue.
+    actions to correct the state drift are added to the queue.
     """
-    def __init__(self) -> None:
-        pass
+    def __init__(self, state_connection: dict, metrics_connection: dict) -> None:
+        match state_connection['type']:
+            case 'mysql':
+                from premiscale.state.mysql import MySQL
+                del(state_connection['type'])
+                self.state_database = MySQL(**state_connection)
+
+        match metrics_connection['type']:
+            case 'influxdb':
+                from premiscale.metrics.influxdb import InfluxDB
+                del(metrics_connection['type'])
+                self.metrics_database = InfluxDB(**metrics_connection)
+
+        self.platform_queue: Queue
+        self.asg_queue: Queue
+
+    def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
+        self.asg_queue = asg_queue
+        self.platform_queue = platform_queue
+
+        # Open database connections
 
 
-class Metrics(Process):
+class Metrics:
     """
     Handle metrics collection from hosts. Only one of these loops is created; metrics
     are published to influxdb for retrieval and query by the ASG loop, which evaluates
     on a per-ASG basis whether Actions need to be taken.
     """
-    def __init__(self) -> None:
+    def __init__(self, connection: dict) -> None:
+        match connection['type']:
+            case 'influxdb':
+                from premiscale.metrics.influxdb import InfluxDB
+                del(connection['type'])
+                self.metrics_database = InfluxDB(**connection)
+
+    def __call__(self) -> None:
         pass
 
 
-# Instances of Action are shorter-lived processes than the other 4.
-class Action(Process):
-    """
-    Encapsulate the various actions that the autoscaler can take. These get queued up.
-    """
-    def __init__(self, typ: str) -> None:
-        self.typ = typ
-
-    def audit_trail_msg(self) -> dict:
-        """
-        Return a dictionary (JSON) object containing audit data about the action taken.
-
-        Returns:
-            _type_: _description_
-        """
-        return {}
-
-    def get(self) -> str:
-        """
-        Return the type of action.
-
-        Returns:
-            str: _description_
-        """
-        return ''
-
-
-class ASG(Process):
+class ASG:
     """
     Handle actions. E.g., if a new VM needs to be created or deleted on some host,
     handle that action, and all relevant side-effects (e.g. updating MySQL state).
@@ -76,10 +79,13 @@ class ASG(Process):
     the config.
     """
     def __init__(self) -> None:
-        pass
+        self.queue: Queue
+
+    def __call__(self, asg_queue: Queue) -> None:
+        self.queue = asg_queue
 
 
-class Platform(Process):
+class Platform:
     """
     Handle communication to and from the platform. Maintains an async websocket
     connection and calls setters and getters on the other daemon threads' objects to
@@ -87,8 +93,21 @@ class Platform(Process):
     """
     def __init__(self, url: str, token: str) -> None:
         self.url = url
-        self.token = token
         self.websocket = None
+        self.queue: Queue
+        self._register(token)
+        self.auth: Dict = {}
+
+    def _register(self, token: str) -> None:
+        """
+        Register the agent with the platform.
+        """
+
+    def __call__(self, platform_queue: Queue) -> None:
+        self.queue = platform_queue
+
+        # This should never exit. Process should stay open forever.
+        asyncio.run(self.set_up_connection())
 
     async def sync_actions(self) -> bool:
         """
@@ -128,46 +147,76 @@ class Platform(Process):
         """
         Establish websocket connection to PremiScale's platform.
         """
-        async with websockets.connect(self.url) as self.websocket:
-            while True:
-                try:
-                    await asyncio.Future()
-                except websockets.ConnectionClosed:
-                    log.error(f'Websocket connection to {self.url} closed unexpectedly, reconnecting...')
-                    continue
+        while True:
+            try:
+                async with ws.connect(self.url) as self.websocket:
+                    try:
+                        await asyncio.Future()
+                    except ws.ConnectionClosed:
+                        log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
+                        continue
+            except socket.gaierror as msg:
+                log.error(f'Could not connect to \'{self.url}\', retrying: {msg}')
+                time.sleep(1)
+                continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: dict) -> None:
+def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '', host: str = '') -> None:
     """
-    Wrap our three daemon processes and pass along relevant data.
+    Wrap our four daemon processes and pass along relevant data.
 
     Args:
         working_dir (str): working directory for this daemon.
         pid_file (str): PID file to use for the main daemon process.
-        agent_config (dict): Agent config object.
+        agent_config (Config): Agent config object.
+        token (str): Agent registration token.
+        host (str): PremiScale platform host.
     """
+    # mp.set_start_method('spawn')
 
-    # We need one of these process trees for every ASG.
+    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor, mp.Manager() as manager:
+        # DaemonContext(
+        #     stdin=sys.stdin,
+        #     stdout=sys.stdout,
+        #     stderr=sys.stderr,
+        #     # files_preserve=[],
+        #     detach_process=False,
+        #     prevent_core=True,
+        #     pidfile=pidfile.TimeoutPIDLockFile(pid_file),
+        #     working_directory=working_dir,
+        #     signal_map={
+        #         signal.SIGTERM: executor.shutdown,
+        #         signal.SIGHUP: executor.shutdown,
+        #         signal.SIGINT: executor.shutdown,
+        #     }
+        # ):
 
-    autoscaling_action_queue: Queue = Queue()
-    platform_message_queue: Queue = Queue()
+        autoscaling_action_queue: Queue = cast(Queue, manager.Queue())
+        platform_message_queue: Queue = cast(Queue, manager.Queue())
 
-    with concurrent.futures.Executor() as executor, DaemonContext(
-            stdin=sys.stdin,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            detach_process=False,
-            prevent_core=True,
-            pidfile=pidfile.TimeoutPIDLockFile(pid_file),
-            working_directory=working_dir,
-            signal_map={
-                signal.SIGTERM: executor.shutdown,
-                signal.SIGHUP: executor.shutdown,
-                signal.SIGINT: executor.shutdown,
-            }
-        ):
-        ...
-        # executor.submit(Platform, platform_message_queue)
-        # executor.submit(ASG, autoscaling_action_queue)
-        # executor.submit(Metrics)
-        # executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
+        processes = [
+            executor.submit(
+                Platform(host, token),
+                platform_message_queue
+            ),
+            executor.submit(
+                ASG(),
+                autoscaling_action_queue
+            ),
+            executor.submit(
+                Metrics(
+                    agent_config.agent_databases_metrics_connection() # type: ignore
+                )
+            ),
+            executor.submit(
+                Reconcile(
+                    agent_config.agent_databases_state_connection(), # type: ignore
+                    agent_config.agent_databases_metrics_connection() # type: ignore
+                ),
+                autoscaling_action_queue,
+                platform_message_queue
+            )
+        ]
+
+        for process in processes:
+            process.result()

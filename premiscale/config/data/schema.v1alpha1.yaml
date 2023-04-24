@@ -1,16 +1,13 @@
-version: enum('v1-alpha1')
+version: enum('v1alpha1')
 agent:
   daemon: include('daemon')
-scaling:
   databases: include('databases')
-  hostGroups: include('hostGroups')
-  autoscalingGroups: include('autoscalingGroups')
+autoscale:
+  hosts: include('hosts')
+  groups: include('groups')
 ---
 daemon:
-  check_interval: int(min=0)
-  timeout: int(min=0)
-  max_threads: int(min=0)
-  queue_max: int(min=0)
+  actionsQueueMax: int(min=0)
 ---
 databases:
   state: include('state')
@@ -19,36 +16,32 @@ databases:
 state:
   type: enum('mysql')
   connection: include('connection')
+  reconcileInterval: int(min=5)
 ---
 metrics:
   type: enum('influxdb')
   connection: include('connection')
-  interval: int(min=0)
-  evaluate: int(min=0)
   trailing: int(min=0)
+  collectionInterval: int(min=5)
+  hostConnectionTimeout: int(min=1)
+  maxThreads: int(min=0)
 ---
 connection:
   url: str(min=1)
+  database: str(min=1)
   credentials:
-    env:
-      username: str(min=1)
-      password: str(min=1)
+    username: str(min=1)
+    password: str(min=1)
 ---
-hostGroups: map(include('hostGroup'), min=1)
+hosts: map(include('host'), min=1)
 ---
-hostGroup: list(include('hostGroupMember'), min=1)
+host: list(include('hostMember'), min=1)
 ---
-hostGroupMember:
+hostMember:
   name: str(min=1)
   address: str(min=1)
   port: int(min=1, max=65535)
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
----
-autoscalingGroups:
-  type: enum('prefix', 'postfix', 'none')
-  # Create new VMs prefix- or postfixed with numbers or hashes.
-  enumerate: enum('numerical', 'hash')
-  groups: include('groups')
 ---
 groups: map(include('group'), min=1)
 ---
@@ -59,10 +52,11 @@ group:
   cloud-init:
     inline: str(min=1)
     file: str(min=1)
-  hostGroups: any(include('hostGroups'), list(min=1))
+  hosts: any(include('hosts'), list(min=1))
   replacement:
     strategy: enum('rollingUpdate')
-    maxUnavailable: int(min=1)
+    maxUnavailable: int(min=0)
+    maxSurge: int(min=0)
   networking:
     # Ignore in the case that the users' cloud-init scripts perform the networking.
     type: enum('static', 'dynamic', 'ignore')
@@ -70,11 +64,15 @@ group:
     subnet: str(min=1)
     gateway: str(min=1)
   scaling:
+    method: enum('random', 'vacancy', 'linear', 'linear-random')
     maxNodes: int(min=0)
     minNodes: int(min=0)
     increment: int(min=0)
     cooldown: int(min=0)
-  metrics:
-    io: int(min=0)
-    cpu: int(min=0, max=100)
-    memory: int(min=0, max=100)
+    overProvision: include('resources')
+    resourceTarget: include('resources')
+---
+resources:
+  cpu: int(min=0, max=100)
+  memory: int(min=0, max=100)
+  io: int(min=0, max=100)
