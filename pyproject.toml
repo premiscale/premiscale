@@ -25,7 +25,7 @@ libvirt-python = "^9.0.0"
 yamale = "^4.0.4"
 Flask = "^2.2.2"
 websockets = "^11.0"
-sqlalchemy = "2.0.4"
+sqlalchemy = "2.0.10"
 influxdb = "^5.3.1"
 python-daemon = "3.0.1"
 
