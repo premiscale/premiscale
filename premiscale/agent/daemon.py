@@ -161,7 +161,7 @@ class Platform:
                 continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '', host: str = '') -> None:
+def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str, host: str) -> None:
     """
     Wrap our four daemon processes and pass along relevant data.
 

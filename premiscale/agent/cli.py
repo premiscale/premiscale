@@ -33,7 +33,7 @@ def main() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true', default=False,
-        help='Start PremiScale as a daemon.'
+        help='Start agent as a daemon.'
     )
 
     parser.add_argument(
@@ -43,22 +43,22 @@ def main() -> None:
 
     parser.add_argument(
         '--host', type=str, default='wss://app.premiscale.com',
-        help='WSS URL of the PremiScale platform.'
+        help='URL of the PremiScale platform.'
     )
 
     parser.add_argument(
         '--token', type=str, default='',
-        help='Token for registering the agent with the PremiScale platform on first start.'
+        help='Token for registering the agent with the platform on start.'
     )
 
     parser.add_argument(
         '--validate', action='store_true', default=False,
-        help='Validate the provided configuration file.'
+        help='Validate the provided configuration file and exit.'
     )
 
     parser.add_argument(
         '--version', action='store_true', default=False,
-        help='Show premiscale version.'
+        help='Display agent version.'
     )
 
     parser.add_argument(
@@ -68,12 +68,12 @@ def main() -> None:
 
     parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for daemon.'
+        help='Pidfile name to use for agent daemon.'
     )
 
     parser.add_argument(
         '--debug', action='store_true', default=False,
-        help='Turn on logging debug mode.'
+        help='Enable agent debug logging.'
     )
 
     args = parser.parse_args()
