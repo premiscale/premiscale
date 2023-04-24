@@ -15,6 +15,7 @@ import concurrent
 from threading import Thread
 from multiprocessing import Process, Queue
 from daemon import DaemonContext, pidfile
+from time import sleep
 
 from premiscale.config._config import Config
 
@@ -176,7 +177,7 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
     autoscaling_action_queue: Queue = Queue()
     platform_message_queue: Queue = Queue()
 
-    with concurrent.futures.ProcessPoolExecutor() as executor, DaemonContext(
+    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor, DaemonContext(
             stdin=sys.stdin,
             stdout=sys.stdout,
             stderr=sys.stderr,
@@ -191,6 +192,14 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
             }
         ):
         # platform_future: concurrent.futures.Future = executor.submit(Platform, platform_message_queue)
+
         # asg_future: concurrent.futures.Future = executor.submit(ASG, autoscaling_action_queue)
-        metrics_future: concurrent.futures.Future = executor.submit(Metrics(agent_config.agent_databases_metrics_connection())) # type: ignore
+
+        metrics_future: concurrent.futures.Future = executor.submit(
+            Metrics(agent_config.agent_databases_metrics_connection()) # type: ignore
+        )
+
         # reconciliation_future: concurrent.futures.Future = executor.submit(Reconcile, autoscaling_action_queue, platform_message_queue)
+
+        while metrics_future.running():
+            sleep(1)
