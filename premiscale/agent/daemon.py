@@ -176,7 +176,7 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
     autoscaling_action_queue: Queue = Queue()
     platform_message_queue: Queue = Queue()
 
-    with concurrent.futures.Executor() as executor, DaemonContext(
+    with concurrent.futures.ProcessPoolExecutor() as executor, DaemonContext(
             stdin=sys.stdin,
             stdout=sys.stdout,
             stderr=sys.stderr,
