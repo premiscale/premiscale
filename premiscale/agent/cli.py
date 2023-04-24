@@ -42,8 +42,8 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--host', type=str, default='https://app.premiscale.com',
-        help='URL of your PremiScale host.'
+        '--host', type=str, default='wss://app.premiscale.com',
+        help='WSS URL of the PremiScale platform.'
     )
 
     parser.add_argument(
