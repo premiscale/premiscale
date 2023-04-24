@@ -29,7 +29,6 @@ class Reconcile:
     actions to correct the state drift are added to the queue.
     """
     def __init__(self, state_connection: dict, metrics_connection: dict) -> None:
-        super().__init__()
         match state_connection['type']:
             case 'mysql':
                 from premiscale.state.mysql import MySQL
@@ -57,7 +56,6 @@ class Metrics:
     on a per-ASG basis whether Actions need to be taken.
     """
     def __init__(self, connection: dict) -> None:
-        super().__init__()
         match connection['type']:
             case 'influxdb':
                 from premiscale.metrics.influxdb import InfluxDB
@@ -77,7 +75,6 @@ class ASG:
     the config.
     """
     def __init__(self) -> None:
-        super().__init__()
         self.queue: Queue
 
     def __call__(self, asg_queue: Queue) -> None:
@@ -91,7 +88,6 @@ class Platform:
     configure them.
     """
     def __init__(self, url: str, token: str) -> None:
-        super().__init__()
         self.url = url
         self.websocket = None
         self.queue: Queue
@@ -199,7 +195,9 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
         )
 
         metrics_future: concurrent.futures.Future = executor.submit(
-            Metrics(agent_config.agent_databases_metrics_connection()) # type: ignore
+            Metrics(
+                agent_config.agent_databases_metrics_connection() # type: ignore
+            )
         )
 
         reconciliation_future: concurrent.futures.Future = executor.submit(
