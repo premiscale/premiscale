@@ -12,10 +12,26 @@ class State(ABC):
     An abstract base class with a skeleton interface for state class types.
     """
 
+    def open(self) -> 'State':
+        """
+        Open a connection to the state backend these methods interact with.
+        """
+        raise NotImplementedError
+
+    def close(self) -> None:
+        """
+        Close the connection to the state backend.
+
+        This method should also dereference any secrets that may be stored in memory.
+        """
+        raise NotImplementedError
+
     def __enter__(self) -> 'State':
+        self.open()
         return self
 
     def __exit__(self, *args: Any) -> None:
+        self.close()
         return
 
     ## Hosts
