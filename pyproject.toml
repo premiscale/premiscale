@@ -21,18 +21,17 @@ keywords = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-libvirt-python = "^9.0.0"
 yamale = "^4.0.4"
 Flask = "^2.2.2"
 websockets = "^11.0"
-sqlalchemy = "2.0.10"
 influxdb = "^5.3.1"
 python-daemon = "3.0.1"
+libvirt-python = "^9.0.0"
+mysqlclient = "2.1.1"
+sqlalchemy = "^2.0.10"
 
 [tool.poetry.group.dev.dependencies]
-setupext-janitor = "^1.1.2"
 twine = "^4.0.2"
-check-manifest = "^0.49"
 pylint = "^2.15.10"
 pre-commit = "^3.0.0"
 

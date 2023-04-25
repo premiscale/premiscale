@@ -3,6 +3,9 @@ Implement common methods all Config-<version> classes should inherit.
 """
 
 
+import json
+
+
 class Config(dict):
     """
     Parse a config dictionary into an object with methods to interact with the config.
@@ -15,3 +18,9 @@ class Config(dict):
         Get the version of the config.
         """
         return self.config['version']
+
+    def json(self) -> str:
+        """
+        Return the config as a JSON object for debugging.
+        """
+        return json.dumps(self.config)

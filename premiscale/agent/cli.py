@@ -8,18 +8,28 @@ PremiScale autoscaler agent.
 import sys
 import logging
 import os
+import asyncio
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
 
 from premiscale.config.parse import initialize, validate, configparse
-from premiscale.agent.daemon import wrapper
+from premiscale.agent.daemon import start
 
 
 __version__ = meta.version('premiscale')
 
 
 log = logging.getLogger(__name__)
+
+
+def debug() -> bool:
+    """
+    Determine if the agent should be in debug based on an environment variable.
+
+    https://stackoverflow.com/a/65407083
+    """
+    return os.getenv('PREMISCALE_DEBUG', 'False').lower() in ('true', '1', 't')
 
 
 def main() -> None:
@@ -33,7 +43,7 @@ def main() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true', default=False,
-        help='Start PremiScale as a daemon.'
+        help='Start agent as a daemon.'
     )
 
     parser.add_argument(
@@ -43,22 +53,22 @@ def main() -> None:
 
     parser.add_argument(
         '--host', type=str, default='wss://app.premiscale.com',
-        help='WSS URL of the PremiScale platform.'
+        help='URL of the PremiScale platform.'
     )
 
     parser.add_argument(
         '--token', type=str, default='',
-        help='Token for registering the agent with the PremiScale platform on first start.'
+        help='Token for registering the agent with the platform on start.'
     )
 
     parser.add_argument(
         '--validate', action='store_true', default=False,
-        help='Validate the provided configuration file.'
+        help='Validate the provided configuration file and exit.'
     )
 
     parser.add_argument(
         '--version', action='store_true', default=False,
-        help='Show premiscale version.'
+        help='Display agent version.'
     )
 
     parser.add_argument(
@@ -68,31 +78,32 @@ def main() -> None:
 
     parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for daemon.'
+        help='Pidfile name to use for agent daemon.'
     )
 
     parser.add_argument(
         '--debug', action='store_true', default=False,
-        help='Turn on logging debug mode.'
+        help='Enable agent debug logging.'
     )
 
     args = parser.parse_args()
 
-    # Configure logger.
-    if args.debug or os.getenv('PREMISCALE_DEBUG') is True:
-        log.info('Agent starting in debug mode.')
+    # Configure logger
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(asctime)s | %(levelname)s | %(message)s',
-            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is True else logging.INFO)
+            level=(logging.DEBUG if args.debug or debug() else logging.INFO)
         )
     else:
         logging.basicConfig(
             stream=sys.stdout,
             format='%(message)s',
-            level=(logging.DEBUG if args.debug or os.getenv('PREMISCALE_DEBUG') is True else logging.INFO)
+            level=(logging.DEBUG if args.debug or debug() else logging.INFO)
         )
+    if args.debug or debug():
+        log.info('Agent started in debug mode.')
+        logging.getLogger('asyncio').setLevel(logging.WARNING)
 
     if args.version:
         log.info(f'premiscale v{__version__}')
@@ -106,15 +117,15 @@ def main() -> None:
         config = configparse(args.config)
         log.info(f'Starting premiscale agent v{__version__}')
 
-        if (token := args.token):
+        if (token := args.token) != '':
             log.debug('Registering agent with provided token')
-        elif (token := os.getenv('PREMISCALE_TOKEN')) is not None:
-            log.debug('Registering agent with provided token environment variable')
+        elif (token := os.getenv('PREMISCALE_TOKEN')) != '':
+            log.debug('Registering agent with provided environment variable')
         else:
             log.warning('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
-        wrapper('/opt/premiscale', args.pid_file, config, token, args.host)
+        start('/opt/premiscale', args.pid_file, config, token, args.host)
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')

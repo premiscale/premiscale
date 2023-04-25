@@ -6,8 +6,8 @@ Define subprocesses encapsulating each control loop.
 import multiprocessing as mp
 import logging
 import asyncio
-import signal
-import sys
+# import signal
+# import sys
 import websockets as ws
 import concurrent
 import time
@@ -15,7 +15,7 @@ import socket
 
 from multiprocessing.queues import Queue
 from typing import Dict, cast
-from daemon import DaemonContext, pidfile
+# from daemon import DaemonContext, pidfile
 
 from premiscale.config._config import Config
 from premiscale.agent.actions import Action, Verb
@@ -49,7 +49,7 @@ class Reconcile:
     def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
-
+        log.debug('Starting reconciliation subprocess')
         # Open database connections
 
 
@@ -67,7 +67,7 @@ class Metrics:
                 self.metrics_database = InfluxDB(**connection)
 
     def __call__(self) -> None:
-        pass
+        log.debug('Starting metrics collection subprocess')
 
 
 class ASG:
@@ -83,6 +83,7 @@ class ASG:
 
     def __call__(self, asg_queue: Queue) -> None:
         self.queue = asg_queue
+        log.debug('Starting autoscaling subprocess')
 
 
 class Platform:
@@ -95,8 +96,8 @@ class Platform:
         self.url = url
         self.websocket = None
         self.queue: Queue
+        self._auth: Dict = dict()
         self._register(token)
-        self.auth: Dict = {}
 
     def _register(self, token: str) -> None:
         """
@@ -105,7 +106,7 @@ class Platform:
 
     def __call__(self, platform_queue: Queue) -> None:
         self.queue = platform_queue
-
+        log.debug('Starting platform connection subprocess')
         # This should never exit. Process should stay open forever.
         asyncio.run(self.set_up_connection())
 
@@ -161,9 +162,9 @@ class Platform:
                 continue
 
 # Use this - https://docs.python.org/3.10/library/concurrent.futures.html?highlight=concurrent#processpoolexecutor
-def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = '', host: str = '') -> None:
+def start(working_dir: str, pid_file: str, agent_config: Config, token: str, host: str) -> None:
     """
-    Wrap our four daemon processes and pass along relevant data.
+    Start our four daemon processes passing along relevant configuration.
 
     Args:
         working_dir (str): working directory for this daemon.
@@ -195,19 +196,24 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
         platform_message_queue: Queue = cast(Queue, manager.Queue())
 
         processes = [
+            # Platform websocket connection subprocess (maintains connection and data stream -> premiscale platform).
+            # If no registration token or platform host is provided, this process is not spawned.
             executor.submit(
                 Platform(host, token),
                 platform_message_queue
-            ),
+            ) if token and host else None,
+            # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
                 ASG(),
                 autoscaling_action_queue
             ),
+            # Host metrics collection subprocess (populates metrics database)
             executor.submit(
                 Metrics(
                     agent_config.agent_databases_metrics_connection() # type: ignore
                 )
             ),
+            # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
             executor.submit(
                 Reconcile(
                     agent_config.agent_databases_state_connection(), # type: ignore
@@ -219,4 +225,5 @@ def wrapper(working_dir: str, pid_file: str, agent_config: Config, token: str = 
         ]
 
         for process in processes:
-            process.result()
+            if process is not None:
+                process.result()
