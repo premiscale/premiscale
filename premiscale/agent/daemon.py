@@ -13,6 +13,7 @@ import concurrent
 import time
 import socket
 
+from urllib.parse import urljoin
 from multiprocessing.queues import Queue
 from typing import Dict, cast
 # from daemon import DaemonContext, pidfile
@@ -92,8 +93,9 @@ class Platform:
     connection and calls setters and getters on the other daemon threads' objects to
     configure them.
     """
-    def __init__(self, url: str, token: str) -> None:
+    def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
         self.url = url
+        self.path = path
         self.websocket = None
         self.queue: Queue
         self._auth: Dict = dict()
@@ -150,7 +152,7 @@ class Platform:
         """
         while True:
             try:
-                async with ws.connect(self.url) as self.websocket:
+                async with ws.connect(urljoin(self.url, self.path)) as self.websocket:
                     try:
                         await asyncio.Future()
                     except ws.ConnectionClosed:
