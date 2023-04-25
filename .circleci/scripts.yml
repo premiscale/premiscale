@@ -9,11 +9,5 @@ workflows:
   scripts:
     jobs:
       - shellcheck/check:
-          name: shellcheck [<< matrix.dir >>]
-          matrix:
-            parameters:
-              dir:
-                - scripts/
-                - docker/premiscale/scripts/
-            alias: shellcheck
+          name: shellcheck
           external_sources: true
