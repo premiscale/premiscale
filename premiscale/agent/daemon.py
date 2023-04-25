@@ -17,6 +17,7 @@ from urllib.parse import urljoin
 from multiprocessing.queues import Queue
 from typing import Dict, cast
 # from daemon import DaemonContext, pidfile
+from websockets.sync.client import connect
 
 from premiscale.config._config import Config
 from premiscale.agent.actions import Action, Verb
@@ -163,7 +164,7 @@ class Platform:
         """
         while True:
             try:
-                async with ws.sync.client.connect(self.url) as self.websocket:
+                async with connect(self.url) as self.websocket:
                     try:
                         log.info(f'Established connection to platform hosted at \'{self.url}\'')
                         while True:
