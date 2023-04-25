@@ -147,7 +147,7 @@ class Platform:
             log.error('Cannot submit arbitrary message to platform, connection has not been established.')
             return False
         else:
-            self.websocket.send(msg)
+            await self.websocket.send(msg)
 
     async def sync_platform_queue(self) -> None:
         """
