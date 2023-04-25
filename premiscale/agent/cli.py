@@ -125,6 +125,7 @@ def main() -> None:
             log.warning('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
+        # Start the premiscale agent.
         start('/opt/premiscale', args.pid_file, config, token, args.host)
     else:
         initialize(args.config)

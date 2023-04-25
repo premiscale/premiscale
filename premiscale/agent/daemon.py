@@ -13,6 +13,7 @@ import concurrent
 import time
 import socket
 
+from urllib.parse import urljoin
 from multiprocessing.queues import Queue
 from typing import Dict, cast
 # from daemon import DaemonContext, pidfile
@@ -50,6 +51,9 @@ class Reconcile:
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
         log.debug('Starting reconciliation subprocess')
+        while True:
+            self.platform_queue.put('Hello')
+            time.sleep(5)
         # Open database connections
 
 
@@ -92,8 +96,9 @@ class Platform:
     connection and calls setters and getters on the other daemon threads' objects to
     configure them.
     """
-    def __init__(self, url: str, token: str) -> None:
-        self.url = url
+    def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
+        # Path needs to align with the Helm chart's ingress.
+        self.url = urljoin(url, path)
         self.websocket = None
         self.queue: Queue
         self._auth: Dict = dict()
@@ -142,7 +147,15 @@ class Platform:
             log.error('Cannot submit arbitrary message to platform, connection has not been established.')
             return False
         else:
-            self.websocket.send(msg)
+            await self.websocket.send(msg)
+
+    async def sync_platform_queue(self) -> None:
+        """
+        Sync the platform queue with the platform. If this function returns, then the queue is empty.
+        """
+        # Clear the queue.
+        while (msg := self.queue.get()):
+            await self.send_message(msg)
 
     async def set_up_connection(self) -> None:
         """
@@ -152,7 +165,11 @@ class Platform:
             try:
                 async with ws.connect(self.url) as self.websocket:
                     try:
-                        await asyncio.Future()
+                        log.info(f'Established connection to platform hosted at \'{self.url}\'')
+                        while True:
+                            await self.sync_platform_queue()
+                            time.sleep(5)
+                        # await asyncio.Future()
                     except ws.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
                         continue
