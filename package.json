@@ -31,6 +31,7 @@
     "helm:install:mysql": "./scripts/helm/mysql-install.sh",
     "helm:uninstall:mysql": "helm uninstall -n platform-develop mysql",
     "helm:repo:add": "./scripts/helm/repo-add.sh",
-    "poetry:lock": "poetry lock"
+    "poetry:lock": "poetry lock",
+    "pstree": "./scripts/pstree.sh"
   }
 }
