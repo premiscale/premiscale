@@ -133,7 +133,7 @@ class Platform:
         """
         return False
 
-    async def send_message(self, msg: str) -> bool:
+    async def send_message(self, msg: str) -> None:
         """
         Send an arbitrary message to the platform.
 
@@ -145,7 +145,6 @@ class Platform:
         """
         if not self.websocket:
             log.error('Cannot submit arbitrary message to platform, connection has not been established.')
-            return False
         else:
             await self.websocket.send(msg)
 
@@ -154,8 +153,10 @@ class Platform:
         Sync the platform queue with the platform. If this function returns, then the queue is empty.
         """
         # Clear the queue.
-        while (msg := self.queue.get()):
+        while (msg := self.queue.get()) is not None:
             await self.send_message(msg)
+        else:
+            await self.send_message('')
 
     async def set_up_connection(self) -> None:
         """
