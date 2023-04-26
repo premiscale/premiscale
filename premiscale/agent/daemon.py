@@ -113,7 +113,7 @@ class Platform:
         self.queue = platform_queue
         log.debug('Starting platform connection subprocess')
         # This should never exit. Process should stay open forever.
-        asyncio.run(self.set_up_connection())
+        asyncio.run(self._set_up_connection())
 
     async def sync_actions(self) -> bool:
         """
@@ -148,7 +148,7 @@ class Platform:
         else:
             await self.websocket.send(msg)
 
-    async def sync_platform_queue(self) -> None:
+    async def _sync_platform_queue(self) -> None:
         """
         Sync the platform queue with the platform. If this function returns, then the queue is empty.
         """
@@ -158,7 +158,7 @@ class Platform:
         else:
             await self.send_message('')
 
-    async def set_up_connection(self) -> None:
+    async def _set_up_connection(self) -> None:
         """
         Establish websocket connection to PremiScale's platform.
         """
@@ -168,7 +168,7 @@ class Platform:
                     try:
                         log.info(f'Established connection to platform hosted at \'{self.url}\'')
                         while True:
-                            await self.sync_platform_queue()
+                            await self._sync_platform_queue()
                             time.sleep(5)
                         # await asyncio.Future()
                     except ws.ConnectionClosed:
