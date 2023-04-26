@@ -164,7 +164,7 @@ class Platform:
         """
         while True:
             try:
-                async with ws.connect(self.url) as self.websocket:
+                async with ws.connect(self.url, ping_timeout=300) as self.websocket:
                     try:
                         log.info(f'Established connection to platform hosted at \'{self.url}\'')
                         while True:
