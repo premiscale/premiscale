@@ -14,7 +14,6 @@ from urllib.parse import urljoin
 from multiprocessing.queues import Queue
 from typing import cast
 # from daemon import DaemonContext, pidfile
-
 from premiscale.config._config import Config
 from premiscale.agent.platform import register, Platform
 from premiscale.agent.autoscaling import ASG
