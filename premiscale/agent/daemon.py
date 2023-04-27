@@ -8,9 +8,7 @@ import logging
 # import signal
 # import sys
 import concurrent
-import time
 
-from urllib.parse import urljoin
 from multiprocessing.queues import Queue
 from typing import cast
 # from daemon import DaemonContext, pidfile
@@ -58,8 +56,8 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         platform_message_queue: Queue = cast(Queue, manager.Queue())
 
         processes = [
-            # Platform websocket connection subprocess (maintains connection and data stream -> premiscale platform).
-            # If no registration token or platform host is provided, this process is not spawned.
+            # Platform websocket connection subprocess. Maintains connection and data stream -> premiscale platform).
+            # If either the (1) registration token or (2) platform host isn't provided, this process is not spawned.
             executor.submit(
                 Platform(host, token),
                 platform_message_queue

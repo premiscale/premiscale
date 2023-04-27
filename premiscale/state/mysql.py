@@ -3,8 +3,8 @@ Methods for interacting with the MySQL database.
 """
 
 import logging
-import sqlalchemy as sqla
 
+from sqlmodel import Field, Session, SQLModel, create_engine
 from premiscale.state._base import State
 
 

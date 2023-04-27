@@ -7,15 +7,125 @@ import logging
 import time
 import websockets as ws
 import socket
+import json
+import requests
 
-from typing import Dict
+from typing import Dict, Callable, Optional, Any
+from functools import wraps
 from multiprocessing.queues import Queue
 from urllib.parse import urljoin
+from urllib.error import URLError
+from http import HTTPStatus
+from mohawk import Sender
 
 
 log = logging.getLogger(__name__)
 
 
+class RateLimitedError(Exception):
+    """
+    Raised when an HTTPStatus.TOO_MANY_REQUESTS code is received.
+    """
+    def __init__(self, message: str ='', delay: float =30.0) -> None:
+        super().__init__(message)
+        self.message = message
+        self.delay = delay
+
+    def __str__(self):
+        return f'RateLimitError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
+
+
+def retry(tries: int) -> Callable:
+    """
+    A request retry decorator. If singledispatch becomes compatible with `typing`, it'd be cool to duplicate this
+    registering another dispatch on `f`, allowing us to remove a layer.
+
+    Args:
+        tries: number of times to retry the wrapped function call. When `0`, retries indefinitely.
+
+    Returns:
+        Either the result of a successful function call (be it via retrying or not).
+    """
+    if tries < 0:
+        raise ValueError(f'Expected positive `tries` values, received: "{tries}"')
+
+    def _f(f: Callable) -> Callable:
+        @wraps(f)
+        def new_f(*args: Any, **kwargs: Any) -> Optional[Dict]:
+            res: Any = None
+
+            def call() -> bool:
+                nonlocal res
+                try:
+                    res = f(*args, **kwargs)
+                    log.info(f'Successfully registered agent.')
+                    return True
+                except RateLimitedError as msg:
+                    log.warning(f'Ratelimited, waiting "{msg.delay}" before trying again')
+                    time.sleep(msg.delay)
+                    return False
+                except URLError as msg:
+                    log.warning(msg)
+                    return False
+
+            if tries > 0:
+                for _ in range(tries):
+                    if call():
+                        return res
+                else:
+                    log.error(f'Could not register agent, retry attempt limit exceeded.')
+                    return None
+            else:
+                while not call():
+                    pass
+                else:
+                    return res
+
+        return new_f
+
+    return _f
+
+
+class Register:
+    """
+    Register the agent with the remote platform.
+    """
+    def __init__(self, user_id: str, api_key: str, org_id: str) -> None:
+        self._key = api_key
+        self._ext = org_id
+
+        self._credentials = {
+            'id': user_id,
+            'key': api_key,
+            'algorithm': 'sha256'
+        }
+
+        self._sender: Sender
+        self._header: str
+
+    def _update_sender(self, url: str, method: str, data: Optional[Dict] =None) -> None:
+        """
+        Update the retrieved token.
+
+        Args:
+            url: url on which we are about to make a request.
+
+        Returns:
+            Nothing.
+        """
+        self._sender = Sender(
+            credentials=self._credentials,
+            url=url,
+            content=json.dumps(data) if data else data,
+            method=method,
+            always_hash_content=False,
+            content_type='application/json',
+            ext=self._ext
+        )
+        self._header = self._sender.request_header
+
+
+@retry(tries=3)
 def register(token: str, endpoint: str = 'https://app.premiscale.com', path: str = '/agent/registration') -> bool:
     """
     Make a request to the registration service.
@@ -29,6 +139,24 @@ def register(token: str, endpoint: str = 'https://app.premiscale.com', path: str
         bool: True if the registration was successful, False otherwise.
     """
     url = urljoin(endpoint, path)
+
+    response = requests.get(
+        url=url,
+        headers={
+            # 'Authorization': header,
+            'Content-Type': 'application/json'
+        }
+    )
+
+    try:
+        return response.json()
+    except json.JSONDecodeError:
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000 + 0.25)
+        else:
+            raise URLError(
+                f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
+            )
 
     return True
 
