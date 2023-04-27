@@ -8,7 +8,6 @@ PremiScale autoscaler agent.
 import sys
 import logging
 import os
-import asyncio
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
@@ -52,7 +51,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--host', type=str, default='wss://app.premiscale.com',
+        '--host', type=str, default='app.premiscale.com',
         help='URL of the PremiScale platform.'
     )
 
