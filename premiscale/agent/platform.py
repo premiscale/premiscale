@@ -71,6 +71,16 @@ class Platform:
         """
         return False
 
+    async def _recv_message(self) -> None:
+        """
+        Receive messages from the platform.
+        """
+        if not self._websocket:
+            log.error('Cannot submit arbitrary message to platform, connection has not been established.')
+        else:
+            async for msg in self._websocket:
+                self.queue.put(msg)
+
     async def send_message(self, msg: str) -> None:
         """
         Send an arbitrary message to the platform.
@@ -81,10 +91,10 @@ class Platform:
         Returns:
             bool: True if the send was successful.
         """
-        if not self.websocket:
+        if not self._websocket:
             log.error('Cannot submit arbitrary message to platform, connection has not been established.')
         else:
-            await self.websocket.send(msg)
+            await self._websocket.send(msg)
 
     async def _sync_platform_queue(self) -> None:
         """
@@ -102,11 +112,12 @@ class Platform:
         """
         while True:
             try:
-                async with ws.connect(self.url, ping_timeout=300) as self.websocket:
+                async with ws.connect(self.url, ping_timeout=300) as self._websocket:
                     try:
                         log.info(f'Established connection to platform hosted at \'{self.url}\'')
                         while True:
                             await self._sync_platform_queue()
+                            await self._recv_message()
                             time.sleep(5)
                         # await asyncio.Future()
                     except ws.ConnectionClosed:
