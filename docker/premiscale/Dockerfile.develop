@@ -37,11 +37,11 @@ WORKDIR /opt/premiscale
 RUN chown -R premiscale:root .
 USER premiscale
 
-ARG PYTHON_USERNAME
-ARG PYTHON_PASSWORD
-ARG PYTHON_REPOSITORY
-ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
-ARG PYTHON_PACKAGE_VERSION=0.0.1
+ARG PYTHON_USERNAME \
+    PYTHON_PASSWORD \
+    PYTHON_REPOSITORY \
+    PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple \
+    PYTHON_PACKAGE_VERSION=0.0.1
 
 ENV PATH=${PATH}:/opt/premiscale/.local/bin
 
