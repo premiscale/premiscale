@@ -11,7 +11,7 @@ import json
 import requests
 
 from typing import Dict, Callable, Optional, Any
-from functools import wraps
+from functools import wraps, singledispatch
 from multiprocessing.queues import Queue
 from urllib.parse import urljoin
 from urllib.error import URLError
@@ -35,10 +35,11 @@ class RateLimitedError(Exception):
         return f'RateLimitError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
 
 
-def retry(tries: int) -> Callable:
+@singledispatch
+def retry(tries: int =0) -> Callable:
     """
     A request retry decorator. If singledispatch becomes compatible with `typing`, it'd be cool to duplicate this
-    registering another dispatch on `f`, allowing us to remove a layer.
+    registering another dispatch on `f`, allowing us to remove a layer of function calls.
 
     Args:
         tries: number of times to retry the wrapped function call. When `0`, retries indefinitely.
@@ -82,8 +83,12 @@ def retry(tries: int) -> Callable:
                     return res
 
         return new_f
-
     return _f
+
+
+@retry.register
+def _() -> Callable:
+    return retry(tries=0)
 
 
 class Register:
@@ -125,7 +130,7 @@ class Register:
         self._header = self._sender.request_header
 
 
-@retry(tries=3)
+@retry  # type: ignore
 def register(token: str, endpoint: str = 'https://app.premiscale.com', path: str = '/agent/registration') -> bool:
     """
     Make a request to the registration service.
@@ -157,8 +162,6 @@ def register(token: str, endpoint: str = 'https://app.premiscale.com', path: str
             raise URLError(
                 f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
             )
-
-    return True
 
 
 class Platform:
