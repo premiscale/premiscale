@@ -1,6 +1,7 @@
 import logging
 
 from multiprocessing.queues import Queue
+from setproctitle import setproctitle
 
 
 log = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ class ASG:
     the config.
     """
     def __init__(self) -> None:
+        setproctitle('autoscaling')
         self.queue: Queue
 
     def __call__(self, asg_queue: Queue) -> None:

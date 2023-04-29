@@ -2,6 +2,7 @@ import logging
 import time
 
 from multiprocessing.queues import Queue
+from setproctitle import setproctitle
 
 
 log = logging.getLogger(__name__)
@@ -14,6 +15,7 @@ class Reconcile:
     actions to correct the state drift are added to the queue.
     """
     def __init__(self, state_connection: dict, metrics_connection: dict) -> None:
+        setproctitle('reconcile')
         match state_connection['type']:
             case 'mysql':
                 from premiscale.state.mysql import MySQL

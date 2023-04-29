@@ -17,6 +17,7 @@ from urllib.parse import urljoin
 from urllib.error import URLError
 from http import HTTPStatus
 from mohawk import Sender
+from setproctitle import setproctitle
 
 
 log = logging.getLogger(__name__)
@@ -171,6 +172,7 @@ class Platform:
     configure them.
     """
     def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
+        setproctitle('platform')
         # Path needs to align with the Helm chart's ingress.
         self.url = urljoin('wss://' + url, path)
         self._token = token
