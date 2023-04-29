@@ -11,7 +11,7 @@ import json
 import requests
 
 from typing import Dict, Callable, Optional, Any
-from functools import wraps, singledispatch
+from functools import wraps
 from multiprocessing.queues import Queue
 from urllib.parse import urljoin
 from urllib.error import URLError
@@ -35,7 +35,6 @@ class RateLimitedError(Exception):
         return f'RateLimitError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
 
 
-@singledispatch
 def retry(tries: int =0) -> Callable:
     """
     A request retry decorator. If singledispatch becomes compatible with `typing`, it'd be cool to duplicate this
@@ -86,11 +85,6 @@ def retry(tries: int =0) -> Callable:
     return _f
 
 
-@retry.register
-def _() -> Callable:
-    return retry(tries=0)
-
-
 class Register:
     """
     Register the agent with the remote platform.
@@ -100,7 +94,7 @@ class Register:
         self._ext = org_id
 
 
-@retry  # type: ignore
+@retry()
 def register(token: str, domain: str, path: str = '/agent/registration') -> bool:
     """
     Make a request to the registration service.
