@@ -16,9 +16,9 @@ class ASG:
     the config.
     """
     def __init__(self) -> None:
-        setproctitle('autoscaling')
         self.queue: Queue
 
     def __call__(self, asg_queue: Queue) -> None:
+        setproctitle('autoscaling')
         self.queue = asg_queue
         log.debug('Starting autoscaling subprocess')

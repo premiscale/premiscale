@@ -15,7 +15,6 @@ class Reconcile:
     actions to correct the state drift are added to the queue.
     """
     def __init__(self, state_connection: dict, metrics_connection: dict) -> None:
-        setproctitle('reconcile')
         match state_connection['type']:
             case 'mysql':
                 from premiscale.state.mysql import MySQL
@@ -32,6 +31,7 @@ class Reconcile:
         self.asg_queue: Queue
 
     def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
+        setproctitle('reconcile')
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
         log.debug('Starting reconciliation subprocess')

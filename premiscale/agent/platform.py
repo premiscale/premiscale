@@ -137,7 +137,6 @@ class Platform:
     configure them.
     """
     def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
-        setproctitle('platform')
         # Path needs to align with the Helm chart's ingress.
         self.url = urljoin('wss://' + url, path)
         self._token = token
@@ -146,6 +145,7 @@ class Platform:
         self._auth: Dict
 
     def __call__(self, platform_queue: Queue) -> None:
+        setproctitle('platform')
         self.queue = platform_queue
         log.debug('Starting platform connection subprocess')
         # This should never exit. Process should stay open forever.

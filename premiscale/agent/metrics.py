@@ -13,7 +13,6 @@ class Metrics:
     on a per-ASG basis whether Actions need to be taken.
     """
     def __init__(self, connection: dict) -> None:
-        setproctitle('metrics')
         match connection['type']:
             case 'influxdb':
                 from premiscale.metrics.influxdb import InfluxDB
@@ -21,4 +20,5 @@ class Metrics:
                 self.metrics_database = InfluxDB(**connection)
 
     def __call__(self) -> None:
+        setproctitle('metrics')
         log.debug('Starting metrics collection subprocess')
