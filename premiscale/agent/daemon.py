@@ -34,8 +34,7 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         token (str): Agent registration token.
         host (str): PremiScale platform host.
     """
-    setproctitle('premiscale agent: daemon')
-    # mp.set_start_method('spawn')
+    setproctitle('premiscale')
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor, mp.Manager() as manager:
         # DaemonContext(
