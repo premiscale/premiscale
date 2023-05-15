@@ -12,7 +12,7 @@ from typing import Optional, Any, Union, Tuple
 from pathlib import Path
 from importlib import resources
 
-from premiscale.config._config import Config
+from src.premiscale.config._config import Config
 
 
 log = logging.getLogger(__name__)

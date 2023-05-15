@@ -5,7 +5,7 @@ Methods for interacting with the MySQL database.
 import logging
 
 from sqlmodel import Field, Session, SQLModel, create_engine
-from premiscale.state._base import State
+from src.premiscale.state._base import State
 
 
 log = logging.getLogger(__name__)

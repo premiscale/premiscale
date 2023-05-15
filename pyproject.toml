@@ -7,7 +7,7 @@ maintainers = ["Emma Doyle <emma@premiscale.com>"]
 license = "Proprietary"
 readme = "README.md"
 packages = [
-  { include = "premiscale" }
+  { include = "src" }
 ]
 include = [
   "LICENSE"
@@ -40,4 +40,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-premiscale = "premiscale.agent.cli:main"
+premiscale = "src.premiscale.agent.cli:main"

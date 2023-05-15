@@ -17,6 +17,7 @@ from urllib.parse import urljoin
 from urllib.error import URLError
 from http import HTTPStatus
 from setproctitle import setproctitle
+from src.premiscale.agent.cli import version
 
 
 log = logging.getLogger(__name__)
@@ -108,6 +109,10 @@ def register(token: str, domain: str, path: str = '/agent/registration') -> bool
         bool: True if the registration was successful, False otherwise.
     """
     url = urljoin(domain, path)
+
+    payload = {
+        'version': version
+    }
 
     # response = requests.get(
     #     url=url,

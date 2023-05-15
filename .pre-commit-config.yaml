@@ -31,7 +31,7 @@ repos:
       - id: pylint
         args:
           - --rcfile=.pylintrc
-          - premiscale/
+          - src/
 
   # - repo: https://github.com/mgedmin/check-manifest
   #   rev: "0.48"
