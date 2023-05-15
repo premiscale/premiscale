@@ -44,7 +44,6 @@ ENV PATH=${PATH}:/opt/premiscale/.local/bin
 
 # Install and initialize PremiScale.
 RUN mkdir -p "$HOME"/.local/bin && \
-. bin/activate && \
 pip install --upgrade pip && \
 pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
 
