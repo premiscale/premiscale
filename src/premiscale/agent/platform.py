@@ -17,7 +17,6 @@ from urllib.parse import urljoin
 from urllib.error import URLError
 from http import HTTPStatus
 from setproctitle import setproctitle
-from src.premiscale.agent.cli import version
 
 
 log = logging.getLogger(__name__)
@@ -96,7 +95,7 @@ class Register:
 
 
 @retry()
-def register(token: str, domain: str, path: str = '/agent/registration') -> bool:
+def register(token: str, version: str, domain: str, path: str = '/agent/registration') -> bool:
     """
     Make a request to the registration service.
 
