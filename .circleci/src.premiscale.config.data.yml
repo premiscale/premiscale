@@ -13,6 +13,6 @@ workflows:
             parameters:
               path:
                 - tests/schema
-                - premiscale/config/data/default.yaml
+                - src/premiscale/config/data/default.yaml
             alias: yamale
-          schema-path: premiscale/config/data/schema.yaml
+          schema-path: src/premiscale/config/data/schema.yaml
