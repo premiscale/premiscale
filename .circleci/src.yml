@@ -36,7 +36,7 @@ jobs:
   pylint:
     description: PyLint
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.2
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -83,7 +83,7 @@ jobs:
   release-twine-setup-py:
     description: twine upload
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.2
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
