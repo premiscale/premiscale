@@ -36,7 +36,7 @@ jobs:
   pylint:
     description: PyLint
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.2
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -56,7 +56,7 @@ jobs:
       modules_path:
         type: string
         description: Path to modules directory in package.
-        default: premiscale
+        default: src
       configuration_file:
         type: string
         description: Path to pylint configuration file
@@ -83,7 +83,7 @@ jobs:
   release-twine-setup-py:
     description: twine upload
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.1
+      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.2
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -197,7 +197,7 @@ workflows:
           name: docker [premiscale] [develop]
           image-name: premiscale
           context: nexus
-          path: docker/premiscale/Dockerfile.develop
+          path: docker/premiscale/Dockerfile
           nexus-domain: $DOCKER_DEVELOP_DOMAIN
           args: >-
             --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
@@ -240,7 +240,7 @@ workflows:
           name: docker [premiscale] [master]
           image-name: premiscale
           context: nexus
-          path: docker/premiscale/Dockerfile.develop
+          path: docker/premiscale/Dockerfile
           nexus-domain: $DOCKER_MASTER_DOMAIN
           args: >-
             --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>

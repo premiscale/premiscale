@@ -4,7 +4,7 @@ Parse config files with the v1alpha1 config-parsing class.
 
 
 from typing import Optional, Any, Dict
-from premiscale.config._config import Config
+from src.premiscale.config._config import Config
 
 import logging
 import os

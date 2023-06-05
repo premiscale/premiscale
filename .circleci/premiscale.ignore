@@ -1,3 +1,0 @@
-premiscale/config/data/*
-!poetry.lock
-!pyproject.toml

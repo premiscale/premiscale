@@ -1,4 +1,4 @@
-# PremiScale agent
+# PremiScale
 
 ```shell
 $ premiscale --help
@@ -21,7 +21,7 @@ options:
 
 ```
 
-The PremiScale autoscaler agent can be used to autoscale virtual machines and manage hardware in an on-premise datacenter (or a developer's local machine).
+The PremiScale agent can be used to autoscale virtual machines and manage hardware in an on-premise datacenter (or a developer's local machine).
 
 ## TODOs
 

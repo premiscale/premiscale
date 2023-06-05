@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.6.1
+  general: bjd2385/general@0.6.2
 
 workflows:
   schema:
@@ -13,6 +13,6 @@ workflows:
             parameters:
               path:
                 - tests/schema
-                - premiscale/config/data/default.yaml
+                - src/premiscale/config/data/default.yaml
             alias: yamale
-          schema-path: premiscale/config/data/schema.yaml
+          schema-path: src/premiscale/config/data/schema.yaml

@@ -8,16 +8,15 @@ PremiScale autoscaler agent.
 import sys
 import logging
 import os
-import asyncio
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
 
-from premiscale.config.parse import initialize, validate, configparse
-from premiscale.agent.daemon import start
+from src.premiscale.config.parse import initialize, validate, configparse
+from src.premiscale.agent.daemon import start
 
 
-__version__ = meta.version('premiscale')
+version = meta.version('premiscale')
 
 
 log = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--host', type=str, default='wss://app.premiscale.com',
+        '--host', type=str, default='app.premiscale.com',
         help='URL of the PremiScale platform.'
     )
 
@@ -106,7 +105,7 @@ def main() -> None:
         logging.getLogger('asyncio').setLevel(logging.WARNING)
 
     if args.version:
-        log.info(f'premiscale v{__version__}')
+        log.info(f'premiscale v{version}')
         sys.exit(0)
 
     if args.validate:
@@ -115,7 +114,7 @@ def main() -> None:
     if args.daemon:
         initialize(args.config)
         config = configparse(args.config)
-        log.info(f'Starting premiscale agent v{__version__}')
+        log.info(f'Starting premiscale agent v{version}')
 
         if (token := args.token) != '':
             log.debug('Registering agent with provided token')

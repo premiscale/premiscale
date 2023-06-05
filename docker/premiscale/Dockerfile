@@ -3,9 +3,10 @@ ARG TAG=3.10.11
 
 FROM ${IMAGE}:${TAG}
 
-ENV DOPPLER_TOKEN=""
-ENV PREMISCALE_DEBUG=false
-ENV PREMISCALE_TOKEN=""
+ENV PREMISCALE_DEBUG=false\
+    PREMISCALE_TOKEN="" \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2023"
@@ -20,14 +21,9 @@ ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
-# Install the Doppler CLI via apt for secrets retrieval.
-RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
-
-RUN apt update && apt install -y libvirt-dev && \
-rm -rf /var/apt/lists/* && \
-python -m venv /opt/premiscale
-
-RUN useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
+RUN apt update && apt install -y libvirt-dev \
+    && rm -rf /var/apt/lists/* \
+    && useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
 
 WORKDIR /opt/premiscale
 
@@ -40,17 +36,13 @@ ARG PYTHON_REPOSITORY
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
 
-ENV PATH=${PATH}:/opt/premiscale/.local/bin
+ENV PATH=/opt/premiscale/.local/bin:/opt/premiscale/bin:${PATH}
 
 # Install and initialize PremiScale.
-RUN mkdir -p "$HOME"/.local/bin && \
-. bin/activate && \
-pip install --upgrade pip && \
-pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}"
+RUN mkdir -p "$HOME"/.local/bin \
+    && pip install --upgrade pip \
+    && pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}" \
+    && premiscale --version
 
-RUN ls -lash /opt/premiscale/bin/
-
-ENV PATH="/opt/premiscale/bin:$PATH"
-
-ENTRYPOINT [ "/tini", "--", "doppler", "run", "--" ]
+ENTRYPOINT [ "/tini", "--" ]
 CMD [ "premiscale", "--log-stdout", "--daemon" ]

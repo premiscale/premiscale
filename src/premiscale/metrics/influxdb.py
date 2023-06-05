@@ -4,7 +4,7 @@ Methods for interacting with influxdb.
 
 import influxdb
 
-from premiscale.metrics._base import Metrics
+from src.premiscale.metrics._base import Metrics
 
 
 class InfluxDB:
