@@ -88,8 +88,6 @@ jobs:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
     resource_class: << parameters.resource-class >>
-    environment:
-      TWINE_NON_INTERACTIVE: true
     parameters:
       resource-class:
         type: enum
@@ -120,48 +118,28 @@ jobs:
         default: .pypirc
       version:
         description: Override the version of the uploaded artifact in pyproject.toml. Mainly for development pipelines.
-        type: integer
-        default: -1
+        type: string
+        default: '-1'
     steps:
       - checkout
       - install-poetry
       - unless:
           condition:
-            equal: [<< parameters.version >>, -1]
+            equal: [<< parameters.version >>, '-1']
           steps:
             - run:
                 name: Update pyproject.toml version
-                command: |
-                  _VERSION="$(grep -oiP "(?<=version = \").*(?=\")" pyproject.toml)"
+                command: |+
+                  _VERSION="$(grep -oiP "(?<=^(version = \")).*(?=\")" pyproject.toml)"
 
-                  if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-                      sed "s@version = \"${_VERSION}\"@version = \"0.0.<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
-                  elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
-                      _VERSION_A="${_VERSION%%a*}"
-                      sed "s@version = \"${_VERSION}\"@version = \"0.0.<< parameters.version >>\"@" pyproject.toml > pyproject.toml.tmp
-                  fi
-
-                  mv pyproject.toml.tmp pyproject.toml
-            # - run:
-            #     name: Update setup.py version
-            #     command: |
-            #       _VERSION="$(grep -oiP "(?<=version=\').*(?=\',)" setup.py)"
-
-            #       if [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
-            #           sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
-            #       elif [[ "$_VERSION" =~ ^[0-9]+.[0-9]+.[0-9]+a[0-9]+$ ]]; then
-            #           _VERSION_A="${_VERSION%%a*}"
-            #           sed "s@version=\'${_VERSION}\'@version=\'0.0.<< parameters.version >>\'@" setup.py > setup.py.tmp
-            #       fi
-
-            #       mv setup.py.tmp setup.py
+                  sed -i "s@version = \"${_VERSION}\"@version = \"<< parameters.version >>\"@" pyproject.toml
       - run:
           name: Build package
-          command: |
+          command: |+
             poetry build
       - run:
           name: Publish package to PyPI
-          command: |
+          command: |+
             pip install twine
             twine upload dist/* -u << parameters.user >> -p << parameters.password >> --repository << parameters.repository >> --non-interactive --config-file << parameters.config >>
 
@@ -185,7 +163,7 @@ workflows:
           resource-class: premiscale/on-premise
           context: nexus
           repository: python-develop
-          version: << pipeline.number >>
+          version: 0.0.<< pipeline.number >>
           requires:
             - pylint [python-develop]
           filters:
@@ -194,7 +172,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [premiscale] [develop]
+          name: docker [docker/premiscale] [develop]
           image-name: premiscale
           context: nexus
           path: docker/premiscale/Dockerfile
@@ -207,6 +185,24 @@ workflows:
           tag: 0.0.<< pipeline.number >>
           requires:
             - twine upload [python-develop]
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - general/helm-upgrade:
+          name: helm upgrade install [helm/premiscale] [develop]
+          cluster: $CHELSEA_CLUSTER
+          namespace: agent-develop
+          repo: $HELM_DEVELOP_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          additional-values: |
+            --set global.platform.hostname=app-develop.premiscale.com --set global.registry=docker-develop.ops.premiscale.com
+          requires:
+            - docker [docker/premiscale] [develop]
+          context:
+            - kubeconfig
+            - nexus
           filters:
             branches:
               ignore:
@@ -228,7 +224,7 @@ workflows:
           resource-class: premiscale/on-premise
           context: nexus
           repository: python-master
-          version: << pipeline.number >>
+          version: 0.0.<< pipeline.number >>
           requires:
             - pylint [python-master]
           filters:
@@ -237,7 +233,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [premiscale] [master]
+          name: docker [docker/premiscale] [master]
           image-name: premiscale
           context: nexus
           path: docker/premiscale/Dockerfile
@@ -250,6 +246,24 @@ workflows:
           tag: 0.0.<< pipeline.number >>
           requires:
             - twine upload [python-master]
+          filters:
+            branches:
+              only:
+                - master
+
+      - general/helm-upgrade:
+          name: helm upgrade install [helm/premiscale] [master]
+          cluster: $CHELSEA_CLUSTER
+          namespace: agent-master
+          repo: $HELM_MASTER_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          additional-values: |
+            --set global.platform.hostname=app-master.premiscale.com --set global.registry=docker-master.ops.premiscale.com
+          requires:
+            - docker [docker/premiscale] [master]
+          context:
+            - kubeconfig
+            - nexus
           filters:
             branches:
               only:

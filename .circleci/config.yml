@@ -70,7 +70,7 @@ workflows:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/docker-nexus:
-          name: docker [premiscale] [tag]
+          name: docker [docker/premiscale]
           image-name: premiscale
           context: nexus
           path: docker/premiscale
@@ -89,3 +89,21 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - general/helm-upgrade:
+          name: helm upgrade install [helm/premiscale] [tag]
+          cluster: $CHELSEA_CLUSTER
+          namespace: agent-tags
+          repo: $HELM_REPOSITORY_URL
+          version: $CIRCLE_TAG
+          # additional-values: |
+          requires:
+            - docker [docker/premiscale]
+            - helm build and push [helm/premiscale]
+          context:
+            - kubeconfig
+            - nexus
+          filters:
+            branches:
+              ignore:
+                - master
