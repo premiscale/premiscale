@@ -43,11 +43,11 @@ api:
   listeningPort: 8080
 
 env:
-  - name: DOPPLER_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: doppler
-        key: doppler_token
+  # - name: DOPPLER_TOKEN
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: doppler
+  #       key: doppler_token
   - name: PREMISCALE_DEBUG
     value: false
   - name: PREMISCALE_TOKEN
