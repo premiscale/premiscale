@@ -125,7 +125,15 @@ def main() -> None:
             token = ''
 
         # Start the premiscale agent.
-        start('/opt/premiscale', args.pid_file, config, token, args.host)
+        sys.exit(
+            start(
+                '/opt/premiscale',
+                args.pid_file,
+                config,
+                token,
+                args.host
+            )
+        )
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')

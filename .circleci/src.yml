@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.6.2
+  general: bjd2385/general@0.7.5
 
 
 executors:
@@ -167,7 +167,7 @@ jobs:
 
 
 workflows:
-  premiscale:
+  src:
     jobs:
       # develop
 

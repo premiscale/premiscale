@@ -43,6 +43,6 @@ build-backend = "poetry.core.masonry.api"
 premiscale = "src.premiscale.agent.cli:main"
 
 [tool.mypy]
-python_version = 3.10
+python_version = "3.10"
 strict_optional = true
 ignore_missing_imports = true

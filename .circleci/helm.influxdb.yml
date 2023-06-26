@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.6.2
+  general: bjd2385/general@0.7.5
 
 
 workflows:
@@ -16,7 +16,6 @@ workflows:
           name: helm build and push [helm/influxdb] [develop]
           context: nexus
           path: helm/influxdb
-          repo-name: premiscale
           repo: $HELM_DEVELOP_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           image-tag: 0.0.<< pipeline.number >>
@@ -32,7 +31,6 @@ workflows:
           name: helm build and push [helm/influxdb] [master]
           context: nexus
           path: helm/influxdb
-          repo-name: premiscale
           repo: $HELM_MASTER_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           image-tag: 0.0.<< pipeline.number >>
