@@ -104,11 +104,6 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--log-stdout', action='store_true',
-        help='Log to stdout (for use in containerized deployments).'
-    )
-
-    parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
         help='Pidfile name to use for agent daemon.'
     )
