@@ -21,7 +21,7 @@ ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
-ARG LIBVIRT_DEV_VERSION=8.0.0-1ubuntu7.5
+ARG LIBVIRT_DEV_VERSION=7.0.0-3+deb11u2
 RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIRT_DEV_VERSION} \
     && rm -rf /var/apt/lists/* \
     && useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
