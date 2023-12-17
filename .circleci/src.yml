@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: bjd2385/general@0.6.2
+  general: premiscale/general@1.0.9
 
 
 executors:
@@ -36,7 +36,7 @@ jobs:
   pylint:
     description: PyLint
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.2
+      - image: docker.ops.premiscale.com/executors/python-3-10:1.0.4
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -83,7 +83,7 @@ jobs:
   release-twine-setup-py:
     description: twine upload
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:v1.0.2
+      - image: docker.ops.premiscale.com/executors/python-3-10:1.0.4
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -169,16 +169,11 @@ jobs:
 workflows:
   premiscale:
     jobs:
-      # develop
-
       - pylint:
-          name: pylint [python-develop]
           resource-class: premiscale/on-premise
           context: nexus
-          filters:
-            branches:
-              ignore:
-                - master
+
+      # develop
 
       - release-twine-setup-py:
           name: twine upload [python-develop]
@@ -187,7 +182,7 @@ workflows:
           repository: python-develop
           version: << pipeline.number >>
           requires:
-            - pylint [python-develop]
+            - pylint
           filters:
             branches:
               ignore:
@@ -214,15 +209,6 @@ workflows:
 
       # master
 
-      - pylint:
-          name: pylint [python-master]
-          resource-class: premiscale/on-premise
-          context: nexus
-          filters:
-            branches:
-              only:
-                - master
-
       - release-twine-setup-py:
           name: twine upload [python-master]
           resource-class: premiscale/on-premise
@@ -230,7 +216,7 @@ workflows:
           repository: python-master
           version: << pipeline.number >>
           requires:
-            - pylint [python-master]
+            - pylint
           filters:
             branches:
               only:

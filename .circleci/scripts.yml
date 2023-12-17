@@ -9,5 +9,4 @@ workflows:
   scripts:
     jobs:
       - shellcheck/check:
-          name: shellcheck
           external_sources: true

@@ -5,16 +5,21 @@ setup: true
 
 
 orbs:
-  dynamic: bjd2385/dynamic-continuation@3.6.12
-  general: bjd2385/general@0.7.5
+  dynamic: bjd2385/dynamic-continuation@3.7.1
+  general: premiscale/general@1.0.9
   slack: circleci/slack@4.12.5
 
 
 workflows:
   premiscale:
     jobs:
+      # Branches
+
       - dynamic/continue:
+          default-branch: master
           context: circleci
+
+      # Tags
 
       - slack/on-hold:
           context: slack
@@ -49,7 +54,6 @@ workflows:
           name: helm build and push [helm/premiscale]
           context: nexus
           path: helm/premiscale
-          repo-name: premiscale
           requires:
             - request-approval
           filters:
@@ -58,7 +62,7 @@ workflows:
             tags:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
-      - general/python-release-twine:
+      - general/python-release-poetry:
           name: pypi premiscale upload [python]
           context: nexus
           repository: python
@@ -81,10 +85,10 @@ workflows:
             --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
             --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
             --build-arg=PYTHON_REPOSITORY=python
-          tag: 0.0.<< pipeline.number >>
           requires:
             - pypi premiscale upload [python]
             - request-approval
+          tag: $CIRCLE_TAG
           filters:
             branches:
               ignore: /.*/
