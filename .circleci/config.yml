@@ -6,7 +6,7 @@ setup: true
 
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.6.12
-  general: bjd2385/general@0.7.5
+  general: premiscale/general@1.0.9
   slack: circleci/slack@4.12.5
 
 
@@ -49,7 +49,6 @@ workflows:
           name: helm build and push [helm/premiscale]
           context: nexus
           path: helm/premiscale
-          repo-name: premiscale
           requires:
             - request-approval
           filters:
@@ -58,7 +57,7 @@ workflows:
             tags:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
-      - general/python-release-twine:
+      - general/python-release-poetry:
           name: pypi premiscale upload [python]
           context: nexus
           repository: python
