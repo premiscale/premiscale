@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Chart.Name }}
-  {{- with .Values.annotations }}
+  {{- with .Values.deployment.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -25,28 +25,28 @@ spec:
         - name: {{ . }}
         {{- end }}
       {{- end }}
-      {{- with .Values.securityContext }}
+      {{- with .Values.deployment.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 12 }}
       {{- end }}
       containers:
-        - name: {{ .Values.image.name }}
-          image: {{ .Values.global.imageRegistry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.resources }}
+        - name: {{ .Values.deployment.image.name }}
+          image: {{ .Values.global.imageRegistry }}/{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          {{- with .Values.deployment.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.api.enabled }}
+          {{- if .Values.deployment.api.enabled }}
           ports:
-            - containerPort: {{ .Values.api.listeningPort }}
+            - containerPort: {{ .Values.deployment.api.port }}
               name: http
           {{- end }}
-          {{- with .Values.securityContext }}
+          {{- with .Values.deployment.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.env }}
+          {{- with .Values.deployment.env }}
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}

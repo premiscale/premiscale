@@ -69,6 +69,26 @@ workflows:
               ignore:
                 - master
 
+      - general/helm-upgrade:
+          name: helm upgrade install [helm/premiscale] [develop]
+          cluster: $CHELSEA_CLUSTER
+          namespace: agent-develop
+          repo: $HELM_DEVELOP_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          additional-values: >-
+            --set global.imageRegistry=docker-develop.ops.premiscale.com
+            --set
+          requires:
+            - helm build and push [helm/premiscale] [develop]
+            - docker [premiscale] [develop]
+          context:
+            - kubeconfig
+            - nexus
+          filters:
+            branches:
+              ignore:
+                - master
+
       # master
 
       - general/python-release-poetry:
@@ -115,4 +135,23 @@ workflows:
           filters:
             branches:
               only:
+                - master
+
+      - general/helm-upgrade:
+          name: helm upgrade install [helm/premiscale] [master]
+          cluster: $CHELSEA_CLUSTER
+          namespace: agent-master
+          repo: $HELM_MASTER_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          additional-values: >-
+            --set global.imageRegistry=docker-master.ops.premiscale.com
+          requires:
+            - helm build and push [helm/premiscale] [master]
+            - docker [premiscale] [master]
+          context:
+            - kubeconfig
+            - nexus
+          filters:
+            branches:
+              ignore:
                 - master
