@@ -5,7 +5,7 @@ setup: true
 
 
 orbs:
-  dynamic: bjd2385/dynamic-continuation@3.6.12
+  dynamic: bjd2385/dynamic-continuation@3.7.1
   general: premiscale/general@1.0.9
   slack: circleci/slack@4.12.5
 
@@ -51,6 +51,7 @@ workflows:
           path: helm/premiscale
           requires:
             - request-approval
+          image-tag-path: .deployment.image.tag
           filters:
             branches:
               ignore: /.*/
@@ -73,7 +74,7 @@ workflows:
           name: docker [premiscale] [tag]
           image-name: premiscale
           context: nexus
-          path: docker/premiscale
+          path: .
           nexus-domain: $DOCKER_DOMAIN
           args: >-
             --build-arg=PYTHON_PACKAGE_VERSION=$CIRCLE_TAG
@@ -84,6 +85,25 @@ workflows:
           requires:
             - pypi premiscale upload [python]
             - request-approval
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - general/helm-upgrade:
+          name: helm upgrade install [helm/premiscale]
+          cluster: $CHELSEA_CLUSTER
+          namespace: platform-tags
+          repo: $HELM_REPOSITORY_URL
+          version: 0.0.<< pipeline.number >>
+          additional-values: |
+            --set global.platform.hostname=app.premiscale.com --set global.registry=docker.ops.premiscale.com
+          requires:
+            - request-approval
+          context:
+            - kubeconfig
+            - nexus
           filters:
             branches:
               ignore: /.*/
