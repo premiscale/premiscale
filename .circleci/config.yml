@@ -53,6 +53,8 @@ workflows:
           requires:
             - request-approval
           image-tag-path: .deployment.image.tag
+          pre-command: |+
+            helm repo add premiscale "$HELM_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           filters:
             branches:
               ignore: /.*/

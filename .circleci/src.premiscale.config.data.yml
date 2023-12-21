@@ -15,4 +15,4 @@ workflows:
                 - tests/schema
                 - src/premiscale/config/data/default.yaml
             alias: yamale
-          schema-path: src/premiscale/config/data/schema.yaml
+          schema-path: src/premiscale/config/data/schema.v1alpha1.yaml
