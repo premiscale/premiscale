@@ -62,6 +62,8 @@ workflows:
           repo: $HELM_DEVELOP_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           image-tag: 0.0.<< pipeline.number >>
+          pre-command: |+
+            helm repo add premiscale "$HELM_DEVELOP_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           requires:
             - helm lint [helm/premiscale]
           filters:
