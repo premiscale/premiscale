@@ -5,15 +5,15 @@ type: application
 version: 0.0.1
 appVersion: "0.0.1"
 
-dependencies: []
-  # - name: mysql
-  #   repository: "@premiscale"
-  #   alias: mysql
-  #   version: 0.0.x
-  #   condition: mysql.enabled
+dependencies:
+  - name: mysql
+    repository: "@premiscale"
+    alias: mysql
+    version: 0.0.x
+    condition: mysql.enabled
 
-  # - name: influxdb
-  #   repository: "@premiscale"
-  #   alias: influxdb
-  #   version: 0.0.x
-  #   condition: influxdb.enabled
+  - name: influxdb
+    repository: "@premiscale"
+    alias: influxdb
+    version: 0.0.x
+    condition: influxdb.enabled
