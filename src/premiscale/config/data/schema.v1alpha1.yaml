@@ -9,6 +9,9 @@ autoscale:
 daemon:
   actionsQueueMax: int(min=0)
 ---
+platform:
+  actionsQueueMax: int(min=0)
+---
 databases:
   state: include('state')
   metrics: include('metrics')
