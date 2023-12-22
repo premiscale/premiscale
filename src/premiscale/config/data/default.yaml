@@ -36,10 +36,9 @@ agent:
 
       # Seconds of collected metrics to keep and evaluate upon (must be >=interval)
       trailing: 1260
-  daemon:
-    actionsQueueMax: 0
 
   platform:
+    actionsQueueMax: 0
     domain: https://chelsea.ops.premiscale.com/agent/echo
 
 # Configure hosts and autoscaling groups on those hosts.

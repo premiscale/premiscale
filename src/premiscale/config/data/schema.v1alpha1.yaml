@@ -1,16 +1,14 @@
 version: enum('v1alpha1')
 agent:
-  daemon: include('daemon')
+  platform: include('platform')
   databases: include('databases')
 autoscale:
   hosts: include('hosts')
   groups: include('groups')
 ---
-daemon:
-  actionsQueueMax: int(min=0)
----
 platform:
   actionsQueueMax: int(min=0)
+  domain: str(min=1)
 ---
 databases:
   state: include('state')
