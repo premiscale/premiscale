@@ -91,6 +91,9 @@ workflows:
           version: 0.0.<< pipeline.number >>
           additional-values: >-
             --set global.imageRegistry=docker-develop.ops.premiscale.com
+            --set global.platform.hostname=app-develop.premiscale.com
+            --set mysql.enabled=true
+            --set influxdb.enabled=true
           requires:
             - helm build and push [helm/premiscale] [develop]
             - docker [premiscale] [develop]
@@ -162,6 +165,9 @@ workflows:
           version: 0.0.<< pipeline.number >>
           additional-values: >-
             --set global.imageRegistry=docker-master.ops.premiscale.com
+            --set global.platform.hostname=app-master.premiscale.com
+            --set mysql.enabled=true
+            --set influxdb.enabled=true
           requires:
             - helm build and push [helm/premiscale] [master]
             - docker [premiscale] [master]

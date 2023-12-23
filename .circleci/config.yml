@@ -112,7 +112,10 @@ workflows:
           repo: $HELM_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           additional-values: |
-            --set global.platform.hostname=app.premiscale.com --set global.registry=docker.ops.premiscale.com
+            --set global.imageRegistry=docker.ops.premiscale.com
+            --set global.platform.hostname=app.premiscale.com
+            --set mysql.enabled=true
+            --set influxdb.enabled=true
           requires:
             - request-approval
           context:
