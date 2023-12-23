@@ -77,7 +77,7 @@ workflows:
           pre-command: |+
             helm repo add premiscale "$HELM_DEVELOP_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           requires:
-            - helm lint [helm/premiscale]
+            - docker [premiscale] [develop]
           filters:
             branches:
               ignore:
@@ -96,7 +96,6 @@ workflows:
             --set influxdb.enabled=true
           requires:
             - helm build and push [helm/premiscale] [develop]
-            - docker [premiscale] [develop]
           context:
             - kubeconfig
             - nexus
@@ -151,7 +150,7 @@ workflows:
           pre-command: |+
             helm repo add premiscale "$HELM_MASTER_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           requires:
-            - helm lint [helm/premiscale]
+            - docker [premiscale] [master]
           filters:
             branches:
               only:
@@ -170,7 +169,6 @@ workflows:
             --set influxdb.enabled=true
           requires:
             - helm build and push [helm/premiscale] [master]
-            - docker [premiscale] [master]
           context:
             - kubeconfig
             - nexus
