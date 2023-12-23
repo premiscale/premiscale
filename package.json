@@ -20,7 +20,6 @@
     "docker:build:mysql": "./scripts/docker/build-mysql.sh",
     "docker:build:influxdb": "./scripts/docker/build-influxdb.sh",
     "docker:run": "./scripts/docker/run.sh",
-    "docker:build-run": "./scripts/docker/build.sh && ./scripts/docker/run.sh",
     "helm:dependency:update": "for p in helm/*; do echo \"$p\" && helm dependency update \"$p\"/; done",
     "helm:install:influxdb": "./scripts/helm/influxdb-install.sh",
     "helm:uninstall:influxdb": "helm uninstall influxdb -n platform-develop",

@@ -32,7 +32,7 @@ class RateLimitedError(Exception):
         self.delay = delay
 
     def __str__(self):
-        return f'RateLimitError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
+        return f'RateLimitedError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
 
 
 def retry(tries: int =0) -> Callable:

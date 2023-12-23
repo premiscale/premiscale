@@ -5,15 +5,25 @@ setup: true
 
 
 orbs:
-  dynamic: bjd2385/dynamic-continuation@3.7.1
-  general: premiscale/general@1.0.9
+  dynamic: bjd2385/dynamic-continuation@3.8.1
+  general: premiscale/general@1.0.12
   slack: circleci/slack@4.12.5
+
+
+executors:
+  python-3-10-libvirt:
+      docker:
+        - image: docker.ops.premiscale.com/executors/python-3-10:1.0.5
+          auth:
+            username: $DOCKER_USERNAME
+            password: $DOCKER_PASSWORD
 
 
 workflows:
   premiscale:
     jobs:
       - dynamic/continue:
+          base-revision: master
           context: circleci
 
       - slack/on-hold:
@@ -52,6 +62,8 @@ workflows:
           requires:
             - request-approval
           image-tag-path: .deployment.image.tag
+          pre-command: |+
+            helm repo add premiscale "$HELM_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           filters:
             branches:
               ignore: /.*/
@@ -60,6 +72,8 @@ workflows:
 
       - general/python-release-poetry:
           name: pypi premiscale upload [python]
+          executor: python-3-10-libvirt
+          resource-class: premiscale/on-premise
           context: nexus
           repository: python
           requires:
@@ -98,7 +112,10 @@ workflows:
           repo: $HELM_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           additional-values: |
-            --set global.platform.hostname=app.premiscale.com --set global.registry=docker.ops.premiscale.com
+            --set global.imageRegistry=docker.ops.premiscale.com
+            --set global.platform.hostname=app.premiscale.com
+            --set mysql.enabled=true
+            --set influxdb.enabled=true
           requires:
             - request-approval
           context:

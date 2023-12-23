@@ -2,17 +2,19 @@ version: 2.1
 
 
 orbs:
-  general: premiscale/general@1.0.9
+  general: premiscale/general@1.0.12
+
+
+executors:
+  premiscale-libvirt:
+    docker:
+      - image: docker.
+
 
 workflows:
-  schema:
+  src-premiscale-config-data:
     jobs:
       - general/python-yamale:
-          name: yamale [<< matrix.path >>]
-          matrix:
-            parameters:
-              path:
-                - tests/schema
-                - src/premiscale/config/data/default.yaml
-            alias: yamale
-          schema-path: src/premiscale/config/data/schema.yaml
+          executor: premiscale-libvirt
+          path: src/premiscale/config/data/default.yaml
+          schema-path: src/premiscale/config/data/schema.v1alpha1.yaml

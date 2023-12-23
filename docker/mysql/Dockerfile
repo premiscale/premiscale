@@ -7,11 +7,12 @@ FROM ${IMAGE}:${TAG}
 ARG VERSION=8.0.31
 
 LABEL org.opencontainers.image.description \
-    MySQL Docker image with Doppler env var wrapper
+    MySQL Docker image
 
-# Install the Doppler CLI via apt for secrets retrieval.
-RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
+# https://github.com/krallin/tini
+ARG TINI_VERSION=v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
 
-# Wrap this Docker image in secrets we can pull from doppler.
-ENTRYPOINT [ "doppler", "run", "--", "docker-entrypoint.sh" ]
+ENTRYPOINT [ "/tini", "--" ]
 CMD [ "mysqld" ]

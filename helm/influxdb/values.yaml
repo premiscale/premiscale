@@ -22,12 +22,8 @@ influxdb:
   securityContext: {}
   livenessProbe: {}
   readinessProbe: {}
-  env:
-    - name: DOPPLER_TOKEN
-      valueFrom:
-        secretKeyRef:
-          name: doppler
-          key: doppler_token
+  env: []
+
   adminUser:
     existingSecret: influxdb-passwords
   persistence:

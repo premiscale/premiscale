@@ -16,7 +16,6 @@ done
 
 for _ in $(seq 1 "$COUNT"); do
     docker run -itd --name "${PROJECT}"-"$(uuid | sed "s@-@@g" | head -c 10)" \
-        -e DOPPLER_TOKEN="$(pass show premiscale/doppler/development-service-token)" \
         -e PREMISCALE_DEBUG=true \
         -e PREMISCALE_TOKEN=123 \
         docker-develop.ops.premiscale.com/"${PROJECT}":"${VERSION}" "$@"

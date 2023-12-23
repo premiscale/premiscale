@@ -4,61 +4,60 @@ global:
     - nexus-docker-registry
   storageClass: longhorn
 
-image:
-  name: mysql
-  tag: latest
-  pullPolicy: Always
+deployment:
+  podSecurityContext: {}
+  containerSecurityContext: {}
 
-auth:
-  existingSecret: mysql-passwords
-  database: premiscale
-  username: premiscale
+  image:
+    name: mysql
+    tag: latest
+    pullPolicy: Always
 
-# Eventually I'll need these
-initdbScripts: {}
+  auth:
+    existingSecret: mysql-passwords
+    database: premiscale
+    username: premiscale
 
-annotations:
-  argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/mysql
+  # Eventually I'll need these
+  initdbScripts: {}
 
-resources:
-  requests:
-    cpu: 0.5
-    memory: 500Mi
-  limits:
-    cpu: 1.0
-    memory: 1Gi
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/mysql
 
-persistence:
-  enabled: true
-  storageClass: longhorn
-  accessModes:
-    - ReadWriteOnce
-  size: 500Mi
-  mountPath: /var/lib/mysql
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 500Mi
+    limits:
+      cpu: 1.0
+      memory: 1Gi
 
-livenessProbe:
-  enabled: true
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    accessModes:
+      - ReadWriteOnce
+    size: 500Mi
+    mountPath: /var/lib/mysql
 
-env:
-  - name: DOPPLER_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: doppler
-        key: doppler_token
-  - name: MYSQL_ROOT_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: mysql-credentials
-        key: mysql-root-password
-  - name: MYSQL_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: mysql-credentials
-        key: mysql-password
-  - name: MYSQL_DATABASE
-    value: premiscale
-  - name: MYSQL_USER
-    value: premiscale
+  livenessProbe:
+    enabled: true
+
+  env:
+    - name: MYSQL_ROOT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mysql-credentials
+          key: mysql-root-password
+    - name: MYSQL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mysql-credentials
+          key: mysql-password
+    - name: MYSQL_DATABASE
+      value: premiscale
+    - name: MYSQL_USER
+      value: premiscale
 
 service:
   enabled: true
@@ -67,5 +66,3 @@ service:
       port: 3306
       targetPort: 3306
   type: ClusterIP
-
-securityContext: {}
