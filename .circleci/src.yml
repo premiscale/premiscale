@@ -90,7 +90,6 @@ workflows:
           version: 0.0.<< pipeline.number >>
           additional-values: >-
             --set global.imageRegistry=docker-develop.ops.premiscale.com
-            --set
           requires:
             - helm build and push [helm/premiscale] [develop]
             - docker [premiscale] [develop]
