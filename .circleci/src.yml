@@ -29,8 +29,6 @@ workflows:
 
       - general/helm-lint:
           name: helm lint [helm/premiscale]
-          executor: python-3-10-libvirt
-          resource-class: premiscale/on-premise
           chart-path: helm/premiscale
 
       # develop
