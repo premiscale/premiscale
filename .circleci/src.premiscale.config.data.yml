@@ -12,7 +12,7 @@ executors:
 
 
 workflows:
-  schema:
+  src-premiscale-config-data:
     jobs:
       - general/python-yamale:
           executor: premiscale-libvirt

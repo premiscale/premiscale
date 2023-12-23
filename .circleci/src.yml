@@ -19,7 +19,7 @@ executors:
 
 
 workflows:
-  premiscale:
+  src:
     jobs:
       - general/python-pylint:
           context: nexus
