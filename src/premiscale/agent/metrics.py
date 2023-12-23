@@ -15,7 +15,7 @@ class Metrics:
     def __init__(self, connection: dict) -> None:
         match connection['type']:
             case 'influxdb':
-                from premiscale.metrics.influxdb import InfluxDB
+                from src.premiscale.metrics.influxdb import InfluxDB
                 del(connection['type'])
                 self.metrics_database = InfluxDB(**connection)
 
