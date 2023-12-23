@@ -22,6 +22,7 @@ workflows:
   src:
     jobs:
       - general/python-pylint:
+          name: pylint
           executor: python-3-10-libvirt
           resource-class: premiscale/on-premise
           context: nexus
@@ -40,7 +41,7 @@ workflows:
           repository: python-develop
           version: 0.0.<< pipeline.number >>
           requires:
-            - general/python-pylint
+            - pylint
           filters:
             branches:
               ignore:
@@ -111,7 +112,7 @@ workflows:
           repository: python-master
           version: 0.0.<< pipeline.number >>
           requires:
-            - general/python-pylint
+            - pylint
           filters:
             branches:
               only:
