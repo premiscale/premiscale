@@ -8,7 +8,7 @@ import yaml
 import logging
 import sys
 
-from typing import Optional, Any, Union, Tuple
+from typing import Any, Union, Tuple
 from pathlib import Path
 from importlib import resources
 
@@ -42,7 +42,7 @@ def configparse(config: str, check: bool = False) -> Config:
                 else:
                     log.info(f'Config \'{config}\' is valid against schema version {config_json["version"]}')
 
-            from premiscale.config.v1alpha1 import Config_v1alpha1
+            from src.premiscale.config.v1alpha1 import Config_v1alpha1
 
             conf = Config_v1alpha1(config_json)
             log.debug(f'Successfully parsed config {conf.version()}: {conf.json()}')
@@ -96,7 +96,7 @@ def validate(config: Union[Path, str], schema: str = 'schema.yaml', strict: bool
 
 def _config_exists(path: Union[str, Path]) -> bool:
     """
-    Determine if a configuration file exists.
+    Determine if a configuration file exists w/the side-effect of added logging.
 
     Args:
         path (Union[str, Path]): path to config file.
@@ -127,7 +127,7 @@ def _make_default(path: Union[str, Path], default_config: Union[str, Path] = 'de
             Path.mkdir(Path(path).parent, parents=True)
         if not _config_exists(path):
             log.debug(f'Creating default config file at \'{str(path)}\'')
-            with resources.open_text('premiscale.config.data', default_config) as default_f, open(str(path), 'x', encoding='utf-8') as f:
+            with resources.open_text('premiscale.config.data', str(default_config)) as default_f, open(str(path), 'x', encoding='utf-8') as f:
                 f.write(default_f.read().strip())
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
