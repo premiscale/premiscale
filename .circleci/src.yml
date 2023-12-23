@@ -25,6 +25,7 @@ workflows:
           context: nexus
 
       - general/helm-lint:
+          context: nexus
           executor: python-3-10-libvirt
           resource-class: premiscale/on-premise
           name: helm lint [helm/premiscale]
