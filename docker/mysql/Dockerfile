@@ -1,5 +1,5 @@
 ARG IMAGE=mysql
-ARG TAG=8.0.33
+ARG TAG=8.2.0
 
 FROM ${IMAGE}:${TAG}
 
