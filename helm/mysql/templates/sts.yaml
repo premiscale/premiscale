@@ -4,9 +4,9 @@ metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
-  {{- with $.Values.annotations }}
+  {{- with $.Values.deployment.annotations }}
   annotations:
-    {{- toYaml $.Values.annotations | nindent 4 }}
+    {{- toYaml $.Values.deployment.annotations | nindent 4 }}
   {{- end }}
 spec:
   replicas: 1
@@ -19,25 +19,25 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      {{- with .Values.securityContext }}
+      {{- with .Values.deployment.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- toYaml . | nindent 12 }}
       {{- end }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
-        {{- range $.Values.global.imagePullSecrets }}
+        {{- range . }}
         - name: {{ . }}
         {{- end }}
       {{- end }}
       containers:
-        - name: {{ .Values.image.name }}
-          image: {{ .Values.global.imageRegistry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.resources }}
+        - name: {{ .Values.deployment.image.name }}
+          image: {{ .Values.global.imageRegistry }}/{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          {{- with .Values.deployment.resources }}
           resources:
-            {{- toYaml $.Values.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.livenessProbe.enabled }}
+          {{- if .Values.deployment.livenessProbe.enabled }}
           livenessProbe:
             exec:
               command:
@@ -47,22 +47,22 @@ spec:
                 - |
                   mysqladmin status -uroot -p"${MYSQL_ROOT_PASSWORD}"
           {{- end }}
-          {{- if .Values.env }}
+          {{- with .Values.deployment.env }}
           env:
-            {{- toYaml $.Values.env | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: {{ .Chart.Name }}
-              mountPath: {{ .Values.persistence.mountPath }}
+              mountPath: {{ .Values.deployment.persistence.mountPath }}
   volumeClaimTemplates:
     - metadata:
         name: {{ .Chart.Name }}
       spec:
         storageClassName: {{ .Values.global.storageClass }}
         accessModes:
-          {{- range $.Values.persistence.accessModes }}
+          {{- range $.Values.deployment.persistence.accessModes }}
           - {{ . }}
           {{- end }}
         resources:
           requests:
-            storage: {{ .Values.persistence.size }}
+            storage: {{ .Values.deployment.persistence.size }}

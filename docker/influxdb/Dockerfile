@@ -7,10 +7,12 @@ FROM ${IMAGE}:${TAG}
 ARG VERSION=2.6.1
 
 LABEL org.opencontainers.image.description \
-    InfluxDB Docker image with Doppler env var wrapper
+    InfluxDB Docker image
 
-# Install the Doppler CLI via apt for secrets retrieval.
-RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh
+# https://github.com/krallin/tini
+ARG TINI_VERSION=v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
 
-ENTRYPOINT [ "doppler", "run", "--", "/entrypoint.sh" ]
+ENTRYPOINT [ "/tini", "--" ]
 CMD [ "influxd" ]
