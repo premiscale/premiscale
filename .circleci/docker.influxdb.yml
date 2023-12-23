@@ -13,6 +13,7 @@ workflows:
           image-name: influxdb
           context: nexus
           path: docker/influxdb
+
           nexus-domain: $DOCKER_DEVELOP_DOMAIN
           tag: 0.0.<< pipeline.number >>
           filters:
