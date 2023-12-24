@@ -24,11 +24,12 @@ RUN chmod +x /tini
 ARG LIBVIRT_DEV_VERSION=9.0.0-4
 RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIRT_DEV_VERSION} \
     && rm -rf /var/apt/lists/* \
-    && useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
+    && groupadd premiscale \
+    && useradd -rm -d /opt/premiscale -s /bin/bash -g premiscale -u 1001 premiscale
 
 WORKDIR /opt/premiscale
 
-RUN chown -R premiscale:root .
+RUN chown -R premiscale:premiscale .
 USER premiscale
 
 ARG PYTHON_USERNAME
