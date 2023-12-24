@@ -16,7 +16,7 @@ repos:
       - id: mixed-line-ending
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.3.0
+    rev: v1.4.1
     hooks:
       - id: mypy
         args:
@@ -31,14 +31,6 @@ repos:
         args:
           - --rcfile=.pylintrc
           - src/
-
-  # - repo: https://github.com/mgedmin/check-manifest
-  #   rev: "0.48"
-  #   hooks:
-  #     - id: check-manifest
-  #       args:
-  #        - --ignore
-  #        - "*.json,*.txt,*.yaml,.mypy.ini,config/*.md,docker/*.sh,,examples/*,helm/*,package/*,scripts/*,service/*,tests/*,.circleci/*,.pylintrc,.tool-versions,docker/**/*,helm/**/*,examples/**/*"
 
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0

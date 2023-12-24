@@ -53,5 +53,45 @@ configMap:
 # Enable / disable databases.
 influxdb:
   enabled: false
+
+  resources:
+    requests:
+      cpu: 0.25
+      memory: 500Mi
+    limits:
+      cpu: 1.0
+      memory: 1Gi
 mysql:
   enabled: false
+
+  resources:
+    requests:
+      cpu: 0.25
+      memory: 500Mi
+    limits:
+      cpu: 1.0
+      memory: 1Gi
+
+# Deploy the kubernetes autoscaler for PremiScale to connect to.
+# Images are overridden to point at those that have been rebuilt to have a
+# premiscale interface.
+kubernetes-autoscaler:
+  enabled: false
+
+  image:
+    repository: docker.ops.premiscale.com/cluster-autoscaler
+    tag: v1.28.2
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 300Mi
+    requests:
+      cpu: 100m
+      memory: 300Mi
+
+  revisionHistoryLimit: 1
+
+  # Pod securityContext
+  securityContext: {}

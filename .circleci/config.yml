@@ -85,7 +85,7 @@ workflows:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - general/docker-nexus:
-          name: docker [premiscale] [tag]
+          name: docker [docker/premiscale]
           image-name: premiscale
           context: nexus
           path: .

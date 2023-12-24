@@ -1,5 +1,5 @@
 ARG IMAGE=python
-ARG TAG=3.10.11
+ARG TAG=3.10.13
 
 FROM ${IMAGE}:${TAG}
 
@@ -21,13 +21,15 @@ ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
-RUN apt update && apt install -y libvirt-dev \
+ARG LIBVIRT_DEV_VERSION=9.0.0-4
+RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIRT_DEV_VERSION} \
     && rm -rf /var/apt/lists/* \
-    && useradd -rm -d /opt/premiscale -s /bin/bash -g root -G sudo -u 1001 premiscale
+    && groupadd premiscale \
+    && useradd -rm -d /opt/premiscale -s /bin/bash -g premiscale -u 1001 premiscale
 
 WORKDIR /opt/premiscale
 
-RUN chown -R premiscale:root .
+RUN chown -R premiscale:premiscale .
 USER premiscale
 
 ARG PYTHON_USERNAME
@@ -45,4 +47,4 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "premiscale", "--log-stdout", "--daemon" ]
+CMD [ "bash", "-c", "premiscale --log-stdout --daemon" ]
