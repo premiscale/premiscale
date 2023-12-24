@@ -45,4 +45,4 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "premiscale", "--log-stdout", "--daemon" ]
+CMD [ "bash", "-c", "premiscale --log-stdout --daemon" ]

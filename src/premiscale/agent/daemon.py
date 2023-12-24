@@ -63,17 +63,20 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
                 Platform(host, token),
                 platform_message_queue
             ) if register(token, f'https://{host}', 'agent/registration') else None,
+
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
                 ASG(),
                 autoscaling_action_queue
             ),
+
             # Host metrics collection subprocess (populates metrics database)
             executor.submit(
                 Metrics(
                     agent_config.agent_databases_metrics_connection() # type: ignore
                 )
             ),
+
             # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
             executor.submit(
                 Reconcile(
