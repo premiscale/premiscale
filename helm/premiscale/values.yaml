@@ -55,3 +55,27 @@ influxdb:
   enabled: false
 mysql:
   enabled: false
+
+# Deploy the kubernetes autoscaler for PremiScale to connect to.
+# Images are overridden to point at those that have been rebuilt to have a
+# premiscale interface.
+kubernetesAutoscaler:
+  enabled: false
+
+  image:
+    repository: docker.ops.premiscale.com/cluster-autoscaler
+    tag: v1.28.2
+    pullPolicy: IfNotPresent
+
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 300Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 300Mi
+
+  revisionHistoryLimit: 1
+
+  # Pod securityContext
+  securityContext: {}
