@@ -18,8 +18,8 @@ dependencies:
     version: 0.0.x
     condition: influxdb.enabled
 
-  - name: autoscaler/cluster-autoscaler
+  - name: cluster-autoscaler
     repository: https://kubernetes.github.io/autoscaler
     alias: kubernetes-autoscaler
     version: 9.34.1
-    condition: kubernetesAutoscaler.enabled
+    condition: kubernetes-autoscaler.enabled
