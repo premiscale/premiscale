@@ -8,7 +8,7 @@ orbs:
 executors:
   python-3-10:
     docker:
-      - image: cimg/python:3.10.9
+      - image: cimg/python:3.10.11
 
   python-3-10-libvirt:
     docker:
@@ -48,7 +48,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [premiscale] [develop]
+          name: docker [docker/premiscale] [develop]
           image-name: premiscale
           context: nexus
           path: docker/premiscale/Dockerfile
@@ -77,7 +77,7 @@ workflows:
           pre-command: |+
             helm repo add premiscale "$HELM_DEVELOP_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           requires:
-            - docker [premiscale] [develop]
+            - docker [docker/premiscale] [develop]
           filters:
             branches:
               ignore:
@@ -121,7 +121,7 @@ workflows:
                 - master
 
       - general/docker-nexus:
-          name: docker [premiscale] [master]
+          name: docker [docker/premiscale] [master]
           image-name: premiscale
           context: nexus
           path: docker/premiscale/Dockerfile
@@ -150,7 +150,7 @@ workflows:
           pre-command: |+
             helm repo add premiscale "$HELM_MASTER_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
           requires:
-            - docker [premiscale] [master]
+            - docker [docker/premiscale] [master]
           filters:
             branches:
               only:
@@ -174,5 +174,5 @@ workflows:
             - nexus
           filters:
             branches:
-              ignore:
+              only:
                 - master

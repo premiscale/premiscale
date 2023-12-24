@@ -23,7 +23,7 @@ from src.premiscale.agent.reconciliation import Reconcile
 log = logging.getLogger(__name__)
 
 
-def start(working_dir: str, pid_file: str, agent_config: Config, token: str, host: str) -> None:
+def start(working_dir: str, pid_file: str, agent_config: Config, token: str, host: str) -> int:
     """
     Start our four daemon processes passing along relevant configuration.
 
@@ -33,6 +33,9 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         agent_config (Config): Agent config object.
         token (str): Agent registration token.
         host (str): PremiScale platform host.
+
+    Returns:
+        int: return code.
     """
     setproctitle('premiscale')
 
@@ -91,3 +94,5 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         for process in processes:
             if process is not None:
                 process.result()
+
+    return 0

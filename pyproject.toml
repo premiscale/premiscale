@@ -22,7 +22,9 @@ keywords = [
 [tool.poetry.dependencies]
 python = "^3.10"
 yamale = "^4.0.4"
-Flask = "^2.2.2"
+Flask = "^2.3.2"
+gunicorn = "^20.1.0"
+flask-cors = "^3.0.10"
 websockets = "^11.0"
 influxdb = "^5.3"
 python-daemon = "^3.0"
@@ -43,6 +45,6 @@ build-backend = "poetry.core.masonry.api"
 premiscale = "src.premiscale.agent.cli:main"
 
 [tool.mypy]
-python_version = 3.10
+python_version = "3.10"
 strict_optional = true
 ignore_missing_imports = true

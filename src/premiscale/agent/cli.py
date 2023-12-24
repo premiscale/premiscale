@@ -9,26 +9,64 @@ import sys
 import logging
 import os
 
+from typing import Union, Optional
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
-
+from enum import Enum
 from src.premiscale.config.parse import initialize, validate, configparse
 from src.premiscale.agent.daemon import start
 
 
 version = meta.version('premiscale')
 
-
 log = logging.getLogger(__name__)
 
 
-def debug() -> bool:
-    """
-    Determine if the agent should be in debug based on an environment variable.
+class LogLevel(Enum):
+    info = logging.INFO
+    error = logging.ERROR
+    warn = logging.WARNING
+    debug = logging.DEBUG
 
-    https://stackoverflow.com/a/65407083
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def from_string(cls, s: str) -> 'LogLevel':
+        try:
+            return cls[s.lower()]
+        except KeyError:
+            log.error('Must specify an accepted log level.')
+            sys.exit(1)
+
+
+def validate_port(number: Union[str, int], port_name: Optional[str] = None) -> int:
     """
-    return os.getenv('PREMISCALE_DEBUG', 'False').lower() in ('true', '1', 't')
+    Validates port number as a string or int.
+
+    Args:
+        number (Union[int, str]): the port number as either an int or a str.
+
+    Returns:
+        int: the port number, if it passes all checks.
+    """
+    try:
+        _number = int(number)
+    except ValueError:
+        if port_name:
+            log.error(f'expected a valid port number "{port_name}", received: "{number}"')
+        else:
+            log.error(f'expected a valid port number, received: "{number}"')
+        sys.exit(1)
+
+    if 0x0 > _number > 0xFFFF:
+        if port_name:
+            log.error(f'port "{port_name}" must be in range 0 < port < 65535, received: "{number}"')
+        else:
+            log.error(f'port must be in range 0 < port < 65535, received: "{number}"')
+        sys.exit(1)
+
+    return _number
 
 
 def main() -> None:
@@ -41,7 +79,12 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '-d', '--daemon', action='store_true', default=False,
+        '--token', type=str, default='',
+        help='Platform registration token.'
+    )
+
+    parser.add_argument(
+        '-d', '--daemon', action='store_true',
         help='Start agent as a daemon.'
     )
 
@@ -51,28 +94,13 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--host', type=str, default='app.premiscale.com',
-        help='URL of the PremiScale platform.'
-    )
-
-    parser.add_argument(
-        '--token', type=str, default='',
-        help='Token for registering the agent with the platform on start.'
-    )
-
-    parser.add_argument(
-        '--validate', action='store_true', default=False,
+        '--validate', action='store_true',
         help='Validate the provided configuration file and exit.'
     )
 
     parser.add_argument(
-        '--version', action='store_true', default=False,
+        '--version', action='store_true',
         help='Display agent version.'
-    )
-
-    parser.add_argument(
-        '--log-stdout', action='store_true', default=False,
-        help='Log to stdout (for use in containerized deployments).'
     )
 
     parser.add_argument(
@@ -81,8 +109,25 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--debug', action='store_true', default=False,
-        help='Enable agent debug logging.'
+        '--log-level', default='info', choices=list(LogLevel), type=LogLevel.from_string,
+        help='Set the logging level.'
+    )
+
+    log_group = parser.add_mutually_exclusive_group()
+
+    log_group.add_argument(
+        '--log-file', type=str, default='/opt/premiscale/echoes.log',
+        help='Specify the file the service logs to if --log-stdout is not set.'
+    )
+
+    log_group.add_argument(
+        '--log-stdout', action='store_true',
+        help='Log to stdout (for use in containerized deployments).'
+    )
+
+    parser.add_argument(
+        '--host', type=str, default='app.premiscale.com',
+        help='URL of the PremiScale platform.'
     )
 
     args = parser.parse_args()
@@ -91,18 +136,20 @@ def main() -> None:
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
-            format='%(asctime)s | %(levelname)s | %(message)s',
-            level=(logging.DEBUG if args.debug or debug() else logging.INFO)
+            format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+            level=args.log_level.value
         )
     else:
-        logging.basicConfig(
-            stream=sys.stdout,
-            format='%(message)s',
-            level=(logging.DEBUG if args.debug or debug() else logging.INFO)
-        )
-    if args.debug or debug():
-        log.info('Agent started in debug mode.')
-        logging.getLogger('asyncio').setLevel(logging.WARNING)
+        try:
+            logging.basicConfig(
+                filename=args.log_file,
+                format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+                level=args.log_level.value,
+                filemode='a'
+            )
+        except FileNotFoundError as msg:
+            log.error(f'Failed to configure logging, received: {msg}')
+            sys.exit(1)
 
     if args.version:
         log.info(f'premiscale v{version}')
@@ -125,7 +172,15 @@ def main() -> None:
             token = ''
 
         # Start the premiscale agent.
-        start('/opt/premiscale', args.pid_file, config, token, args.host)
+        sys.exit(
+            start(
+                '/opt/premiscale',
+                args.pid_file,
+                config,
+                token,
+                args.host
+            )
+        )
     else:
         initialize(args.config)
         log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')
