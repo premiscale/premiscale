@@ -41,7 +41,7 @@ def healthcheck() -> Response:
 
 class Healthcheck(base.Application):
     """
-    Custom gunicorn application so we can start this service via the echoes service CLI.
+    Custom gunicorn application so we can start this service via the PremiScale service CLI.
     """
     def __init__(self, options: Optional[Dict] = None, app: Optional[Flask] = None):
         self.options = options or {}
