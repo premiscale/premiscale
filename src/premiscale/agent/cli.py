@@ -152,7 +152,7 @@ def main() -> None:
                 level=args.log_level.value,
                 filemode='a'
             )
-        except FileNotFoundError as msg:
+        except (FileNotFoundError, PermissionError) as msg:
             log.error(f'Failed to configure logging, received: {msg}')
             sys.exit(1)
 
