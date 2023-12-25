@@ -37,9 +37,9 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.deployment.api.enabled }}
+          {{- if .Values.deployment.imds.enabled }}
           ports:
-            - containerPort: {{ .Values.deployment.api.port }}
+            - containerPort: {{ .Values.deployment.imds.port }}
               name: http
           {{- end }}
           {{- with .Values.deployment.containerSecurityContext }}

@@ -34,15 +34,23 @@ deployment:
     # argocd-image-updater.argoproj.io/write-back-method: git
     # argocd-image-updater.argoproj.io/git-branch: master
 
-  api:
+  imds:
     enabled: false
     port: 8080
 
   env:
-    - name: PREMISCALE_DEBUG
-      value: 'false'
     - name: PREMISCALE_TOKEN
       value: ''
+    - name: PREMISCALE_CONFIG_PATH
+      value: /opt/premiscale/config.yaml
+    - name: PREMISCALE_PID_FILE
+      value: /opt/premiscale/premiscale.pid
+    - name: PREMISCALE_LOG_LEVEL
+      value: info
+    - name: PREMISCALE_LOG_FILE
+      value: /opt/premiscale/agent.log
+    - name: PREMISCALE_PLATFORM
+      value: app.premiscale.com
 
 configMap:
   enabled: false
