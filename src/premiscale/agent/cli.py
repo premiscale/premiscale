@@ -10,6 +10,7 @@ import logging
 import os
 
 from typing import Union, Optional
+from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
 from enum import Enum
@@ -116,7 +117,7 @@ def main() -> None:
     log_group = parser.add_mutually_exclusive_group()
 
     log_group.add_argument(
-        '--log-file', type=str, default='/opt/premiscale/echoes.log',
+        '--log-file', type=str, default='/opt/premiscale/agent.log',
         help='Specify the file the service logs to if --log-stdout is not set.'
     )
 
@@ -141,6 +142,10 @@ def main() -> None:
         )
     else:
         try:
+            # Instantiate log path (when logging locally).
+            if not Path.exists(Path(args.log_file)):
+                Path(args.log_file).parent.mkdir(parents=True, exist_ok=True)
+
             logging.basicConfig(
                 filename=args.log_file,
                 format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
