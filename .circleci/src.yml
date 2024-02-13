@@ -111,14 +111,18 @@ workflows:
           repo: $HELM_DEVELOP_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           additional-values: >-
-            --set global.imageRegistry=docker-develop.ops.premiscale.com
-            --set global.platform.hostname=app-develop.premiscale.com
+            --set global.imageRegistry="$DOCKER_DEVELOP_DOMAIN"
+            --set global.platform.hostname="$APP_DEVELOP_DOMAIN"
             --set mysql.enabled=true
+            --set mysql.deployment.image.tag=0.0.<< pipeline.number >>
             --set influxdb.enabled=true
+            --set influxdb.influxdb.image.repository="$DOCKER_DEVELOP_DOMAIN"/influxdb
+            --set influxdb.influxdb.image.tag=0.0.<< pipeline.number >>
           requires:
             - 'hold: release develop deployment'
           context:
             - kubeconfig
+            - premiscale
             - nexus
           filters:
             branches:
