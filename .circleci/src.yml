@@ -3,6 +3,7 @@ version: 2.1
 
 orbs:
   general: premiscale/general@1.2.0
+  slack: circleci/slack@4.12.6
 
 
 executors:
@@ -83,6 +84,26 @@ workflows:
               ignore:
                 - master
 
+      - slack/on-hold:
+          name: 'slack: notify release development deployment hold'
+          context: slack
+          requires:
+            - helm build and push [helm/premiscale] [develop]
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - request-approval:
+          name: 'hold: release develop deployment'
+          requires:
+            - 'slack: notify release development deployment hold'
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master
+
       - general/helm-upgrade:
           name: helm upgrade install [helm/premiscale] [develop]
           cluster: $CHELSEA_CLUSTER
@@ -95,7 +116,7 @@ workflows:
             --set mysql.enabled=true
             --set influxdb.enabled=true
           requires:
-            - helm build and push [helm/premiscale] [develop]
+            - 'hold: release develop deployment'
           context:
             - kubeconfig
             - nexus
@@ -156,6 +177,26 @@ workflows:
               only:
                 - master
 
+      - slack/on-hold:
+          name: 'slack: notify release master deployment hold'
+          context: slack
+          requires:
+            - helm build and push [helm/premiscale] [master]
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - request-approval:
+          name: 'hold: release master deployment'
+          requires:
+            - 'slack: notify release master deployment hold'
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master
+
       - general/helm-upgrade:
           name: helm upgrade install [helm/premiscale] [master]
           cluster: $CHELSEA_CLUSTER
@@ -168,7 +209,7 @@ workflows:
             --set mysql.enabled=true
             --set influxdb.enabled=true
           requires:
-            - helm build and push [helm/premiscale] [master]
+            - 'hold: release master deployment'
           context:
             - kubeconfig
             - nexus
