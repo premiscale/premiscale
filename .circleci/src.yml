@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: premiscale/general@1.0.12
+  general: premiscale/general@1.2.0
 
 
 executors:
@@ -12,7 +12,7 @@ executors:
 
   python-3-10-libvirt:
     docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:1.0.5
+      - image: docker.ops.premiscale.com/executors/python-3-10:1.0.6
         auth:
           username: $DOCKER_USERNAME
           password: $DOCKER_PASSWORD
@@ -24,7 +24,7 @@ workflows:
       - general/python-pylint:
           name: pylint
           executor: python-3-10-libvirt
-          resource-class: premiscale/on-premise
+          resource-class: premiscale/small
           context: nexus
 
       - general/helm-lint:
@@ -36,7 +36,7 @@ workflows:
       - general/python-release-poetry:
           name: twine upload [python-develop]
           executor: python-3-10-libvirt
-          resource-class: premiscale/on-premise
+          resource-class: premiscale/small
           context: nexus
           repository: python-develop
           version: 0.0.<< pipeline.number >>
@@ -109,7 +109,7 @@ workflows:
       - general/python-release-poetry:
           name: twine upload [python-master]
           executor: python-3-10-libvirt
-          resource-class: premiscale/on-premise
+          resource-class: premiscale/small
           context: nexus
           repository: python-master
           version: 0.0.<< pipeline.number >>
