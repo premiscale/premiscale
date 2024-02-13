@@ -208,10 +208,13 @@ workflows:
           repo: $HELM_MASTER_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           additional-values: >-
-            --set global.imageRegistry=docker-master.ops.premiscale.com
-            --set global.platform.hostname=app-master.premiscale.com
+            --set global.imageRegistry="$DOCKER_MASTER_DOMAIN"
+            --set global.platform.hostname="$APP_MASTER_DOMAIN"
             --set mysql.enabled=true
+            --set mysql.deployment.image.tag=0.0.<< pipeline.number >>
             --set influxdb.enabled=true
+            --set influxdb.influxdb.image.repository="$DOCKER_MASTER_DOMAIN"/influxdb
+            --set influxdb.influxdb.image.tag=0.0.<< pipeline.number >>
           requires:
             - 'hold: release master deployment'
           context:
