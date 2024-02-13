@@ -4,7 +4,7 @@
 $ premiscale --help
 usage: premiscale [-h] [-d] [-c CONFIG] [--host HOST] [--token TOKEN] [--validate] [--version] [--log-stdout] [--pid-file PID_FILE] [--debug]
 
-PremiScale autoscaler agent. © PremiScale, Inc. 2023
+PremiScale autoscaler agent. © PremiScale, Inc. 2024
 
 options:
   -h, --help            show this help message and exit

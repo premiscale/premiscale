@@ -6,14 +6,14 @@ setup: true
 
 orbs:
   dynamic: bjd2385/dynamic-continuation@3.8.1
-  general: premiscale/general@1.0.12
-  slack: circleci/slack@4.12.5
+  general: premiscale/general@1.2.0
+  slack: circleci/slack@4.12.6
 
 
 executors:
   python-3-10-libvirt:
       docker:
-        - image: docker.ops.premiscale.com/executors/python-3-10:1.0.5
+        - image: docker.ops.premiscale.com/executors/python-3-10:1.0.6
           auth:
             username: $DOCKER_USERNAME
             password: $DOCKER_PASSWORD
@@ -35,6 +35,7 @@ workflows:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       - request-approval:
+          name: 'hold: create tagged release artifacts'
           requires:
             - slack/on-hold
           type: approval
@@ -48,22 +49,7 @@ workflows:
           name: Create GitHub release from tag
           context: github
           requires:
-            - request-approval
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
-
-      - general/helm-release-nexus:
-          name: helm build and push [helm/premiscale]
-          context: nexus
-          path: helm/premiscale
-          requires:
-            - request-approval
-          image-tag-path: .deployment.image.tag
-          pre-command: |+
-            helm repo add premiscale "$HELM_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
+            - 'hold: create tagged release artifacts'
           filters:
             branches:
               ignore: /.*/
@@ -73,11 +59,11 @@ workflows:
       - general/python-release-poetry:
           name: pypi premiscale upload [python]
           executor: python-3-10-libvirt
-          resource-class: premiscale/on-premise
+          resource-class: premiscale/small
           context: nexus
           repository: python
           requires:
-            - request-approval
+            - 'hold: create tagged release artifacts'
           filters:
             branches:
               ignore: /.*/
@@ -98,7 +84,43 @@ workflows:
           tag: 0.0.<< pipeline.number >>
           requires:
             - pypi premiscale upload [python]
-            - request-approval
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - general/helm-release-nexus:
+          name: helm build and push [helm/premiscale]
+          context: nexus
+          path: helm/premiscale
+          requires:
+            - docker [docker/premiscale]
+          image-tag-path: .deployment.image.tag
+          pre-command: |+
+            helm repo add premiscale "$HELM_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - slack/on-hold:
+          name: 'slack: notify release tagged deployment hold'
+          context: slack
+          requires:
+            - helm build and push [helm/premiscale]
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+
+      - request-approval:
+          name: 'hold: release tagged deployment'
+          requires:
+            - 'slack: notify release tagged deployment hold'
+          type: approval
           filters:
             branches:
               ignore: /.*/
@@ -112,14 +134,18 @@ workflows:
           repo: $HELM_REPOSITORY_URL
           version: 0.0.<< pipeline.number >>
           additional-values: |
-            --set global.imageRegistry=docker.ops.premiscale.com
-            --set global.platform.hostname=app.premiscale.com
+            --set global.imageRegistry="$DOCKER_DOMAIN"
+            --set global.platform.hostname="$APP_DOMAIN"
             --set mysql.enabled=true
+            --set mysql.deployment.image.tag="$CIRCLE_TAG"
             --set influxdb.enabled=true
+            --set influxdb.influxdb.image.repository="$DOCKER_DOMAIN"/influxdb
+            --set influxdb.influxdb.image.tag="$CIRCLE_TAG"
           requires:
-            - request-approval
+            - 'hold: release tagged deployment'
           context:
             - kubeconfig
+            - premiscale
             - nexus
           filters:
             branches:
