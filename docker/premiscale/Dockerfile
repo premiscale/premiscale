@@ -3,10 +3,14 @@ ARG TAG=3.10.13
 
 FROM ${IMAGE}:${TAG}
 
-ENV PREMISCALE_DEBUG=false\
+ENV PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1 \
     PREMISCALE_TOKEN="" \
-    PYTHONHASHSEED=random \
-    PYTHONUNBUFFERED=1
+    PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml \
+    PREMISCALE_PID_FILE=/opt/premiscale/premiscale.pid \
+    PREMISCALE_LOG_LEVEL=info \
+    PREMISCALE_LOG_FILE=/opt/premiscale/agent.log \
+    PREMISCALE_PLATFORM=app.premiscale.com
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2024"
@@ -47,4 +51,4 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "premiscale --log-stdout --daemon" ]
+CMD [ "bash", "-c", "premiscale --log-stdout --daemon --token ${PREMISCALE_TOKEN} --config ${PREMISCALE_CONFIG_PATH} --pid-file ${PREMISCALE_PID_FILE} --log-level ${PREMISCALE_LOG_LEVEL} --log-file ${PREMISCALE_LOG_FILE} --host ${PREMISCALE_PLATFORM}" ]
