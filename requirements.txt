@@ -579,9 +579,9 @@ sqlalchemy==2.0.27 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:fa67d821c1fd268a5a87922ef4940442513b4e6c377553506b9db3b83beebbd8 \
     --hash=sha256:fd8aafda7cdff03b905d4426b714601c0978725a19efc39f5f207b86d188ba01 \
     --hash=sha256:ff2f1b7c963961d41403b650842dc2039175b906ab2093635d8319bef0b7d620
-sqlmodel==0.0.14 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:0bff8fc94af86b44925aa813f56cf6aabdd7f156b73259f2f60692c6a64ac90e \
-    --hash=sha256:accea3ff5d878e41ac439b11e78613ed61ce300cfcb860e87a2d73d4884cbee4
+sqlmodel==0.0.18; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:2e520efe03810ef2c268a1004cfc5ef8f8a936312232f38d6c8e62c11af2cac3 \
+    --hash=sha256:d70fdf8fe595e30a918660cf4537b9c5fc2fffdbfcba851a0135de73c3ebcbb7
 typing-extensions==4.9.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:23478f88c37f27d76ac8aee6c905017a143b0b1b886c3c9f66bc2fd94f9f5783 \
     --hash=sha256:af72aea155e91adfc61c3ae9e0e342dbc0cba726d6cba4b6c72c1f34e47291cd
