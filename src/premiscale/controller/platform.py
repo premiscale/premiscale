@@ -142,7 +142,7 @@ class Platform:
     """
     def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
         # Path needs to align with the Helm chart's ingress.
-        self.url = urljoin('wss://' + url, path)
+        self.url = urljoin('ws://' + url, path)
         self._token = token
         self.websocket = None
         self.queue: Queue
