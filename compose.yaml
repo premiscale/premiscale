@@ -1,0 +1,196 @@
+services:
+  # Controller network
+  premiscale:
+    container_name: premiscale
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    environment:
+      - PREMISCALE_TOKEN=123
+      - PREMISCALE_LISTEN_ADDRESS=0.0.0.0
+      - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
+      - PREMISCALE_PID_FILE=/opt/premiscale/premiscale.pid
+      - PREMISCALE_LOG_LEVEL=info
+      - PREMISCALE_LOG_FILE=/opt/premiscale/agent.log
+      - PREMISCALE_PLATFORM=echoes:8080
+    networks:
+      - controller
+      - platform
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    depends_on:
+      mysql-agent-state:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+      echoes:
+        condition: service_healthy
+      registration:
+        condition: service_healthy
+  mysql-agent-state:
+    container_name: premiscale-mysql-state
+    image: mysql:8.4.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=premiscale
+      - MYSQL_DATABASE=premiscale
+      - MYSQL_USER=premiscale
+      - MYSQL_PASSWORD=premiscale
+    ports:
+      - 3306:3306
+    networks:
+      - controller
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+    healthcheck:
+      test: mysqladmin ping -h localhost
+      start_period: 3s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  influxdb:
+    container_name: premiscale-influxdb-metrics
+    image: influxdb:2.7.6
+    environment:
+      - DOCKER_INFLUXDB_INIT_USERNAME=premiscale
+      - DOCKER_INFLUXDB_INIT_PASSWORD=premiscale
+      - DOCKER_INFLUXDB_INIT_ORG=premiscale
+      - DOCKER_INFLUXDB_INIT_BUCKET=premiscale-local
+    ports:
+      - 8086:8086
+    networks:
+      - controller
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+    healthcheck:
+      test: influx ping || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+
+  # Platform network
+  echoes:
+    container_name: premiscale-echoes
+    build:
+      context: ../echoes/
+      dockerfile: Dockerfile.local
+    environment:
+      - ECHOES_LISTEN_ADDRESS=0.0.0.0
+      - ECHOES_LISTEN_HTTP_PORT=8081
+      - ECHOES_LISTEN_WSS_PORT=8080
+      - ECHOES_LOGLEVEL=info
+      - ECHOES_FLASK_WORKERS=1
+      - MYSQL_USERNAME=premiscale
+      - MYSQL_PASSWORD=premiscale
+      - MYSQL_HOST=localhost
+      - MYSQL_PORT=3036
+      - MYSQL_DATABASE=premiscale
+    ports:
+      - 8080:8080
+      - 8081:8081
+    networks:
+      - platform
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    depends_on:
+      mysql-platform:
+        condition: service_healthy
+    healthcheck:
+      test: curl http://localhost:$$ECHOES_LISTEN_HTTP_PORT/agent/websocket/healthcheck
+      start_period: 2s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  registration:
+    container_name: premiscale-registration
+    build:
+      context: ../registration/
+      dockerfile: Dockerfile.local
+    environment:
+      - REGISTRATION_LISTEN_ADDRESS=0.0.0.0
+      - REGISTRATION_LISTEN_PORT=8080
+      - REGISTRATION_WORKERS=0
+      - REGISTRATION_LOGLEVEL=info
+      - MYSQL_USERNAME=premiscale
+      - MYSQL_PASSWORD=premiscale
+      - MYSQL_HOST=localhost
+      - MYSQL_PORT=3036
+      - MYSQL_DATABASE=premiscale
+    ports:
+      - 8082:8080
+    networks:
+      - platform
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    depends_on:
+      mysql-platform:
+        condition: service_healthy
+    healthcheck:
+      test: curl http://localhost:$$REGISTRATION_LISTEN_PORT/agent/registration/healthcheck
+      start_period: 2s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  mysql-platform:
+    container_name: premiscale-mysql-platform
+    image: mysql:8.4.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=premiscale
+      - MYSQL_DATABASE=premiscale
+      - MYSQL_USER=premiscale
+      - MYSQL_PASSWORD=premiscale
+    ports:
+      - 3307:3306
+    networks:
+      - platform
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+    healthcheck:
+      test: mysqladmin ping -h localhost
+      start_period: 3s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+networks:
+  controller:
+    driver: bridge
+    internal: true
+  platform:
+    driver: bridge
+    internal: false
