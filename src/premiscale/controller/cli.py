@@ -136,7 +136,7 @@ def main() -> None:
                 args.pid_file,
                 config,
                 token,
-                args.host
+                args.platform
             )
         )
     else:

@@ -6,8 +6,9 @@ import asyncio
 import logging
 import time
 import socket
-import json
 import requests
+import json
+import ssl
 
 from typing import Dict, Callable, Optional, Any
 from websockets import client as ws, exceptions as wse
@@ -172,7 +173,7 @@ class Platform:
                     except wse.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
                         continue
-            except socket.gaierror as msg:
+            except (socket.gaierror, ssl.SSLError) as msg:
                 log.error(f'Could not connect to \'{self.url}\', retrying: {msg}')
                 time.sleep(1)
                 continue
