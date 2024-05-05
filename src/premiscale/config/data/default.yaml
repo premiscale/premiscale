@@ -39,7 +39,7 @@ agent:
 
   platform:
     actionsQueueMax: 0
-    domain: https://chelsea.ops.premiscale.com/agent/echo
+    domain: https://$PREMISCALE_PLATFORM
 
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:

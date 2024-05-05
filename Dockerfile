@@ -5,14 +5,15 @@ FROM --platform=linux/amd64 ${IMAGE}:${TAG}
 
 SHELL [ "/bin/bash", "-c" ]
 
-ENV PYTHONHASHSEED=random \
-    PYTHONUNBUFFERED=1 \
-    PREMISCALE_TOKEN="" \
+ENV PREMISCALE_TOKEN="" \
     PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml \
     PREMISCALE_PID_FILE=/opt/premiscale/premiscale.pid \
     PREMISCALE_LOG_LEVEL=info \
-    PREMISCALE_LOG_FILE=/opt/premiscale/agent.log \
-    PREMISCALE_PLATFORM=app.premiscale.com
+    PREMISCALE_PLATFORM=app.premiscale.com \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1 \
+    POETRY_VIRTUALENVS_CREATE=true \
+    POETRY_VERSION=1.8.2
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2024"
