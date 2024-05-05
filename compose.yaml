@@ -103,6 +103,9 @@ services:
       - MYSQL_HOST=localhost
       - MYSQL_PORT=3037
       - MYSQL_DATABASE=premiscale
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=premiscale
     ports:
       - 8080:8080
       - 8081:8081
@@ -118,6 +121,8 @@ services:
           memory: 1G
     depends_on:
       mysql-platform:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: curl http://localhost:$$ECHOES_LISTEN_HTTP_PORT/agent/websocket/healthcheck
@@ -140,6 +145,9 @@ services:
       - MYSQL_HOST=localhost
       - MYSQL_PORT=3037
       - MYSQL_DATABASE=premiscale
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=premiscale
     ports:
       - 8082:8080
     networks:
@@ -155,12 +163,30 @@ services:
     depends_on:
       mysql-platform:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
       test: curl http://localhost:$$REGISTRATION_LISTEN_PORT/agent/registration/healthcheck
       start_period: 2s
       interval: 5s
       timeout: 5s
       retries: 3
+  redis:
+    container_name: redis
+    image: redis:7.2.4
+    environment:
+      - REDIS_PASSWORD=premiscale
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD
+    volumes:
+      - cache:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 3s
+      retries: 5
+      start_period: 2s
+      timeout: 3s
   mysql-platform:
     container_name: premiscale-mysql-platform
     image: mysql:8.4.0
@@ -194,3 +220,6 @@ networks:
   platform:
     driver: bridge
     internal: false
+volumes:
+  cache:
+    driver: local
