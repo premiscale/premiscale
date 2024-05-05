@@ -4,7 +4,7 @@ Parse config files with the v1alpha1 config-parsing class.
 
 
 from typing import Optional, Any, Dict
-from src.premiscale.config._config import Config
+from premiscale.config._config import Config
 
 import logging
 import os
@@ -93,8 +93,8 @@ class Config_v1alpha1(Config):
                 mysql_connect = state['connection']
                 return {
                     'type': 'mysql',
-                    'url': mysql_connect['url'],
-                    'database': mysql_connect['database'],
+                    'url': os.path.expandvars(mysql_connect['url']),
+                    'database': os.path.expandvars(mysql_connect['database']),
                     'username': os.path.expandvars(mysql_connect['credentials']['username']),
                     'password': os.path.expandvars(mysql_connect['credentials']['password'])
                 }
@@ -133,8 +133,8 @@ class Config_v1alpha1(Config):
                 influxdb_connect = metrics['connection']
                 return {
                     'type': 'influxdb',
-                    'url': influxdb_connect['url'],
-                    'database': influxdb_connect['database'],
+                    'url': os.path.expandvars(influxdb_connect['url']),
+                    'database': os.path.expandvars(influxdb_connect['database']),
                     'username': os.path.expandvars(influxdb_connect['credentials']['username']),
                     'password': os.path.expandvars(influxdb_connect['credentials']['password'])
                 }

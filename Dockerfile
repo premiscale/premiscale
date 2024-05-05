@@ -54,4 +54,4 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "premiscale --log-stdout --daemon --token ${PREMISCALE_TOKEN} --config ${PREMISCALE_CONFIG_PATH} --pid-file ${PREMISCALE_PID_FILE} --log-level ${PREMISCALE_LOG_LEVEL} --log-file ${PREMISCALE_LOG_FILE} --host ${PREMISCALE_PLATFORM}" ]
+CMD [ "bash", "-c", "premiscale --log-stdout --daemon --token ${PREMISCALE_TOKEN} --config ${PREMISCALE_CONFIG_PATH} --pid-file ${PREMISCALE_PID_FILE} --log-level ${PREMISCALE_LOG_LEVEL} --log-file ${PREMISCALE_LOG_FILE} --platform ${PREMISCALE_PLATFORM}" ]

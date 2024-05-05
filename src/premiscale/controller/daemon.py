@@ -13,11 +13,11 @@ from multiprocessing.queues import Queue
 from typing import cast
 from setproctitle import setproctitle
 # from daemon import DaemonContext, pidfile
-from src.premiscale.config._config import Config
-from src.premiscale.controller.platform import Platform, register
-from src.premiscale.controller.autoscaling import ASG
-from src.premiscale.controller.metrics import Metrics
-from src.premiscale.controller.reconciliation import Reconcile
+from premiscale.config._config import Config
+from premiscale.controller.platform import Platform, register
+from premiscale.controller.autoscaling import ASG
+from premiscale.controller.metrics import Metrics
+from premiscale.controller.reconciliation import Reconcile
 
 
 log = logging.getLogger(__name__)

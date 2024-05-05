@@ -13,6 +13,12 @@ services:
       - PREMISCALE_LOG_LEVEL=info
       - PREMISCALE_LOG_FILE=/opt/premiscale/agent.log
       - PREMISCALE_PLATFORM=echoes:8080
+      - INFLUXDB_HOST=localhost:8086
+      - INFLUXDB_USERNAME=premiscale
+      - INFLUXDB_PASSWORD=premiscale
+      - MYSQL_HOST=localhost:3306
+      - MYSQL_USERNAME=premiscale
+      - MYSQL_PASSWORD=premiscale
     networks:
       - controller
       - platform

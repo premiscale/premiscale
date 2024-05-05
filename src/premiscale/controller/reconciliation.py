@@ -17,13 +17,13 @@ class Reconcile:
     def __init__(self, state_connection: dict, metrics_connection: dict) -> None:
         match state_connection['type']:
             case 'mysql':
-                from src.premiscale.state.mysql import MySQL
+                from premiscale.state.mysql import MySQL
                 del(state_connection['type'])
                 self.state_database = MySQL(**state_connection)
 
         match metrics_connection['type']:
             case 'influxdb':
-                from src.premiscale.metrics.influxdb import InfluxDB
+                from premiscale.metrics.influxdb import InfluxDB
                 del(metrics_connection['type'])
                 self.metrics_database = InfluxDB(**metrics_connection)
 

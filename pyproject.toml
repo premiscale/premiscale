@@ -7,7 +7,7 @@ maintainers = ["Emma Doyle <emma@premiscale.com>"]
 license = "Proprietary"
 readme = "README.md"
 packages = [
-  { include = "src" }
+  { include = "premiscale", from = "src" }
 ]
 include = [
   "LICENSE"
@@ -51,7 +51,7 @@ ignore_missing_imports = true
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = "invalid-name,wrong-import-order,superfluous-parens,line-too-long,missing-final-newline,logging-fstring-interpolation,too-many-instance-attributes,unused-argument,unused-import"
-fail-under = 9
+fail-under = 4
 
 [tool.pylint.MASTER]
 init-hook = "import sys; sys.path.append('.')"

@@ -1,5 +1,5 @@
 """
-PremiScale autoscaler agent.
+PremiScale autoscaler.
 
 © PremiScale, Inc. 2024
 """
@@ -12,9 +12,10 @@ import os
 from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
-from src.premiscale.config.parse import initialize, validate, configparse
-from src.premiscale.controller.daemon import start
-from src.premiscale.controller.utils import LogLevel, validate_port
+
+from premiscale.config.parse import initialize, validate, configparse
+from premiscale.controller.daemon import start
+from premiscale.controller.utils import LogLevel
 
 
 version = meta.version('premiscale')
@@ -79,7 +80,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--host', type=str, default='app.premiscale.com',
+        '--platform', type=str, default='app.premiscale.com',
         help='URL of the PremiScale platform.'
     )
 

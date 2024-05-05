@@ -5,12 +5,12 @@ Methods relating to connecting to PremiScale's platform.
 import asyncio
 import logging
 import time
-import websockets as ws
 import socket
 import json
 import requests
 
 from typing import Dict, Callable, Optional, Any
+from websockets import client as ws, exceptions as wse
 from functools import wraps
 from multiprocessing.queues import Queue
 from urllib.parse import urljoin
@@ -142,7 +142,7 @@ class Platform:
     """
     def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
         # Path needs to align with the Helm chart's ingress.
-        self.url = urljoin('ws://' + url, path)
+        self.url = urljoin('wss://' + url, path)
         self._token = token
         self.websocket = None
         self.queue: Queue
@@ -169,7 +169,7 @@ class Platform:
                         await self._sync_platform_queue()
                         await self._recv_message()
                         # await asyncio.Future()
-                    except ws.ConnectionClosed:
+                    except wse.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
                         continue
             except socket.gaierror as msg:
