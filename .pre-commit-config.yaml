@@ -50,7 +50,7 @@ repos:
       - id: hadolint
         args:
           - Dockerfile
-          - Dockerfile.local
+          - Dockerfile.develop
           - docker/influxdb/Dockerfile
           - docker/mysql/Dockerfile
           - --config

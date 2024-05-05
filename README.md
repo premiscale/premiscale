@@ -1,5 +1,7 @@
 # PremiScale
 
+The PremiScale Kubernetes controller brings autoscaling to on-premise infrastructure.
+
 ```shell
 $ premiscale --help
 usage: premiscale [-h] [-d] [-c CONFIG] [--host HOST] [--token TOKEN] [--validate] [--version] [--log-stdout] [--pid-file PID_FILE] [--debug]
@@ -21,4 +23,45 @@ options:
 
 ```
 
-The PremiScale agent can be used to autoscale virtual machines and manage hardware in an on-premise datacenter (or a developer's local machine).
+## Development
+
+### Local
+
+Run
+
+```shell
+docker compose up -d
+```
+
+This will bring up a number of services, including platform services that the controller registers and connects to for billing.
+
+### Remote
+
+Connect to your development cluster of choice with kubectl access, followed by
+
+```shell
+devspace
+```
+
+This will bring up a development stack in a local or remote Kubernetes cluster of your choice.
+
+### Tests
+
+Run unit tests with
+
+```shell
+poetry run pytest tests/unit
+```
+
+e2e tests against a live environment with
+
+```shell
+poetry run pytest tests/e2e
+```
+
+And coverage against the codebase with
+
+```shell
+poetry run coverage run -m pytest
+poetry run coverage report -m pytest
+```
