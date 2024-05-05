@@ -49,7 +49,8 @@ repos:
     hooks:
       - id: hadolint
         args:
-          - docker/premiscale/Dockerfile
+          - Dockerfile
+          - Dockerfile.local
           - docker/influxdb/Dockerfile
           - docker/mysql/Dockerfile
           - --config

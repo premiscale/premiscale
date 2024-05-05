@@ -1,7 +1,9 @@
 ARG IMAGE=python
 ARG TAG=3.10.13
 
-FROM ${IMAGE}:${TAG}
+FROM --platform=linux/amd64 ${IMAGE}:${TAG}
+
+SHELL [ "/bin/bash", "-c" ]
 
 ENV PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1 \
