@@ -59,7 +59,7 @@ repos:
           - docker/influxdb/Dockerfile
           - docker/mysql/Dockerfile
           - --config
-          - config/.hadolint.yaml
+          - .github/.hadolint.yaml
 
   # - repo: https://github.com/k-ogawa-1988/yamale-pre-commit
   #   rev: v0.0.2

@@ -36,7 +36,7 @@ RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIR
 
 WORKDIR /opt/premiscale
 COPY src/ ./src/
-COPY README.md LICENSE poetry.lock pyproject.toml requirements.txt /opt/premiscale/
+COPY README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
 
 RUN chown -R premiscale:premiscale .
 USER premiscale
