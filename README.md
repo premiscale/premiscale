@@ -2,7 +2,7 @@
 
 PremiScale brings autoscaling to on-premise infrastructure, with a particular focus on integrating with the [Kubernetes autoscaler](https://github.com/kubernetes/autoscaler).
 
-```shell
+```text
 $ premiscale --help
 usage: premiscale [-h] [-d] [-c CONFIG] [--host HOST] [--token TOKEN] [--validate] [--version] [--log-stdout] [--pid-file PID_FILE] [--debug]
 
@@ -21,6 +21,16 @@ options:
   --pid-file PID_FILE   Pidfile name to use for daemon. (default: /opt/premiscale/premiscale.pid)
   --debug               Turn on logging debug mode. (default: False)
 ```
+
+## Architecture
+
+PremiScale is a controller that works by
+
+See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.g
+
+<p align="center" width="100%">
+  <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
+</p>
 
 ## Development
 
