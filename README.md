@@ -26,7 +26,7 @@ options:
 
 PremiScale is a controller that works by
 
-See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.g
+See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.
 
 <p align="center" width="100%">
   <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
