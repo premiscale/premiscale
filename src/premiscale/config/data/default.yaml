@@ -7,7 +7,7 @@ agent:
     state:
       type: mysql
       connection:
-        url: 'localhost:3306'
+        url: $MYSQL_HOST
         database: premiscale
         credentials:
           username: $MYSQL_USERNAME
@@ -21,7 +21,7 @@ agent:
     metrics:
       type: influxdb
       connection:
-        url: 'localhost:8086'
+        url: $INFLUXDB_HOST
         database: premiscale
         credentials:
           username: $INFLUXDB_USERNAME
@@ -39,7 +39,7 @@ agent:
 
   platform:
     actionsQueueMax: 0
-    domain: https://chelsea.ops.premiscale.com/agent/echo
+    domain: $PREMISCALE_PLATFORM
 
 # Configure hosts and autoscaling groups on those hosts.
 autoscale:

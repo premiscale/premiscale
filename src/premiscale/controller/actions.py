@@ -6,7 +6,7 @@ Define actions the agent can take against infrastructure.
 import enum
 
 from typing import Any
-from src.premiscale.hypervisor.libvirt import Libvirt
+from premiscale.hypervisor.libvirt import Libvirt
 
 
 class Verb(enum.Enum):

@@ -1,5 +1,5 @@
 """
-PremiScale autoscaler agent.
+PremiScale autoscaler.
 
 © PremiScale, Inc. 2024
 """
@@ -12,9 +12,10 @@ import os
 from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib import metadata as meta
-from src.premiscale.config.parse import initialize, validate, configparse
-from src.premiscale.controller.daemon import start
-from src.premiscale.controller.utils import LogLevel, validate_port
+
+from premiscale.config.parse import initialize, validate, configparse
+from premiscale.controller.daemon import start
+from premiscale.controller.utils import LogLevel
 
 
 version = meta.version('premiscale')
@@ -58,7 +59,7 @@ def main() -> None:
 
     parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for agent daemon.'
+        help='Pidfile name to use for the agent daemon.'
     )
 
     parser.add_argument(
@@ -79,8 +80,13 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--host', type=str, default='app.premiscale.com',
+        '--platform', type=str, default='app.premiscale.com',
         help='URL of the PremiScale platform.'
+    )
+
+    parser.add_argument(
+        '--cacert', type=str, default='',
+        help='Path to the certificate file (for use with self-signed certificates).'
     )
 
     args = parser.parse_args()
@@ -93,18 +99,18 @@ def main() -> None:
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
-            format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+            format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
             level=args.log_level.value
         )
     else:
         try:
             # Instantiate log path (when logging locally).
-            if not Path.exists(Path(args.log_file)):
+            if not Path(args.log_file).exists():
                 Path(args.log_file).parent.mkdir(parents=True, exist_ok=True)
 
             logging.basicConfig(
                 filename=args.log_file,
-                format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+                format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
                 level=args.log_level.value,
                 filemode='a'
             )
@@ -125,7 +131,6 @@ def main() -> None:
         elif (token := os.getenv('PREMISCALE_TOKEN')) != '':
             log.debug('Registering agent with provided environment variable')
         else:
-            log.warning('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
         # Start the premiscale agent.
@@ -134,10 +139,12 @@ def main() -> None:
                 '/opt/premiscale',
                 args.pid_file,
                 config,
+                version,
                 token,
-                args.host
+                args.platform,
+                args.cacert
             )
         )
     else:
         initialize(args.config)
-        log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')
+        log.info('PremiScale successfully initialized. Use \'--daemon\' to start the controller.')

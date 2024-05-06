@@ -5,7 +5,7 @@ Serve premiscale agent healthcheck endpoint when in daemon mode. Follows the sam
 import logging
 import gunicorn.app.base as base
 
-from typing import Dict, Optional, Any
+from typing import Dict, Any
 from setproctitle import setproctitle
 from http import HTTPStatus
 from flask import Flask, Response
@@ -43,7 +43,7 @@ class Healthcheck(base.Application):
     """
     Custom gunicorn application so we can start this service via the PremiScale service CLI.
     """
-    def __init__(self, options: Optional[Dict] = None, app: Optional[Flask] = None):
+    def __init__(self, options: Dict | None = None, app: Flask | None = None):
         self.options = options or {}
         self.application = app
         super().__init__()

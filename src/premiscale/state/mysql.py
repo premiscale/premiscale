@@ -5,11 +5,10 @@ Methods for interacting with the MySQL database.
 import logging
 
 from sqlmodel import Field, Session, SQLModel, create_engine
-from src.premiscale.state._base import State
+from premiscale.state._base import State
 
 
 log = logging.getLogger(__name__)
-# url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
 
 
 class MySQL(State):
@@ -17,11 +16,22 @@ class MySQL(State):
     Provide a clean interface to the MySQL database.
     """
     def __init__(self, url: str, database: str, username: str, password: str) -> None:
+        # url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
         self.url = url
+
         self.database = database
         self._username = username
         self._password = password
         self._connection = None
+
+    def is_connected(self) -> bool:
+        """
+        Check if the connection to the MySQL database is open.
+
+        Returns:
+            bool: True if the connection is open.
+        """
+        return self._connection is not None
 
     def open(self) -> 'MySQL':
         """

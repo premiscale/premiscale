@@ -15,22 +15,27 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: mixed-line-ending
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
+  - repo: local
     hooks:
       - id: mypy
+        language: script
+        name: mypy
+        entry: /usr/bin/env poetry run mypy
         args:
-          - --install-types
           - --non-interactive
+          - --install-types
           - --config-file=pyproject.toml
-
-  - repo: https://github.com/PyCQA/pylint
-    rev: v3.0.0a6
-    hooks:
+        files: src/
+        types:
+          - python
       - id: pylint
-        args:
-          - --rcfile=.pylintrc
-          - src/
+        language: script
+        name: pylint
+        entry: /usr/bin/env poetry run pylint
+        args: []
+        files: src/
+        types:
+          - python
 
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
@@ -54,7 +59,7 @@ repos:
           - docker/influxdb/Dockerfile
           - docker/mysql/Dockerfile
           - --config
-          - .hadolint.yaml
+          - .github/.hadolint.yaml
 
   # - repo: https://github.com/k-ogawa-1988/yamale-pre-commit
   #   rev: v0.0.2

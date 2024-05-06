@@ -7,7 +7,7 @@ maintainers = ["Emma Doyle <emma@premiscale.com>"]
 license = "Proprietary"
 readme = "README.md"
 packages = [
-  { include = "src" }
+  { include = "premiscale", from = "src" }
 ]
 include = [
   "LICENSE"
@@ -42,9 +42,16 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-premiscale = "src.premiscale.controller.cli:main"
+premiscale = "premiscale.controller.cli:main"
 
 [tool.mypy]
 python_version = "3.10"
 strict_optional = true
 ignore_missing_imports = true
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = "invalid-name,wrong-import-order,superfluous-parens,line-too-long,missing-final-newline,logging-fstring-interpolation,too-many-instance-attributes,unused-argument,unused-import"
+fail-under = 4
+
+[tool.pylint.MASTER]
+init-hook = "import sys; sys.path.append('.')"

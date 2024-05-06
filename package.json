@@ -32,6 +32,8 @@
     "helm:repo:add": "./scripts/helm/repo-add.sh",
     "poetry:lock": "poetry lock",
     "ps": "./scripts/pstree.sh",
-    "pst": "./scripts/psthread.sh"
+    "pst": "./scripts/psthread.sh",
+    "compose:up": "./scripts/docker/compose-up.sh",
+    "compose:down": "./scripts/docker/compose-down.sh"
   }
 }

@@ -1,8 +1,0 @@
-[Unit]
-Description=PremiScale autoscaler
-
-[Service]
-ExecStart=premiscale --daemon --log-stdout
-
-[Install]
-WantedBy=multi-user.target

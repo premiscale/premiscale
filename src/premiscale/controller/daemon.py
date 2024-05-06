@@ -5,25 +5,33 @@ Define subprocesses encapsulating each control loop.
 
 import multiprocessing as mp
 import logging
-# import signal
-# import sys
+import signal
+import sys
 import concurrent
 
 from multiprocessing.queues import Queue
 from typing import cast
 from setproctitle import setproctitle
-# from daemon import DaemonContext, pidfile
-from src.premiscale.config._config import Config
-from src.premiscale.controller.platform import Platform, register
-from src.premiscale.controller.autoscaling import ASG
-from src.premiscale.controller.metrics import Metrics
-from src.premiscale.controller.reconciliation import Reconcile
+from daemon import DaemonContext, pidfile
+from premiscale.config._config import Config
+from premiscale.controller.platform import Platform, register
+from premiscale.controller.autoscaling import ASG
+from premiscale.controller.metrics import Metrics
+from premiscale.controller.reconciliation import Reconcile
 
 
 log = logging.getLogger(__name__)
 
 
-def start(working_dir: str, pid_file: str, agent_config: Config, token: str, host: str) -> int:
+def start(
+        working_dir: str,
+        pid_file: str,
+        agent_config: Config,
+        agent_version: str,
+        token: str,
+        host: str,
+        cacert: str
+    ) -> int:
     """
     Start our four daemon processes passing along relevant configuration.
 
@@ -31,8 +39,10 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
         working_dir (str): working directory for this daemon.
         pid_file (str): PID file to use for the main daemon process.
         agent_config (Config): Agent config object.
+        agent_version (str): Agent version (from the package metadata).
         token (str): Agent registration token.
         host (str): PremiScale platform host.
+        cacert (str): Path to the certificate file (for use with self-signed certificates).
 
     Returns:
         int: return code.
@@ -61,11 +71,16 @@ def start(working_dir: str, pid_file: str, agent_config: Config, token: str, hos
 
         processes = [
             # Platform websocket connection subprocess. Maintains connection and data stream -> premiscale platform).
-            # If either the (1) registration token or (2) platform host isn't provided, this process is not spawned.
             executor.submit(
-                Platform(host, token),
+                Platform(host, registration, cacert),
                 platform_message_queue
-            ) if register(token, f'https://{host}', 'agent/registration') else None,
+            ) if (registration := register(
+                token=token,
+                version=agent_version,
+                host=f'https://{host}',
+                path='agent/registration',
+                cacert=cacert
+            )) else None,
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
