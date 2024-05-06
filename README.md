@@ -1,6 +1,6 @@
 # PremiScale
 
-The PremiScale Kubernetes controller brings autoscaling to on-premise infrastructure.
+PremiScale brings autoscaling to on-premise infrastructure, with a particular focus on integrating with the [Kubernetes autoscaler](https://github.com/kubernetes/autoscaler).
 
 ```shell
 $ premiscale --help
@@ -24,15 +24,21 @@ options:
 
 ## Development
 
+### Dependencies
+
+Install [asdf](https://asdf-vm.com/guide/getting-started.html#_1-install-dependencies), followed by running `asdf install` in the root of this project.
+
 ### Local
 
-Run
-
 ```shell
-docker compose up -d
+yarn compose:up
 ```
 
-This will bring up a number of services, including platform services that the controller registers and connects to for billing.
+This will bring up a number of services, including platform services that the controller registers and connects to for billing. When you're finished, run
+
+```shell
+yarn compose:down
+```
 
 ### Remote
 
