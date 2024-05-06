@@ -5,14 +5,14 @@ Define subprocesses encapsulating each control loop.
 
 import multiprocessing as mp
 import logging
-# import signal
-# import sys
+import signal
+import sys
 import concurrent
 
 from multiprocessing.queues import Queue
 from typing import cast
 from setproctitle import setproctitle
-# from daemon import DaemonContext, pidfile
+from daemon import DaemonContext, pidfile
 from premiscale.config._config import Config
 from premiscale.controller.platform import Platform, register
 from premiscale.controller.autoscaling import ASG
@@ -23,7 +23,15 @@ from premiscale.controller.reconciliation import Reconcile
 log = logging.getLogger(__name__)
 
 
-def start(working_dir: str, pid_file: str, agent_config: Config, agent_version: str, token: str, host: str, cacert: str) -> int:
+def start(
+        working_dir: str,
+        pid_file: str,
+        agent_config: Config,
+        agent_version: str,
+        token: str,
+        host: str,
+        cacert: str
+    ) -> int:
     """
     Start our four daemon processes passing along relevant configuration.
 
@@ -69,7 +77,7 @@ def start(working_dir: str, pid_file: str, agent_config: Config, agent_version: 
             ) if (registration := register(
                 token=token,
                 version=agent_version,
-                domain=f'https://{host}',
+                host=f'https://{host}',
                 path='agent/registration',
                 cacert=cacert
             )) else None,

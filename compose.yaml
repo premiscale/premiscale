@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./Dockerfile.develop
     environment:
-      - PREMISCALE_TOKEN=123
+      # - PREMISCALE_TOKEN=123
       - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
       - PREMISCALE_LOG_LEVEL=info
       - PREMISCALE_PLATFORM=platform:443
@@ -124,22 +124,22 @@ services:
         condition: service_healthy
       echoes:
         condition: service_healthy
-  test:
-    image: ubuntu:22.04
-    command: sleep inf
-    networks:
-      - platform
-      - controller
-    volumes:
-      - ./certs:/certs
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 300M
-        reservations:
-          cpus: '0.25'
-          memory: 300M
+  # test:
+  #   image: ubuntu:22.04
+  #   command: sleep inf
+  #   networks:
+  #     - platform
+  #     - controller
+  #   volumes:
+  #     - ./certs:/certs
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.25'
+  #         memory: 300M
+  #       reservations:
+  #         cpus: '0.25'
+  #         memory: 300M
   echoes:
     container_name: premiscale-echoes
     build:

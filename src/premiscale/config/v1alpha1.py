@@ -3,7 +3,7 @@ Parse config files with the v1alpha1 config-parsing class.
 """
 
 
-from typing import Optional, Any, Dict
+from typing import Dict
 from premiscale.config._config import Config
 
 import logging

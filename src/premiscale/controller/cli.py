@@ -99,7 +99,7 @@ def main() -> None:
     if args.log_stdout:
         logging.basicConfig(
             stream=sys.stdout,
-            format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+            format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
             level=args.log_level.value
         )
     else:
@@ -110,7 +110,7 @@ def main() -> None:
 
             logging.basicConfig(
                 filename=args.log_file,
-                format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+                format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
                 level=args.log_level.value,
                 filemode='a'
             )
@@ -131,7 +131,6 @@ def main() -> None:
         elif (token := os.getenv('PREMISCALE_TOKEN')) != '':
             log.debug('Registering agent with provided environment variable')
         else:
-            log.warning('Platform registration token not present, starting agent in standalone mode')
             token = ''
 
         # Start the premiscale agent.

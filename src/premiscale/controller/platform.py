@@ -10,7 +10,7 @@ import requests
 import json
 import ssl
 
-from typing import Dict, Callable, Optional, Any
+from typing import Dict, Callable, Any
 
 from websockets import client as ws, exceptions as wse
 from socket import gaierror
@@ -38,13 +38,15 @@ class RateLimitedError(Exception):
         return f'RateLimitedError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
 
 
-def retry(tries: int =0) -> Callable:
+def retry(tries: int =0, delay: float = 1.0, ratelimit_buffer: float = 0.25) -> Callable:
     """
     A request retry decorator. If singledispatch becomes compatible with `typing`, it'd be cool to duplicate this
     registering another dispatch on `f`, allowing us to remove a layer of function calls.
 
     Args:
-        tries: number of times to retry the wrapped function call. When `0`, retries indefinitely.
+        tries: number of times to retry the wrapped function call. When `0`, retries indefinitely. (default: 0)
+        delay: if tries is 0, this delay value is used between retries. (default: 1.0s)
+        ratelimit_buffer: a buffer to add to the delay when a rate limit is hit. (default: 0.25s)
 
     Returns:
         Either the result of a successful function call (be it via retrying or not).
@@ -54,69 +56,73 @@ def retry(tries: int =0) -> Callable:
 
     def _f(f: Callable) -> Callable:
         @wraps(f)
-        def new_f(*args: Any, **kwargs: Any) -> Optional[Dict]:
+        def new_f(*args: Any, **kwargs: Any) -> Dict | None:
             res: Any = None
 
-            def call() -> bool:
+            def call() -> Dict[str, str] | None:
                 nonlocal res
 
                 try:
                     return f(*args, **kwargs)
                 except RateLimitedError as msg:
-                    log.warning(f'Ratelimited, waiting "{msg.delay}" before trying again')
-                    time.sleep(msg.delay)
-                    return False
+                    log.warning(f'Ratelimited, waiting "{msg.delay + ratelimit_buffer}"s before trying again')
+                    time.sleep(msg.delay + ratelimit_buffer)
+                    return None
                 except URLError as msg:
                     log.warning(msg)
-                    return False
+                    return None
 
             if tries > 0:
+                # Finite number of user-specified retries.
                 for _ in range(tries):
-                    if call():
+                    if (res := call()) is not None:
                         return res
                 else:
                     log.error(f'Could not register agent, retry attempt limit exceeded.')
                     return None
             else:
-                while not call():
-                    pass
-                else:
-                    return res
+                # Infinite retries.
+                while (res := call()) is None:
+                    time.sleep(delay)
+
+                return res
 
         return new_f
     return _f
 
 
 @retry()
-def register(token: str, version: str, domain: str, path: str = '/agent/registration', cacert: str = '') -> bool:
+def register(token: str, version: str, host: str, path: str = '/agent/registration', cacert: str = '') -> Dict[str, str] | None:
     """
     Make a request to the registration service.
 
     Args:
         token (str): registration API token.
         version (str): agent version.
-        domain (str): platform domain.
+        host (str): platform domain.
         path (str): endpoint to hit at the platform domain.
         cacert (str): path to the CA certificate file.
 
     Returns:
-        bool: True if the registration was successful, False otherwise.
+        Dict[str, str]: registration service response, or an empty dict if the registration was not successful.
 
     Raises:
         RateLimitedError: if the request is rate limited.
     """
-    url = urljoin(domain, path)
+    platform_url = urljoin(host, path)
 
-    payload = {
-        'version': version,
-        'type': 'agent',
-        'registration_key': token
-    }
+    if token == '':
+        log.warning('No registration token provided, starting agent in standalone mode')
+        return {}
 
     try:
         response = requests.post(
-            url=url,
-            data=json.dumps(payload),
+            url=platform_url,
+            data=json.dumps({
+                'version': version,
+                'type': 'agent',
+                'registration_key': token
+            }),
             headers={
                 # 'Authorization': header,
                 'Content-Type': 'application/json'
@@ -125,18 +131,20 @@ def register(token: str, version: str, domain: str, path: str = '/agent/registra
         )
     except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
         log.error(f'Could not verify SSL certificate: {msg}')
-        return False
+        return None
 
     try:
-        return response.json()
+        registration_response = response.json()
+        log.info(f'Registration response: {json.dumps(registration_response)}')
+        return registration_response
     except json.JSONDecodeError:
         if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
-            raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000 + 0.25)
+            raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000)
         else:
             log.error(
                 f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
             )
-            return False
+            return None
 
 
 class Platform:
@@ -145,19 +153,16 @@ class Platform:
     connection and calls setters and getters on the other daemon threads' objects to
     configure them.
     """
-    def __init__(self, url: str, registration: dict, path: str = '/agent/websocket', cacert: str = '') -> None:
-        # Path needs to align with the Helm chart's ingress.
-        self.url = urljoin('wss://' + url, path)
+    def __init__(self, host: str, registration: dict, path: str = '/agent/websocket', cacert: str = '') -> None:
+        self.host = urljoin('wss://' + host, path)
+        self._queue: Queue
         self._registration = registration
-        print(self._registration)
         self._websocket: ws.WebSocketClientProtocol
         self._cacert = cacert
-        self.queue: Queue
-        self._auth: Dict
 
     def __call__(self, platform_queue: Queue) -> None:
         setproctitle('platform')
-        self.queue = platform_queue
+        self._queue = platform_queue
         log.debug('Starting platform connection subprocess')
         # This should never exit. Process should stay open forever.
         asyncio.run(
@@ -179,27 +184,25 @@ class Platform:
 
         while True:
             try:
-                async with ws.connect(self.url, ping_timeout=300, ssl=ssl_context) as self._websocket:
-                    log.info(f'Established connection to platform hosted at \'{self.url}\'')
+                async with ws.connect(self.host, ping_timeout=300, ssl=ssl_context) as self._websocket:
+                    log.info(f'Established connection to platform hosted at \'{self.host}\'')
 
                     try:
                         await self._sync_platform_queue()
                         await self._recv_message()
                         # await asyncio.Future()
                     except wse.ConnectionClosed:
-                        log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
-                        continue
+                        log.error(f'Websocket connection to \'{self.host}\' closed unexpectedly, reconnecting...')
             except (gaierror, ssl.SSLError) as msg:
-                log.error(f'Could not connect to \'{self.url}\', retrying: {msg}')
+                log.error(f'Could not connect to \'{self.host}\', retrying: {msg}')
                 time.sleep(1)
-                continue
 
     async def _sync_platform_queue(self) -> None:
         """
         Sync the platform queue with the platform. If this function returns, then the queue is empty.
         """
         # Clear the queue.
-        while (msg := self.queue.get()) is not None:
+        while (msg := self._queue.get()) is not None:
             await self.send_message(msg)
         else:
             await self.send_message('')
@@ -209,7 +212,7 @@ class Platform:
         Receive messages from the platform.
         """
         async for msg in self._websocket:
-            self.queue.put(msg)
+            self._queue.put(msg)
 
     async def sync_actions(self) -> bool:
         """
@@ -229,7 +232,7 @@ class Platform:
         """
         return False
 
-    async def send_message(self, msg: str) -> None:
+    async def send_message(self, msg: str) -> bool:
         """
         Asynchronously send a message up to the platform.
 
@@ -237,9 +240,7 @@ class Platform:
             msg (str): Message to send.
 
         Returns:
-            bool: True if the send was successful.
+            bool: True if the item was queued.
         """
-        if not self._websocket:
-            log.error('Cannot submit message to platform, connection has not been established.')
-        else:
-            self.queue.put(msg)
+        self._queue.put(msg)
+        return True

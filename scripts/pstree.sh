@@ -8,5 +8,5 @@ fi
 
 POD="${1}"
 
-#docker exec -it "$CONTAINER" ps -ef --forest
-kubectl exec -it "$POD" -- /bin/bash -c 'ps -ef --forest'
+docker exec -it "$POD" ps -ef --forest
+#kubectl exec -it "$POD" -- /bin/bash -c 'ps -ef --forest'
