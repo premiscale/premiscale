@@ -59,7 +59,7 @@ def main() -> None:
 
     parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for agent daemon.'
+        help='Pidfile name to use for the agent daemon.'
     )
 
     parser.add_argument(
@@ -84,6 +84,11 @@ def main() -> None:
         help='URL of the PremiScale platform.'
     )
 
+    parser.add_argument(
+        '--cacert', type=str, default='',
+        help='Path to the certificate file (for use with self-signed certificates).'
+    )
+
     args = parser.parse_args()
 
     if args.version:
@@ -100,7 +105,7 @@ def main() -> None:
     else:
         try:
             # Instantiate log path (when logging locally).
-            if not Path.exists(Path(args.log_file)):
+            if not Path(args.log_file).exists():
                 Path(args.log_file).parent.mkdir(parents=True, exist_ok=True)
 
             logging.basicConfig(
@@ -135,10 +140,12 @@ def main() -> None:
                 '/opt/premiscale',
                 args.pid_file,
                 config,
+                version,
                 token,
-                args.platform
+                args.platform,
+                args.cacert
             )
         )
     else:
         initialize(args.config)
-        log.info('PremiScale successfully initialized. Use \'--daemon\' to start the agent controller.')
+        log.info('PremiScale successfully initialized. Use \'--daemon\' to start the controller.')

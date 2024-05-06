@@ -5,13 +5,15 @@ Methods relating to connecting to PremiScale's platform.
 import asyncio
 import logging
 import time
-import socket
+import ssl
 import requests
 import json
 import ssl
 
 from typing import Dict, Callable, Optional, Any
+
 from websockets import client as ws, exceptions as wse
+from socket import gaierror
 from functools import wraps
 from multiprocessing.queues import Queue
 from urllib.parse import urljoin
@@ -57,10 +59,9 @@ def retry(tries: int =0) -> Callable:
 
             def call() -> bool:
                 nonlocal res
+
                 try:
-                    res = f(*args, **kwargs)
-                    log.info(f'Successfully registered agent.')
-                    return True
+                    return f(*args, **kwargs)
                 except RateLimitedError as msg:
                     log.warning(f'Ratelimited, waiting "{msg.delay}" before trying again')
                     time.sleep(msg.delay)
@@ -86,53 +87,56 @@ def retry(tries: int =0) -> Callable:
     return _f
 
 
-class Register:
-    """
-    Register the agent with the remote platform.
-    """
-    def __init__(self, user_id: str, api_key: str, org_id: str) -> None:
-        self._key = api_key
-        self._ext = org_id
-
-
 @retry()
-def register(token: str, version: str, domain: str, path: str = '/agent/registration') -> bool:
+def register(token: str, version: str, domain: str, path: str = '/agent/registration', cacert: str = '') -> bool:
     """
     Make a request to the registration service.
 
     Args:
         token (str): registration API token.
+        version (str): agent version.
         domain (str): platform domain.
         path (str): endpoint to hit at the platform domain.
+        cacert (str): path to the CA certificate file.
 
     Returns:
         bool: True if the registration was successful, False otherwise.
+
+    Raises:
+        RateLimitedError: if the request is rate limited.
     """
     url = urljoin(domain, path)
 
     payload = {
-        'version': version
+        'version': version,
+        'type': 'agent',
+        'registration_key': token
     }
 
-    # response = requests.get(
-    #     url=url,
-    #     headers={
-    #         # 'Authorization': header,
-    #         'Content-Type': 'application/json'
-    #     }
-    # )
+    try:
+        response = requests.post(
+            url=url,
+            data=json.dumps(payload),
+            headers={
+                # 'Authorization': header,
+                'Content-Type': 'application/json'
+            },
+            verify=cacert
+        )
+    except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
+        log.error(f'Could not verify SSL certificate: {msg}')
+        return False
 
-    # try:
-    #     return response.json()
-    # except json.JSONDecodeError:
-    #     if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
-    #         raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000 + 0.25)
-    #     else:
-    #         raise URLError(
-    #             f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
-    #         )
-
-    return True
+    try:
+        return response.json()
+    except json.JSONDecodeError:
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000 + 0.25)
+        else:
+            log.error(
+                f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
+            )
+            return False
 
 
 class Platform:
@@ -141,11 +145,13 @@ class Platform:
     connection and calls setters and getters on the other daemon threads' objects to
     configure them.
     """
-    def __init__(self, url: str, token: str, path: str = '/agent/websocket') -> None:
+    def __init__(self, url: str, registration: dict, path: str = '/agent/websocket', cacert: str = '') -> None:
         # Path needs to align with the Helm chart's ingress.
         self.url = urljoin('wss://' + url, path)
-        self._token = token
-        self.websocket = None
+        self._registration = registration
+        print(self._registration)
+        self._websocket: ws.WebSocketClientProtocol
+        self._cacert = cacert
         self.queue: Queue
         self._auth: Dict
 
@@ -162,18 +168,28 @@ class Platform:
         """
         Establish websocket connection to PremiScale's platform.
         """
+        ssl_context: ssl.SSLContext | None = None
+
+        # Handle self-signed certificates if provided. Build a custom SSL context.
+        if self._cacert != '':
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            ssl_context.load_verify_locations(
+                cafile=self._cacert
+            )
+
         while True:
             try:
-                async with ws.connect(self.url, ping_timeout=300) as self._websocket:
+                async with ws.connect(self.url, ping_timeout=300, ssl=ssl_context) as self._websocket:
+                    log.info(f'Established connection to platform hosted at \'{self.url}\'')
+
                     try:
-                        log.info(f'Established connection to platform hosted at \'{self.url}\'')
                         await self._sync_platform_queue()
                         await self._recv_message()
                         # await asyncio.Future()
                     except wse.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.url}\' closed unexpectedly, reconnecting...')
                         continue
-            except (socket.gaierror, ssl.SSLError) as msg:
+            except (gaierror, ssl.SSLError) as msg:
                 log.error(f'Could not connect to \'{self.url}\', retrying: {msg}')
                 time.sleep(1)
                 continue
@@ -192,11 +208,8 @@ class Platform:
         """
         Receive messages from the platform.
         """
-        if not self._websocket:
-            log.error('Cannot submit arbitrary message to platform, connection has not been established.')
-        else:
-            async for msg in self._websocket:
-                self.queue.put(msg)
+        async for msg in self._websocket:
+            self.queue.put(msg)
 
     async def sync_actions(self) -> bool:
         """
@@ -218,7 +231,7 @@ class Platform:
 
     async def send_message(self, msg: str) -> None:
         """
-        Send an arbitrary message to the platform.
+        Asynchronously send a message up to the platform.
 
         Args:
             msg (str): Message to send.
@@ -229,4 +242,4 @@ class Platform:
         if not self._websocket:
             log.error('Cannot submit message to platform, connection has not been established.')
         else:
-            await self._websocket.send(msg)
+            self.queue.put(msg)

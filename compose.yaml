@@ -10,6 +10,7 @@ services:
       - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
       - PREMISCALE_LOG_LEVEL=info
       - PREMISCALE_PLATFORM=platform:443
+      - PREMISCALE_CACERT=/opt/premiscale/cert.pem
       - INFLUXDB_HOST=influxdb:8086
       - INFLUXDB_USERNAME=premiscale
       - INFLUXDB_PASSWORD=premiscale
@@ -37,6 +38,8 @@ services:
         condition: service_healthy
       platform:
         condition: service_healthy
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem
   mysql-agent-state:
     container_name: premiscale-mysql-state
     image: mysql:8.4.0
@@ -121,6 +124,22 @@ services:
         condition: service_healthy
       echoes:
         condition: service_healthy
+  test:
+    image: ubuntu:22.04
+    command: sleep inf
+    networks:
+      - platform
+      - controller
+    volumes:
+      - ./certs:/certs
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 300M
+        reservations:
+          cpus: '0.25'
+          memory: 300M
   echoes:
     container_name: premiscale-echoes
     build:
