@@ -155,10 +155,11 @@ class Platform:
     """
     def __init__(self, host: str, registration: dict, path: str = '/agent/websocket', cacert: str = '') -> None:
         self.host = urljoin('wss://' + host, path)
-        self._queue: Queue
         self._registration = registration
-        self._websocket: ws.WebSocketClientProtocol
         self._cacert = cacert
+
+        self._queue: Queue
+        self._websocket: ws.WebSocketClientProtocol
 
     def __call__(self, platform_queue: Queue) -> None:
         setproctitle('platform')

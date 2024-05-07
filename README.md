@@ -4,22 +4,25 @@ PremiScale brings autoscaling to on-premise infrastructure, with a particular fo
 
 ```text
 $ premiscale --help
-usage: premiscale [-h] [-d] [-c CONFIG] [--host HOST] [--token TOKEN] [--validate] [--version] [--log-stdout] [--pid-file PID_FILE] [--debug]
+usage: premiscale [-h] [--token TOKEN] [-d] [-c CONFIG] [--validate] [--version] [--pid-file PID_FILE] [--log-level {info,error,warn,debug}] [--log-file LOG_FILE | --log-stdout] [--platform PLATFORM] [--cacert CACERT]
 
-PremiScale autoscaler controller. © PremiScale, Inc. 2024
+PremiScale autoscaler. © PremiScale, Inc. 2024
 
 options:
   -h, --help            show this help message and exit
-  -d, --daemon          Start PremiScale as a daemon. (default: False)
+  --token TOKEN         Platform registration token. (default: )
+  -d, --daemon          Start agent as a daemon. (default: False)
   -c CONFIG, --config CONFIG
                         Configuration file path to use. (default: /opt/premiscale/config.yaml)
-  --platform PLATFORM   WSS URL of the PremiScale platform. (default: wss://app.premiscale.com)
-  --token TOKEN         Token for registering the agent with the PremiScale platform on first start. (default: )
-  --validate            Validate the provided configuration file. (default: False)
-  --version             Show premiscale version. (default: False)
+  --validate            Validate the provided configuration file and exit. (default: False)
+  --version             Display agent version. (default: False)
+  --pid-file PID_FILE   Pidfile name to use for the agent daemon. (default: /opt/premiscale/premiscale.pid)
+  --log-level {info,error,warn,debug}
+                        Set the logging level. (default: info)
+  --log-file LOG_FILE   Specify the file the service logs to if --log-stdout is not set. (default: /opt/premiscale/agent.log)
   --log-stdout          Log to stdout (for use in containerized deployments). (default: False)
-  --pid-file PID_FILE   Pidfile name to use for daemon. (default: /opt/premiscale/premiscale.pid)
-  --debug               Turn on logging debug mode. (default: False)
+  --platform PLATFORM   URL of the PremiScale platform. (default: app.premiscale.com)
+  --cacert CACERT       Path to the certificate file (for use with self-signed certificates). (default: )
 ```
 
 ## Architecture
