@@ -169,7 +169,7 @@ class Platform:
         self._cacert = cacert
 
         self._queue: Queue
-        self._received_platform_messages: Queue = Queue()
+        self._received_platform_messages: asyncio.Queue = asyncio.Queue()
         self._websocket: ws.WebSocketClientProtocol
 
     def __call__(self, platform_queue: Queue) -> None:
@@ -226,7 +226,7 @@ class Platform:
         Receive messages from the platform and place them on a separate queue to be acted upon.
         """
         async for msg in self._websocket:
-            self._received_platform_messages.put(msg)
+            await self._received_platform_messages.put(msg)
 
     async def sync_actions(self) -> bool:
         """
