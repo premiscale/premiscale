@@ -13,6 +13,7 @@ include = [
   "LICENSE"
 ]
 keywords = [
+    "premiscale",
     "autoscaling",
     "asg",
     "kvm",
