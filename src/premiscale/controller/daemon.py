@@ -70,9 +70,13 @@ def start(
         platform_message_queue: Queue = cast(Queue, manager.Queue())
 
         processes = [
-            # Platform websocket connection subprocess. Maintains connection and data stream -> premiscale platform).
+            # Platform websocket connection subprocess. Maintains registration, connection and data stream -> premiscale platform).
             executor.submit(
-                Platform(host, registration, cacert),
+                Platform(
+                    host=host,
+                    registration=registration,
+                    cacert=cacert
+                ),
                 platform_message_queue
             ) if (registration := register(
                 token=token,

@@ -92,7 +92,13 @@ def retry(tries: int =0, delay: float = 1.0, ratelimit_buffer: float = 0.25) -> 
 
 
 @retry()
-def register(token: str, version: str, host: str, path: str = '/agent/registration', cacert: str = '') -> Dict[str, str] | None:
+def register(
+    token: str,
+    version: str,
+    host: str,
+    path: str = '/agent/registration',
+    cacert: str = ''
+) -> Dict[str, str] | None:
     """
     Make a request to the registration service.
 
@@ -104,7 +110,7 @@ def register(token: str, version: str, host: str, path: str = '/agent/registrati
         cacert (str): path to the CA certificate file.
 
     Returns:
-        Dict[str, str]: registration service response, or an empty dict if the registration was not successful.
+        Dict[str, str] | None: registration service response, or an empty dict if the registration was not successful.
 
     Raises:
         RateLimitedError: if the request is rate limited.
@@ -130,7 +136,7 @@ def register(token: str, version: str, host: str, path: str = '/agent/registrati
             verify=cacert
         )
     except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
-        log.error(f'Could not verify SSL certificate: {msg}')
+        log.error(f'Could not verify SSL certificate: {msg}. Skipping registration.')
         return None
 
     try:
@@ -153,7 +159,11 @@ class Platform:
     connection and calls setters and getters on the other daemon threads' objects to
     configure them.
     """
-    def __init__(self, host: str, registration: dict, path: str = '/agent/websocket', cacert: str = '') -> None:
+    def __init__(self,
+                 registration: dict,
+                 host: str,
+                 path: str = '/agent/websocket',
+                 cacert: str = '') -> None:
         self.host = urljoin('wss://' + host, path)
         self._registration = registration
         self._cacert = cacert
