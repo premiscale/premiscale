@@ -6,20 +6,26 @@ Define actions the agent can take against infrastructure.
 import enum
 
 from typing import Any
+from abc import ABC, abstractmethod
+
+# TODO: context needs to be realized here as far as which hypervisor to use.
 from premiscale.hypervisor.libvirt import Libvirt
 
 
 class Verb(enum.Enum):
     """
-    Classify different actions the agent can take on infrastructure, e.g. creating, deleting, or migrating VMs.
+    Classify different C[R]UD operations the controller can take on infrastructure, e.g. creating, deleting,
+    or migrating VMs.
     """
     # Do nothing.
     NULL = 0
 
     # Creates
     CREATE = 1
-    MIGRATE = 2
     CLONE = 3
+
+    # Updates
+    MIGRATE = 2
     REPLACE = 4
 
     # Deletes
@@ -27,15 +33,16 @@ class Verb(enum.Enum):
     DELETE_STORAGE = 11
 
 
-# Instances of Action are intended to execute in a thread on the ASG process.
-class Action:
+class Action(ABC):
     """
     Encapsulate the various actions that the autoscaler can take. These get queued up and acted upon in the
-    autoscaling daemon.
+    autoscaling subprocess as threads. One action is processed at a time in each thread, and each thread
+    corresponds to an ASG.
     """
     def __init__(self, action: Verb) -> None:
         self.action = action
 
+    @abstractmethod
     def audit_trail_msg(self) -> dict:
         """
         Return a dictionary (JSON) object containing audit data about the action taken.
