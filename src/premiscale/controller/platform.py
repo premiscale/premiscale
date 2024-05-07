@@ -199,9 +199,10 @@ class Platform:
                     log.info(f'Established connection to platform hosted at \'{self.host}\'')
 
                     try:
-                        await self._sync_platform_queue()
-                        await self._recv_message()
-                        # await asyncio.Future()
+                        await asyncio.gather(
+                            # self._sync_platform_queue(),
+                            self._recv_message()
+                        )
                     except wse.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.host}\' closed unexpectedly, reconnecting...')
             except (gaierror, ssl.SSLError) as msg:
@@ -212,11 +213,12 @@ class Platform:
         """
         Sync the platform queue with the platform. If this function returns, then the queue is empty.
         """
-        # Clear the queue.
-        while (msg := self._queue.get()) is not None:
-            await self.send_message(msg)
-        else:
-            await self.send_message('')
+        while True:
+            if not self._queue.empty():
+                for _ in range(self._queue.qsize()):
+                    msg = self._queue.get()
+                    await self.send_message(msg)
+            await asyncio.sleep(1)
 
     async def _recv_message(self) -> None:
         """
