@@ -38,21 +38,21 @@ class RateLimitedError(Exception):
         return f'RateLimitedError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
 
 
-def retry(tries: int =0, delay: float = 1.0, ratelimit_buffer: float = 0.25) -> Callable:
+def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0.25) -> Callable:
     """
     A request retry decorator. If singledispatch becomes compatible with `typing`, it'd be cool to duplicate this
     registering another dispatch on `f`, allowing us to remove a layer of function calls.
 
     Args:
-        tries: number of times to retry the wrapped function call. When `0`, retries indefinitely. (default: 0)
-        delay: if tries is 0, this delay value is used between retries. (default: 1.0s)
+        retries: number of times to retry the wrapped function call. When `0`, retries indefinitely. (default: 0)
+        retry_delay: if retries is 0, this delay value is used between retries. (default: 1.0s)
         ratelimit_buffer: a buffer to add to the delay when a rate limit is hit. (default: 0.25s)
 
     Returns:
         Either the result of a successful function call (be it via retrying or not).
     """
-    if tries < 0:
-        raise ValueError(f'Expected positive `tries` values, received: "{tries}"')
+    if retries < 0:
+        raise ValueError(f'Expected positive `retries` values, received: "{retries}"')
 
     def _f(f: Callable) -> Callable:
         @wraps(f)
@@ -72,9 +72,9 @@ def retry(tries: int =0, delay: float = 1.0, ratelimit_buffer: float = 0.25) -> 
                     log.warning(msg)
                     return None
 
-            if tries > 0:
+            if retries > 0:
                 # Finite number of user-specified retries.
-                for _ in range(tries):
+                for _ in range(retries):
                     if (res := call()) is not None:
                         return res
                 else:
@@ -83,7 +83,7 @@ def retry(tries: int =0, delay: float = 1.0, ratelimit_buffer: float = 0.25) -> 
             else:
                 # Infinite retries.
                 while (res := call()) is None:
-                    time.sleep(delay)
+                    time.sleep(retry_delay)
 
                 return res
 
@@ -169,6 +169,7 @@ class Platform:
         self._cacert = cacert
 
         self._queue: Queue
+        self._received_platform_messages: asyncio.Queue = asyncio.Queue()
         self._websocket: ws.WebSocketClientProtocol
 
     def __call__(self, platform_queue: Queue) -> None:
@@ -199,9 +200,10 @@ class Platform:
                     log.info(f'Established connection to platform hosted at \'{self.host}\'')
 
                     try:
-                        await self._sync_platform_queue()
-                        await self._recv_message()
-                        # await asyncio.Future()
+                        await asyncio.gather(
+                            self._recv_message(),
+                            self._sync_platform_queue()
+                        )
                     except wse.ConnectionClosed:
                         log.error(f'Websocket connection to \'{self.host}\' closed unexpectedly, reconnecting...')
             except (gaierror, ssl.SSLError) as msg:
@@ -212,18 +214,19 @@ class Platform:
         """
         Sync the platform queue with the platform. If this function returns, then the queue is empty.
         """
-        # Clear the queue.
-        while (msg := self._queue.get()) is not None:
-            await self.send_message(msg)
-        else:
-            await self.send_message('')
+        while True:
+            if not self._queue.empty():
+                for _ in range(self._queue.qsize()):
+                    msg = self._queue.get()
+                    await self.send_message(msg)
+            await asyncio.sleep(1)
 
     async def _recv_message(self) -> None:
         """
-        Receive messages from the platform.
+        Receive messages from the platform and place them on a separate queue to be acted upon.
         """
         async for msg in self._websocket:
-            self._queue.put(msg)
+            await self._received_platform_messages.put(msg)
 
     async def sync_actions(self) -> bool:
         """

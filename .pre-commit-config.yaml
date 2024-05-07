@@ -36,6 +36,16 @@ repos:
         files: src/
         types:
           - python
+      - id: cog
+        language: script
+        name: cog
+        entry: /usr/bin/env poetry run cog --check -r -c -U README.md
+        args: []
+        files: README.md
+        types:
+          - markdown
+        # additional_dependencies:
+        #   - cog
 
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
