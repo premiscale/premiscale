@@ -123,6 +123,7 @@ def register(
         log.warning('No registration token provided, starting agent in standalone mode')
         return {}
 
+    # If the agent has already registered, skip the registration request.
     if (registration_response := read_json('registration.json')) is not None:
         log.info('Agent already registered with platform. Skipping agent registration request.')
         return registration_response

@@ -42,13 +42,13 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
     healthcheck:
-      test: curl http://localhost/healthcheck
+      test: curl http://localhost:8085/healthcheck
       start_period: 3s
       interval: 5s
       timeout: 5s
       retries: 3
     ports:
-      - 8080:8080
+      - 8085:8085
   mysql-agent-state:
     container_name: mysql-agent
     image: mysql:8.4.0
@@ -278,7 +278,7 @@ services:
 networks:
   controller:
     driver: bridge
-    internal: true
+    internal: false
   platform:
     driver: bridge
     internal: false

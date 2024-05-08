@@ -98,7 +98,7 @@ def start(
             executor.submit(
                 Healthcheck(
                     options={
-                        'bind': 'localhost:8080',
+                        'bind': 'localhost:8085',
                         'workers': 1,
                         'backlog': 10,
                         'worker_class': 'sync',
@@ -120,7 +120,7 @@ def start(
                         'proc_name': 'healthcheck'
                     },
                     app=healthcheck_api
-                ).run,
+                ).run(),
             ) if os.getenv('IN_DOCKER') else None,
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)

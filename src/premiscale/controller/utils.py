@@ -8,6 +8,7 @@ import logging
 import json
 
 from enum import Enum
+from pathlib import Path
 
 
 log = logging.getLogger(__name__)
@@ -79,6 +80,7 @@ def write_json(data: dict, path: str) -> None:
     """
     try:
         with open(path, 'w', encoding='utf-8') as f:
+            log.debug(f'Writing JSON to file: {path}')
             json.dump(data, f)
     except (FileNotFoundError, PermissionError) as msg:
         log.error(f'Failed to write JSON file, received: {msg}')
@@ -95,8 +97,10 @@ def read_json(path: str) -> dict | None:
         dict: the data from the JSON file.
     """
     try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        if Path(path).exists():
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return None
     except (FileNotFoundError, PermissionError) as msg:
         log.error(f'Failed to read JSON file, received: {msg}')
         return None
