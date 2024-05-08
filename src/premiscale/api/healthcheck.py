@@ -18,7 +18,7 @@ CORS(api)
 log = logging.getLogger(__name__)
 
 
-@api.get('/agent/websocket/healthcheck')
+@api.get('/healthcheck')
 def healthcheck() -> Response:
     """
     Quick healthcheck endpoint.

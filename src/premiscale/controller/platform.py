@@ -21,6 +21,8 @@ from urllib.error import URLError
 from http import HTTPStatus
 from setproctitle import setproctitle
 
+from premiscale.controller.utils import write_json, read_json
+
 
 log = logging.getLogger(__name__)
 
@@ -121,6 +123,11 @@ def register(
         log.warning('No registration token provided, starting agent in standalone mode')
         return {}
 
+    # If the agent has already registered, skip the registration request.
+    if (registration_response := read_json('registration.json')) is not None:
+        log.info('Agent already registered with platform. Skipping agent registration request.')
+        return registration_response
+
     try:
         response = requests.post(
             url=platform_url,
@@ -142,6 +149,7 @@ def register(
     try:
         registration_response = response.json()
         log.info(f'Registration response: {json.dumps(registration_response)}')
+        write_json(registration_response, 'registration.json')
         return registration_response
     except json.JSONDecodeError:
         if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
@@ -158,13 +166,22 @@ class Platform:
     Handle communication to and from the platform. Maintains an async websocket
     connection and calls setters and getters on the other daemon threads' objects to
     configure them.
+
+    Args:
+        registration (Dict[str, str]): registration response from the registration service.
+        version (str): agent version.
+        host (str): platform host.
+        path (str): path to the websocket endpoint.
+        cacert (str): path to the certificate file (for use with self-signed certificates).
     """
     def __init__(self,
-                 registration: dict,
-                 host: str,
+                 registration: Dict[str, str],
+                 version: str,
+                 host: str = 'app.premiscale.com',
                  path: str = '/agent/websocket',
                  cacert: str = '') -> None:
-        self.host = urljoin('wss://' + host, path)
+        self.host = urljoin(host, path)
+        self.version = version
         self._registration = registration
         self._cacert = cacert
 

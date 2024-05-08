@@ -17,6 +17,7 @@ services:
       - MYSQL_HOST=mysql-agent-state:3306
       - MYSQL_USERNAME=premiscale
       - MYSQL_PASSWORD=premiscale
+      - IN_DOCKER=true
     networks:
       - controller
     deploy:
@@ -40,8 +41,16 @@ services:
         condition: service_healthy
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
+    healthcheck:
+      test: curl http://localhost:8085/healthcheck
+      start_period: 3s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    ports:
+      - 8085:8085
   mysql-agent-state:
-    container_name: premiscale-mysql-state
+    container_name: mysql-agent
     image: mysql:8.4.0
     environment:
       - MYSQL_ROOT_PASSWORD=premiscale
@@ -67,7 +76,7 @@ services:
       timeout: 5s
       retries: 3
   influxdb:
-    container_name: premiscale-influxdb-metrics
+    container_name: influxdb-agent
     image: influxdb:2.7.6
     environment:
       - DOCKER_INFLUXDB_INIT_USERNAME=premiscale
@@ -241,7 +250,7 @@ services:
       start_period: 2s
       timeout: 3s
   mysql-platform:
-    container_name: premiscale-mysql-platform
+    container_name: mysql-platform
     image: mysql:8.4.0
     environment:
       - MYSQL_ROOT_PASSWORD=premiscale
@@ -269,7 +278,7 @@ services:
 networks:
   controller:
     driver: bridge
-    internal: true
+    internal: false
   platform:
     driver: bridge
     internal: false

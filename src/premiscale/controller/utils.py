@@ -5,8 +5,11 @@ Controller utils.
 
 import sys
 import logging
+import json
 
 from enum import Enum
+from pathlib import Path
+
 
 log = logging.getLogger(__name__)
 
@@ -65,3 +68,39 @@ def validate_port(number: str | int, port_name: str | None = None) -> int:
         sys.exit(1)
 
     return _number
+
+
+def write_json(data: dict, path: str) -> None:
+    """
+    Write a dictionary to a JSON file.
+
+    Args:
+        data (dict): the dictionary to write.
+        path (str): the path to write the file to.
+    """
+    try:
+        with open(path, 'w', encoding='utf-8') as f:
+            log.debug(f'Writing JSON to file: {path}')
+            json.dump(data, f)
+    except (FileNotFoundError, PermissionError) as msg:
+        log.error(f'Failed to write JSON file, received: {msg}')
+
+
+def read_json(path: str) -> dict | None:
+    """
+    Read a JSON file and return the data as a dictionary.
+
+    Args:
+        path (str): the path to the JSON file.
+
+    Returns:
+        dict: the data from the JSON file.
+    """
+    try:
+        if Path(path).exists():
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return None
+    except (FileNotFoundError, PermissionError) as msg:
+        log.error(f'Failed to read JSON file, received: {msg}')
+        return None

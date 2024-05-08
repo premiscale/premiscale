@@ -53,6 +53,11 @@ def main() -> None:
     )
 
     parser.add_argument(
+        '--platform', type=str, default='app.premiscale.com',
+        help='URL of the PremiScale platform.'
+    )
+
+    parser.add_argument(
         '--version', action='store_true',
         help='Display agent version.'
     )
@@ -77,11 +82,6 @@ def main() -> None:
     log_group.add_argument(
         '--log-stdout', action='store_true',
         help='Log to stdout (for use in containerized deployments).'
-    )
-
-    parser.add_argument(
-        '--platform', type=str, default='app.premiscale.com',
-        help='URL of the PremiScale platform.'
     )
 
     parser.add_argument(

@@ -8,16 +8,22 @@ import logging
 import signal
 import sys
 import concurrent
+import os
 
 from multiprocessing.queues import Queue
 from typing import cast
 from setproctitle import setproctitle
 from daemon import DaemonContext, pidfile
+
 from premiscale.config._config import Config
 from premiscale.controller.platform import Platform, register
 from premiscale.controller.autoscaling import ASG
 from premiscale.controller.metrics import Metrics
 from premiscale.controller.reconciliation import Reconcile
+from premiscale.api.healthcheck import (
+    Healthcheck,
+    api as healthcheck_api
+)
 
 
 log = logging.getLogger(__name__)
@@ -49,7 +55,7 @@ def start(
     """
     setproctitle('premiscale')
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor, mp.Manager() as manager:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=5) as executor, mp.Manager() as manager:
         # DaemonContext(
         #     stdin=sys.stdin,
         #     stdout=sys.stdout,
@@ -73,8 +79,10 @@ def start(
             # Platform websocket connection subprocess. Maintains registration, connection and data stream -> premiscale platform).
             executor.submit(
                 Platform(
-                    host=host,
                     registration=registration,
+                    version=agent_version,
+                    host=f'wss://{host}',
+                    path='agent/websocket',
                     cacert=cacert
                 ),
                 platform_message_queue
@@ -85,6 +93,35 @@ def start(
                 path='agent/registration',
                 cacert=cacert
             )) else None,
+
+            # Healthcheck subprocess (serves healthcheck endpoint in Docker containers).
+            executor.submit(
+                Healthcheck(
+                    options={
+                        'bind': 'localhost:8085',
+                        'workers': 1,
+                        'backlog': 10,
+                        'worker_class': 'sync',
+                        'worker_connections': 10,
+                        'timeout': 10,
+                        'keepalive': 5,
+                        'spew': False,
+                        'daemon': False,
+                        'raw_env': [],
+                        'pidfile': None,
+                        'umask': 0,
+                        'user': None,
+                        'group': None,
+                        'tmp_upload_dir': None,
+                        'errorlog': '-',
+                        'loglevel': 'info',
+                        'accesslog': '-',
+                        'access_log_format': '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"',
+                        'proc_name': 'healthcheck'
+                    },
+                    app=healthcheck_api
+                ).run(),
+            ) if os.getenv('IN_DOCKER') else None,
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
