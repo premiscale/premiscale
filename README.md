@@ -10,39 +10,9 @@ cog.outl(f'```text\n$ premiscale --help\n{subprocess.run("poetry run premiscale 
 ]]] -->
 ```text
 $ premiscale --help
-usage: premiscale [-h] [--token TOKEN] [-d] [-c CONFIG] [--validate]
-                  [--version] [--pid-file PID_FILE]
-                  [--log-level {info,error,warn,debug}]
-                  [--log-file LOG_FILE | --log-stdout] [--platform PLATFORM]
-                  [--cacert CACERT]
-
-PremiScale autoscaler. © PremiScale, Inc. 2024
-
-options:
-  -h, --help            show this help message and exit
-  --token TOKEN         Platform registration token. (default: )
-  -d, --daemon          Start agent as a daemon. (default: False)
-  -c CONFIG, --config CONFIG
-                        Configuration file path to use. (default:
-                        /opt/premiscale/config.yaml)
-  --validate            Validate the provided configuration file and exit.
-                        (default: False)
-  --version             Display agent version. (default: False)
-  --pid-file PID_FILE   Pidfile name to use for the agent daemon. (default:
-                        /opt/premiscale/premiscale.pid)
-  --log-level {info,error,warn,debug}
-                        Set the logging level. (default: info)
-  --log-file LOG_FILE   Specify the file the service logs to if --log-stdout
-                        is not set. (default: /opt/premiscale/agent.log)
-  --log-stdout          Log to stdout (for use in containerized deployments).
-                        (default: False)
-  --platform PLATFORM   URL of the PremiScale platform. (default:
-                        app.premiscale.com)
-  --cacert CACERT       Path to the certificate file (for use with self-signed
-                        certificates). (default: )
 
 ```
-<!-- [[[end]]] (checksum: d213a43bd2ea46b8a4f2d190362f6d77) -->
+<!-- [[[end]]] (checksum: 8cebe6abdefb1648e599b1c9ea8c441d) -->
 
 ## Architecture
 
@@ -53,6 +23,20 @@ See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffE
 <p align="center" width="100%">
   <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
 </p>
+
+## Install
+
+### Docker
+
+```shell
+docker run -itd
+```
+
+### Kubernetes
+
+```shell
+helm upgrade --install
+```
 
 ## Development
 

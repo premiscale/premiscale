@@ -20,7 +20,7 @@ from premiscale.controller.platform import Platform, register
 from premiscale.controller.autoscaling import ASG
 from premiscale.controller.metrics import Metrics
 from premiscale.controller.reconciliation import Reconcile
-from premiscale.api.healthcheck import (
+from premiscale.api.healthcheck.routes import (
     Healthcheck,
     api as healthcheck_api
 )
@@ -55,7 +55,7 @@ def start(
     """
     setproctitle('premiscale')
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=5) as executor, mp.Manager() as manager:
+    with concurrent.futures.ProcessPoolExecutor() as executor, mp.Manager() as manager:
         # DaemonContext(
         #     stdin=sys.stdin,
         #     stdout=sys.stdout,
@@ -94,35 +94,6 @@ def start(
                 cacert=cacert
             )) else None,
 
-            # Healthcheck subprocess (serves healthcheck endpoint in Docker containers).
-            executor.submit(
-                Healthcheck(
-                    options={
-                        'bind': 'localhost:8085',
-                        'workers': 1,
-                        'backlog': 10,
-                        'worker_class': 'sync',
-                        'worker_connections': 10,
-                        'timeout': 10,
-                        'keepalive': 5,
-                        'spew': False,
-                        'daemon': False,
-                        'raw_env': [],
-                        'pidfile': None,
-                        'umask': 0,
-                        'user': None,
-                        'group': None,
-                        'tmp_upload_dir': None,
-                        'errorlog': '-',
-                        'loglevel': 'info',
-                        'accesslog': '-',
-                        'access_log_format': '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"',
-                        'proc_name': 'healthcheck'
-                    },
-                    app=healthcheck_api
-                ).run(),
-            ) if os.getenv('IN_DOCKER') else None,
-
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
                 ASG(),
@@ -144,7 +115,15 @@ def start(
                 ),
                 autoscaling_action_queue,
                 platform_message_queue
-            )
+            ),
+
+            # Healthcheck subprocess (serves healthcheck endpoint in Docker containers).
+            executor.submit(
+                Healthcheck(
+                    host='localhost',
+                    port=8085
+                ),
+            ) if os.getenv('IN_DOCKER') else None
         ]
 
         for process in processes:
