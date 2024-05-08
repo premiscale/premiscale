@@ -17,6 +17,7 @@ services:
       - MYSQL_HOST=mysql-agent-state:3306
       - MYSQL_USERNAME=premiscale
       - MYSQL_PASSWORD=premiscale
+      - IN_DOCKER=true
     networks:
       - controller
     deploy:
@@ -46,6 +47,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
+    ports:
+      - 8080:8080
   mysql-agent-state:
     container_name: mysql-agent
     image: mysql:8.4.0
