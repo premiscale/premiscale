@@ -7,7 +7,6 @@ import logging
 from http import HTTPStatus
 from flask import Flask, Response
 from flask_cors import CORS
-from gevent.pywsgi import WSGIServer
 
 
 api = Flask(__name__)
@@ -54,13 +53,14 @@ class Healthcheck:
     def __init__(self, host: str = 'localhost', port: int = 8085) -> None:
         self.host = host
         self.port = port
-        self.server = WSGIServer(
-            (
-                host,
-                port
-            ),
-            api
-        )
+        self.server = None
+        # self.server = WSGIServer(
+        #     (
+        #         host,
+        #         port
+        #     ),
+        #     api
+        # )
 
     def __call__(self) -> None:
         self.run()
@@ -69,4 +69,4 @@ class Healthcheck:
         """
         Start the healthcheck API server.
         """
-        self.server.serve_forever()
+        # self.server.serve_forever()

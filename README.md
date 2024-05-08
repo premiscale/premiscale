@@ -10,9 +10,38 @@ cog.outl(f'```text\n$ premiscale --help\n{subprocess.run("poetry run premiscale 
 ]]] -->
 ```text
 $ premiscale --help
+usage: premiscale [-h] [--token TOKEN] [-d] [-c CONFIG] [--validate]
+                  [--platform PLATFORM] [--version] [--pid-file PID_FILE]
+                  [--log-level {info,error,warn,debug}]
+                  [--log-file LOG_FILE | --log-stdout] [--cacert CACERT]
+
+PremiScale autoscaler. © PremiScale, Inc. 2024
+
+options:
+  -h, --help            show this help message and exit
+  --token TOKEN         Platform registration token. (default: )
+  -d, --daemon          Start agent as a daemon. (default: False)
+  -c CONFIG, --config CONFIG
+                        Configuration file path to use. (default:
+                        /opt/premiscale/config.yaml)
+  --validate            Validate the provided configuration file and exit.
+                        (default: False)
+  --platform PLATFORM   URL of the PremiScale platform. (default:
+                        app.premiscale.com)
+  --version             Display agent version. (default: False)
+  --pid-file PID_FILE   Pidfile name to use for the agent daemon. (default:
+                        /opt/premiscale/premiscale.pid)
+  --log-level {info,error,warn,debug}
+                        Set the logging level. (default: info)
+  --log-file LOG_FILE   Specify the file the service logs to if --log-stdout
+                        is not set. (default: /opt/premiscale/agent.log)
+  --log-stdout          Log to stdout (for use in containerized deployments).
+                        (default: False)
+  --cacert CACERT       Path to the certificate file (for use with self-signed
+                        certificates). (default: )
 
 ```
-<!-- [[[end]]] (checksum: 8cebe6abdefb1648e599b1c9ea8c441d) -->
+<!-- [[[end]]] (checksum: 5fd99b57734fed0f90c8f06beab12676) (checksum: ) -->
 
 ## Architecture
 
