@@ -21,14 +21,14 @@ class Config_v1alpha1(Config):
 
     # Top-level.
 
-    def agent(self) -> Dict:
+    def controller(self) -> Dict:
         """
-        Get the agent config dict.
+        Get the controller config dict.
 
         Returns:
-            Dict: the agent config dict.
+            Dict: the controller config dict.
         """
-        return self.config['agent']
+        return self.config['controller']
 
     def autoscale(self) -> Dict:
         """
@@ -41,23 +41,23 @@ class Config_v1alpha1(Config):
 
     ## Secondary-level.
 
-    def agent_daemon(self) -> Dict:
+    def controller_daemon(self) -> Dict:
         """
         Get the daemon configuration options as a flat map.
 
         Returns:
             Dict: The daemon configuration options.
         """
-        return self.agent()['daemon']
+        return self.controller()['daemon']
 
-    def agent_databases(self) -> Dict:
+    def controller_databases(self) -> Dict:
         """
         Get the autoscaling databases configuration map.
 
         Returns:
             Dict: The autoscale.databases config map.
         """
-        return self.agent()['databases']
+        return self.controller()['databases']
 
     def autoscale_hosts(self) -> Dict:
         """
@@ -81,14 +81,14 @@ class Config_v1alpha1(Config):
 
     #### state
 
-    def agent_databases_state_connection(self) -> Dict:
+    def controller_databases_state_connection(self) -> Dict:
         """
         Get the state database credentials (MySQL).
 
         Returns:
             Dict: MySQL configuration and credentials.
         """
-        match (state := self.agent_databases()['state'])['type']:
+        match (state := self.controller_databases()['state'])['type']:
             case 'mysql':
                 mysql_connect = state['connection']
                 return {
@@ -102,14 +102,14 @@ class Config_v1alpha1(Config):
                 log.error(f'State database type \'{state["type"]}\' unsupported')
                 sys.exit(1)
 
-    def agent_databases_state_configuration(self) -> Dict:
+    def controller_databases_state_configuration(self) -> Dict:
         """
         Get the state database credentials (MySQL).
 
         Returns:
             Dict: MySQL configuration and credentials.
         """
-        match (state := self.agent_databases()['state'])['type']:
+        match (state := self.controller_databases()['state'])['type']:
             case 'mysql':
                 return {
                     'type': 'mysql',
@@ -121,14 +121,14 @@ class Config_v1alpha1(Config):
 
     #### metrics
 
-    def agent_databases_metrics_connection(self) -> Dict:
+    def controller_databases_metrics_connection(self) -> Dict:
         """
         Get the metrics database credentials (InfluxDB).
 
         Returns:
             Dict: Metrics database credentials.
         """
-        match (metrics := self.agent_databases()['metrics'])['type']:
+        match (metrics := self.controller_databases()['metrics'])['type']:
             case 'influxdb':
                 influxdb_connect = metrics['connection']
                 return {
@@ -142,14 +142,14 @@ class Config_v1alpha1(Config):
                 log.error(f'Metrics database type \'{metrics["type"]}\' unsupported')
                 sys.exit(1)
 
-    def agent_databases_metrics_configuration(self) -> Dict:
+    def controller_databases_metrics_configuration(self) -> Dict:
         """
         Get the metrics database configuration (whereas the last method retrieved the credentials/auth data).
 
         Returns:
             Dict: configuration instead of credentials.
         """
-        match (metrics := self.agent_databases()['metrics'])['type']:
+        match (metrics := self.controller_databases()['metrics'])['type']:
             case 'influxdb':
                 return {
                     'type': 'influxdb',

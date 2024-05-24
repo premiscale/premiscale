@@ -6,18 +6,6 @@ version: 0.0.1
 appVersion: "0.0.1"
 
 dependencies:
-  - name: mysql
-    repository: "@premiscale"
-    alias: mysql
-    version: 0.0.x
-    condition: mysql.enabled
-
-  - name: influxdb
-    repository: "@premiscale"
-    alias: influxdb
-    version: 0.0.x
-    condition: influxdb.enabled
-
   - name: cluster-autoscaler
     repository: https://kubernetes.github.io/autoscaler
     alias: kubernetes-autoscaler

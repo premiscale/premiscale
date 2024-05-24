@@ -1,7 +1,7 @@
 version: v1alpha1
 
-# Configure the agent, such as databases and how often to take certain actions.
-agent:
+# Configure the controller, such as database connection criteria and how often to take certain controller-specific actions.
+controller:
   databases:
     # State is where the ASGs current state is stored so it can be queried without making additional calls to libvirt.
     state:

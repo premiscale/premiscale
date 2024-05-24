@@ -1,0 +1,21 @@
+{{- if .Values.configMap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ default .Values.configMap.name .Chart.Name }}
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+  {{- with .Values.configMap.labels }}
+  labels:
+    {{- range $k, $v := . }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+  {{- end }}
+  {{- with .Values.configMap.annotations }}
+  annotations:
+    {{- range $k, $v := . }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+  {{- end }}
+immutable: {{ .Values.configMap.immutable }}
+data: {{ .Values.configMap.config }}
+{{- end }}

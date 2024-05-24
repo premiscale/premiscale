@@ -1,5 +1,6 @@
 minimum_pre_commit_version: 3.0.4
 fail_fast: true
+
 default_stages:
   - commit
   - manual
@@ -66,8 +67,8 @@ repos:
         args:
           - Dockerfile
           - Dockerfile.develop
-          - docker/influxdb/Dockerfile
-          - docker/mysql/Dockerfile
+          - Dockerfile.imds
+          - Dockerfile.imds.develop
           - --config
           - .github/.hadolint.yaml
 
@@ -78,10 +79,10 @@ repos:
   #       args:
   #         - conf/schema.yaml
 
-  - repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.22
-    hooks:
-      - id: helmlint
+  # - repo: https://github.com/gruntwork-io/pre-commit
+  #   rev: v0.1.22
+  #   hooks:
+  #     - id: helmlint
 
   - repo: https://github.com/python-poetry/poetry
     rev: 1.5.0

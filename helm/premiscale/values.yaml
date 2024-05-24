@@ -1,93 +1,136 @@
 global:
-  imageRegistry: docker.ops.premiscale.com
-  imagePullSecrets:
-    - nexus-docker-registry
-  storageClass: longhorn
-
-service:
-  enabled: true
-  type: ClusterIP
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-
-deployment:
-  podSecurityContext: {}
-  containerSecurityContext: {}
-
   image:
-    name: premiscale
-    tag: 0.0.315
-    pullPolicy: Always
+    registry: docker.io
 
-  resources:
-    requests:
-      cpu: 0.1
-      memory: 300Mi
-    limits:
-      cpu: 4.0
-      memory: 2Gi
 
-  annotations:
-    argocd-image-updater.argoproj.io/image-list: docker.ops.premiscale.com/premiscale
-    # argocd-image-updater.argoproj.io/write-back-method: git
-    # argocd-image-updater.argoproj.io/git-branch: master
+## @section PremiScale Controller
 
-  imds:
+
+controller:
+  deployment:
+    image:
+      name: premiscale
+      tag: 0.0.1
+      pullPolicy: Always
+      pullSecrets: []
+
+    resources:
+      requests:
+        cpu: 0.5
+        memory: 1Gi
+      limits:
+        cpu: 4.0
+        memory: 2Gi
+
+    podSecurityContext: {}
+    containerSecurityContext: {}
+
+    annotations: {}
+    labels: {}
+
+    startupProbe:
+      enabled: false
+      path: /health
+      port: 8080
+      config: {}
+
+    livenessProbe:
+      enabled: false
+      path: /health
+      port: 8080
+      config: {}
+
+    readinessProbe:
+      enabled: false
+      path: /ready
+      port: 8080
+      config: {}
+
+    ports:
+      - name: http
+        containerPort: 8080
+        protocol: TCP
+
+  registration:
+    # If create is false, the secret must already exist, therefore 'name' and 'key' are used.
+    createSecret: false
+
+    secretName: premiscale-registration-token
+
+    key: token
+
+    value: ''
+    immutable: true
+
+  config:
+    mountPath: /opt/premiscale/config.yaml
+
+  logging:
+    ## @param controller.logging.level [string] Can be one of info|debug|warn|error.
+    level: info
+
+  ## @param controller.extraEnv [list] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.
+  extraEnv: []
+
+
+## @section IMDS
+
+
+imds:
+  ## @param imds.enabled [bool] Enable or disable the IMDS service. This API service is used to retrieve metadata from the controller databases.
+  enabled: false
+  port: 8085
+
+  labels: {}
+  annotations: {}
+
+  ingress:
+    ## @param imds.ingress.enabled [bool] Enable or disable the ingress. If the ingress is enabled, the controller service must also be enabled; the service type is automatically switched to LoadBalancer as well.
     enabled: false
-    port: 8080
 
-  env:
-    - name: PREMISCALE_TOKEN
-      value: ''
-    - name: PREMISCALE_CONFIG_PATH
-      value: /opt/premiscale/config.yaml
-    - name: PREMISCALE_PID_FILE
-      value: /opt/premiscale/premiscale.pid
-    - name: PREMISCALE_LOG_LEVEL
-      value: info
-    - name: PREMISCALE_LOG_FILE
-      value: /opt/premiscale/agent.log
-    - name: PREMISCALE_PLATFORM
-      value: app.premiscale.com
+
+## @section PremiScale Controller Config
+
 
 configMap:
   enabled: false
   config: |+
-    Your PremiScale config file.
+    Your PremiScale controller config file.
   mountPath: /opt/premiscale
+  immutable: false
 
-# Enable / disable databases.
-influxdb:
-  enabled: false
+  labels: {}
+  annotations: {}
 
-  resources:
-    requests:
-      cpu: 0.25
-      memory: 500Mi
-    limits:
-      cpu: 1.0
-      memory: 1Gi
-mysql:
-  enabled: false
 
-  resources:
-    requests:
-      cpu: 0.25
-      memory: 500Mi
-    limits:
-      cpu: 1.0
-      memory: 1Gi
+## @section Controller service
 
-# Deploy the kubernetes autoscaler for PremiScale to connect to.
-# Images are overridden to point at those that have been rebuilt to have a
-# premiscale interface.
+
+service:
+  ## @param service.enabled [bool] Enable or disable the service. If ingress is enabled, the service type is automatically enabled and the type switched to LoadBalancer.
+  enabled: true
+  type: ClusterIP
+
+  ports:
+    liveness:
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    imds:
+      protocol: TCP
+      port: 8085
+      targetPort: 8085
+
+
+## @section Kubernetes autoscaler
+
+
 kubernetes-autoscaler:
+  ## @param kubernetes-autoscaler.enabled [bool] Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides.
   enabled: false
 
   image:
-    repository: docker.ops.premiscale.com/cluster-autoscaler
+    repository: kubernetes/cluster-autoscaler
     tag: v1.28.2
     pullPolicy: IfNotPresent
 

@@ -8,7 +8,7 @@ import yaml
 import logging
 import sys
 
-from typing import Any, Union, Tuple
+from typing import Union, Tuple
 from pathlib import Path
 from importlib import resources
 

@@ -17,7 +17,6 @@ services:
       - MYSQL_HOST=mysql-agent-state:3306
       - MYSQL_USERNAME=premiscale
       - MYSQL_PASSWORD=premiscale
-      - IN_DOCKER=true
     networks:
       - controller
     deploy:

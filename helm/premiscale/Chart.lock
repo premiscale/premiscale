@@ -1,12 +1,6 @@
 dependencies:
-- name: mysql
-  repository: https://repo.ops.premiscale.com/repository/helm-develop/
-  version: 0.0.820
-- name: influxdb
-  repository: https://repo.ops.premiscale.com/repository/helm-develop/
-  version: 0.0.820
 - name: cluster-autoscaler
   repository: https://kubernetes.github.io/autoscaler
   version: 9.34.1
-digest: sha256:8fb3362677fd89067976407f0037e4a9af6ca929751936caeb9dfe3068c4eaab
-generated: "2023-12-24T12:05:19.845471713-07:00"
+digest: sha256:dee5f2d90ef6911756b525c996d12de4e0c76983d1f69c6c112971bf624ee9d1
+generated: "2024-05-24T14:52:19.360129-04:00"

@@ -80,7 +80,7 @@ def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0
                     if (res := call()) is not None:
                         return res
                 else:
-                    log.error(f'Could not register agent, retry attempt limit exceeded.')
+                    log.error(f'Could not register controller with platform, retry attempt limit exceeded.')
                     return None
             else:
                 # Infinite retries.
@@ -120,10 +120,10 @@ def register(
     platform_url = urljoin(host, path)
 
     if token == '':
-        log.warning('No registration token provided, starting agent in standalone mode')
+        log.warning('No registration token provided, starting controller in standalone mode')
         return {}
 
-    # If the agent has already registered, skip the registration request.
+    # If the controller has already registered, skip the registration request.
     if (registration_response := read_json('registration.json')) is not None:
         log.info('Agent already registered with platform. Skipping agent registration request.')
         return registration_response
@@ -169,7 +169,7 @@ class Platform:
 
     Args:
         registration (Dict[str, str]): registration response from the registration service.
-        version (str): agent version.
+        version (str): controller version.
         host (str): platform host.
         path (str): path to the websocket endpoint.
         cacert (str): path to the certificate file (for use with self-signed certificates).
@@ -247,7 +247,7 @@ class Platform:
 
     async def sync_actions(self) -> bool:
         """
-        Sync actions taken by the agent for auditing.
+        Sync actions taken by the controller for auditing.
 
         Returns:
             bool: True if the sync was successful.

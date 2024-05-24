@@ -13,8 +13,7 @@ ENV PREMISCALE_TOKEN="" \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_CREATE=true \
-    POETRY_VERSION=1.8.2 \
-    IN_DOCKER=true
+    POETRY_VERSION=1.8.2
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2024"

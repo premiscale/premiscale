@@ -7,13 +7,15 @@ maintainers = ["Emma Doyle <emma@premiscale.com>"]
 license = "Proprietary"
 readme = "README.md"
 packages = [
-  { include = "premiscale", from = "src" }
+  { include = "premiscale", from = "src" },
+  { include = "imds", from = "src" }
 ]
 include = [
   "LICENSE"
 ]
 keywords = [
     "premiscale",
+    "imds",
     "autoscaling",
     "asg",
     "kvm",

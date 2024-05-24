@@ -1,5 +1,5 @@
 version: enum('v1alpha1')
-agent:
+controller:
   platform: include('platform')
   databases: include('databases')
 autoscale:
