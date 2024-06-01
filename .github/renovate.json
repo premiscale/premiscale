@@ -1,24 +1,13 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
-    ":pinOnlyDevDependencies",
-    "schedule:weekly",
+    "config:recommended"
+  ],
+  "packageRules": [
     {
-      "groupName": "all dependencies",
-      "separateMajorMinor": true,
-      "groupSlug": "all",
-      "packageRules": [
-        {
-          "packagePatterns": [
-            "*"
-          ],
-          "groupName": "all dependencies",
-          "groupSlug": "all"
-        }
-      ],
-      "lockFileMaintenance": {
-        "enabled": true
-      }
+      "matchCategories": ["python"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "python (non-major)"
     }
   ]
 }
