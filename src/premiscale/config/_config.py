@@ -3,10 +3,12 @@ Implement common methods all Config-<version> classes should inherit.
 """
 
 
+from abc import ABC
+
 import json
 
 
-class Config(dict):
+class Config(ABC, dict):
     """
     Parse a config dictionary into an object with methods to interact with the config.
     """

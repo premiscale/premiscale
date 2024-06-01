@@ -3,6 +3,7 @@ Define subprocesses encapsulating each control loop.
 """
 
 
+import concurrent.futures
 import multiprocessing as mp
 import logging
 import signal
@@ -20,10 +21,7 @@ from premiscale.controller.platform import Platform, register
 from premiscale.controller.autoscaling import ASG
 from premiscale.controller.metrics import Metrics
 from premiscale.controller.reconciliation import Reconcile
-from premiscale.api.healthcheck import (
-    Healthcheck,
-    api as healthcheck_api
-)
+from premiscale.healthcheck import app as healthcheck
 
 
 log = logging.getLogger(__name__)
@@ -32,8 +30,8 @@ log = logging.getLogger(__name__)
 def start(
         working_dir: str,
         pid_file: str,
-        agent_config: Config,
-        agent_version: str,
+        controller_config: Config,
+        controller_version: str,
         token: str,
         host: str,
         cacert: str
@@ -44,9 +42,9 @@ def start(
     Args:
         working_dir (str): working directory for this daemon.
         pid_file (str): PID file to use for the main daemon process.
-        agent_config (Config): Agent config object.
-        agent_version (str): Agent version (from the package metadata).
-        token (str): Agent registration token.
+        controller_config (Config): controller config object.
+        controller_version (str): controller version (from the package metadata).
+        token (str): controller registration token.
         host (str): PremiScale platform host.
         cacert (str): Path to the certificate file (for use with self-signed certificates).
 
@@ -55,7 +53,13 @@ def start(
     """
     setproctitle('premiscale')
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=5) as executor, mp.Manager() as manager:
+    # Start the healthcheck API in a separate thread as a daemon.
+    with concurrent.futures.ThreadPoolExecutor() as main_process_tp:
+        main_process_tp.submit(
+            healthcheck.run, host=host, port=8085
+        )
+
+    with concurrent.futures.ProcessPoolExecutor() as executor, mp.Manager() as manager:
         # DaemonContext(
         #     stdin=sys.stdin,
         #     stdout=sys.stdout,
@@ -80,48 +84,19 @@ def start(
             executor.submit(
                 Platform(
                     registration=registration,
-                    version=agent_version,
+                    version=controller_version,
                     host=f'wss://{host}',
-                    path='agent/websocket',
+                    path='controller/websocket',
                     cacert=cacert
                 ),
                 platform_message_queue
             ) if (registration := register(
                 token=token,
-                version=agent_version,
+                version=controller_version,
                 host=f'https://{host}',
-                path='agent/registration',
+                path='controller/registration',
                 cacert=cacert
             )) else None,
-
-            # Healthcheck subprocess (serves healthcheck endpoint in Docker containers).
-            executor.submit(
-                Healthcheck(
-                    options={
-                        'bind': 'localhost:8085',
-                        'workers': 1,
-                        'backlog': 10,
-                        'worker_class': 'sync',
-                        'worker_connections': 10,
-                        'timeout': 10,
-                        'keepalive': 5,
-                        'spew': False,
-                        'daemon': False,
-                        'raw_env': [],
-                        'pidfile': None,
-                        'umask': 0,
-                        'user': None,
-                        'group': None,
-                        'tmp_upload_dir': None,
-                        'errorlog': '-',
-                        'loglevel': 'info',
-                        'accesslog': '-',
-                        'access_log_format': '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"',
-                        'proc_name': 'healthcheck'
-                    },
-                    app=healthcheck_api
-                ).run(),
-            ) if os.getenv('IN_DOCKER') else None,
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
@@ -132,15 +107,15 @@ def start(
             # Host metrics collection subprocess (populates metrics database)
             executor.submit(
                 Metrics(
-                    agent_config.agent_databases_metrics_connection() # type: ignore
+                    controller_config.controller_databases_metrics_connection() # type: ignore
                 )
             ),
 
             # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
             executor.submit(
                 Reconcile(
-                    agent_config.agent_databases_state_connection(), # type: ignore
-                    agent_config.agent_databases_metrics_connection() # type: ignore
+                    controller_config.controller_databases_state_connection(), # type: ignore
+                    controller_config.controller_databases_metrics_connection() # type: ignore
                 ),
                 autoscaling_action_queue,
                 platform_message_queue

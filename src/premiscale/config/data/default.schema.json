@@ -1,0 +1,169 @@
+{
+    "title": "Chart Values",
+    "type": "object",
+    "properties": {
+        "version": {
+            "type": "string",
+            "description": "The version of the configuration file.",
+            "default": "\"\""
+        },
+        "controller": {
+            "type": "object",
+            "properties": {
+                "databases": {
+                    "type": "object",
+                    "properties": {
+                        "state": {
+                            "type": "object",
+                            "properties": {
+                                "collectionInterval": {
+                                    "type": "number",
+                                    "description": "How often the agent collects metrics and stores them in the database.",
+                                    "default": "60"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "description": "The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.",
+                                    "default": "mysql"
+                                },
+                                "connection": {
+                                    "type": "object",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "The URL of the database.",
+                                            "default": "$MYSQL_HOST"
+                                        },
+                                        "database": {
+                                            "type": "string",
+                                            "description": "The name of the database to create or use, if it already exists.",
+                                            "default": "premiscale"
+                                        },
+                                        "credentials": {
+                                            "type": "object",
+                                            "properties": {
+                                                "username": {
+                                                    "type": "string",
+                                                    "description": "The username to use to connect to the database.",
+                                                    "default": "$MYSQL_USERNAME"
+                                                },
+                                                "password": {
+                                                    "type": "string",
+                                                    "description": "The password to use to connect to the database.",
+                                                    "default": "$MYSQL_PASSWORD"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "metrics": {
+                            "type": "object",
+                            "properties": {
+                                "collectionInterval": {
+                                    "type": "number",
+                                    "description": "How often the agent retrieves metrics from all of the connected hosts.",
+                                    "default": "60"
+                                },
+                                "maxThreads": {
+                                    "type": "number",
+                                    "description": "Establish connections to hosts in maxThreads-batches.",
+                                    "default": "10"
+                                },
+                                "hostConnectionTimeout": {
+                                    "type": "number",
+                                    "description": "How long to wait for a connection to a host before timing out.",
+                                    "default": "60"
+                                },
+                                "trailing": {
+                                    "type": "number",
+                                    "description": "Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes",
+                                    "default": "1200"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "description": "The type of database to use for storing metrics. Can be 'influxdb' or 'memory'.",
+                                    "default": "influxdb"
+                                },
+                                "connection": {
+                                    "type": "object",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "The URL of the database.",
+                                            "default": "$INFLUXDB_HOST"
+                                        },
+                                        "database": {
+                                            "type": "string",
+                                            "description": "The name of the database to create or use.",
+                                            "default": "premiscale"
+                                        },
+                                        "credentials": {
+                                            "type": "object",
+                                            "properties": {
+                                                "username": {
+                                                    "type": "string",
+                                                    "description": "The username to use to connect to the database.",
+                                                    "default": "$INFLUXDB_USERNAME"
+                                                },
+                                                "password": {
+                                                    "type": "string",
+                                                    "description": "The password to use to connect to the database.",
+                                                    "default": "$INFLUXDB_PASSWORD"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "platform": {
+                    "type": "object",
+                    "properties": {
+                        "actionsQueueMax": {
+                            "type": "number",
+                            "description": "The maximum number of actions to queue up FIFO before dropping them. 0 means no limit.",
+                            "default": "0"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "The domain of the platform.",
+                            "default": "$PREMISCALE_PLATFORM"
+                        },
+                        "certificates": {
+                            "type": "object",
+                            "properties": {
+                                "path": {
+                                    "type": "string",
+                                    "description": "Path to a directory containing the controller's certificates.",
+                                    "default": "/opt/premiscale/certs"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "autoscale": {
+            "type": "object",
+            "properties": {
+                "hosts": {
+                    "type": "object",
+                    "properties": {
+                        "group-1": {
+                            "type": "array",
+                            "description": "An example group of hosts to assign to an ASG.",
+                            "default": "[]",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

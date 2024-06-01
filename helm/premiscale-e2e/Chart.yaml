@@ -1,0 +1,6 @@
+apiVersion: v2
+name: premiscale-e2e
+description: The PremiScale autoscaling controller e2e testing environment
+type: application
+version: 0.0.1
+appVersion: "0.0.1"

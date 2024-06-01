@@ -39,7 +39,7 @@ def main() -> None:
 
     parser.add_argument(
         '-d', '--daemon', action='store_true',
-        help='Start agent as a daemon.'
+        help='Start controller as a daemon.'
     )
 
     parser.add_argument(
@@ -59,12 +59,12 @@ def main() -> None:
 
     parser.add_argument(
         '--version', action='store_true',
-        help='Display agent version.'
+        help='Display controller version.'
     )
 
     parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for the agent daemon.'
+        help='Pidfile name to use for the controller daemon.'
     )
 
     parser.add_argument(
@@ -75,7 +75,7 @@ def main() -> None:
     log_group = parser.add_mutually_exclusive_group()
 
     log_group.add_argument(
-        '--log-file', type=str, default='/opt/premiscale/agent.log',
+        '--log-file', type=str, default='/opt/premiscale/controller.log',
         help='Specify the file the service logs to if --log-stdout is not set.'
     )
 
@@ -124,16 +124,16 @@ def main() -> None:
     if args.daemon:
         initialize(args.config)
         config = configparse(args.config)
-        log.info(f'Starting premiscale agent v{version}')
+        log.info(f'Starting PremiScale controller v{version}')
 
         if (token := args.token) != '':
-            log.debug('Registering agent with provided token')
+            log.debug('Registering controller with provided token')
         elif (token := os.getenv('PREMISCALE_TOKEN')) != '':
-            log.debug('Registering agent with provided environment variable')
+            log.debug('Registering controller with provided environment variable')
         else:
             token = ''
 
-        # Start the premiscale agent.
+        # Start the premiscale controller.
         sys.exit(
             start(
                 '/opt/premiscale',

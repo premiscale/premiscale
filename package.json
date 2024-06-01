@@ -34,6 +34,12 @@
     "ps": "./scripts/pstree.sh",
     "pst": "./scripts/psthread.sh",
     "compose:up": "./scripts/docker/compose-up.sh",
-    "compose:down": "./scripts/docker/compose-down.sh"
+    "compose:down": "./scripts/docker/compose-down.sh",
+    "minikube:up": "./scripts/minikube.sh start",
+    "minikube:down": "./scripts/minikube.sh stop",
+    "minikube:delete": "./scripts/minikube.sh delete",
+    "test:e2e": "yarn minikube:up && poetry run pytest -vrP src/test/e2e; yarn minikube:delete",
+    "test:unit": "poetry run pytest -vrP src/test/unit",
+    "test:e2e:test": "./src/test_hook.py"
   }
 }

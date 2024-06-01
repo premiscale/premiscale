@@ -4,7 +4,8 @@ services:
     container_name: premiscale
     build:
       context: .
-      dockerfile: ./Dockerfile.develop
+      dockerfile: ./Dockerfile
+      target: develop
     environment:
       - PREMISCALE_TOKEN=123
       - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
@@ -17,7 +18,6 @@ services:
       - MYSQL_HOST=mysql-agent-state:3306
       - MYSQL_USERNAME=premiscale
       - MYSQL_PASSWORD=premiscale
-      - IN_DOCKER=true
     networks:
       - controller
     deploy:
