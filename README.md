@@ -1,6 +1,6 @@
 # PremiScale
 
-PremiScale brings autoscaling to on-premise infrastructure, with a particular focus on integrating with the [Kubernetes autoscaler](https://github.com/kubernetes/autoscaler).
+PremiScale is a controller that brings autoscaling to on-premise infrastructure, with a particular focus on integrating with the [Kubernetes autoscaler](https://github.com/kubernetes/autoscaler).
 
 <!-- [[[cog
 import subprocess
@@ -53,19 +53,9 @@ See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffE
   <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
 </p>
 
-## Install
+## Installation
 
-### Docker
-
-```shell
-docker run -itd
-```
-
-### Kubernetes
-
-```shell
-helm upgrade --install
-```
+See the [chart README](https://github.com/premiscale/premiscale/tree/master/helm/premiscale) for an overview of controller installation and configuration options.
 
 ## Development
 
@@ -100,16 +90,16 @@ This will bring up a development stack in a local or remote Kubernetes cluster o
 Run unit tests with
 
 ```shell
-poetry run pytest tests/unit
+yarn test:unit
 ```
 
-e2e tests against a live environment with
+e2e tests against a mock, minikube-based environment with
 
 ```shell
-poetry run pytest tests/e2e
+yarn test:e2e
 ```
 
-And coverage against the codebase with
+and check test coverage with
 
 ```shell
 poetry run coverage run -m pytest
