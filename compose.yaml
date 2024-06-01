@@ -4,7 +4,8 @@ services:
     container_name: premiscale
     build:
       context: .
-      dockerfile: ./Dockerfile.develop
+      dockerfile: ./Dockerfile
+      target: develop
     environment:
       - PREMISCALE_TOKEN=123
       - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml

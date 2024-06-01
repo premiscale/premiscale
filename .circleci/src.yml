@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: premiscale/general@1.2.0
+  general: premiscale/general@1.2.5
   slack: circleci/slack@4.12.6
 
 
@@ -11,22 +11,17 @@ executors:
     docker:
       - image: cimg/python:3.10.13
 
-  python-3-10-libvirt:
-    docker:
-      - image: docker.ops.premiscale.com/executors/python-3-10:1.0.6
-        auth:
-          username: $DOCKER_USERNAME
-          password: $DOCKER_PASSWORD
-
 
 workflows:
   src:
     jobs:
       - general/python-pylint:
           name: pylint
-          executor: python-3-10-libvirt
           resource-class: premiscale/small
           context: nexus
+
+      - general/python-mypy:
+          name: mypy
 
       - general/helm-lint:
           name: helm lint [helm/premiscale]
@@ -34,193 +29,193 @@ workflows:
 
       # develop
 
-      - general/python-release-poetry:
-          name: twine upload [python-develop]
-          executor: python-3-10-libvirt
-          resource-class: premiscale/small
-          context: nexus
-          repository: python-develop
-          version: 0.0.<< pipeline.number >>
-          requires:
-            - pylint
-          filters:
-            branches:
-              ignore:
-                - master
+      # - general/python-release-poetry:
+      #     name: twine upload [python-develop]
+      #     executor: python-3-10-libvirt
+      #     resource-class: premiscale/small
+      #     context: nexus
+      #     repository: python-develop
+      #     version: 0.0.<< pipeline.number >>
+      #     requires:
+      #       - pylint
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - general/docker-nexus:
-          name: docker [docker/premiscale] [develop]
-          image-name: premiscale
-          context: nexus
-          path: docker/premiscale/Dockerfile
-          nexus-domain: $DOCKER_DEVELOP_DOMAIN
-          args: >-
-            --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
-            --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
-            --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
-            --build-arg=PYTHON_REPOSITORY=python-develop
-          tag: 0.0.<< pipeline.number >>
-          requires:
-            - twine upload [python-develop]
-          filters:
-            branches:
-              ignore:
-                - master
+      # - general/docker-nexus:
+      #     name: docker [docker/premiscale] [develop]
+      #     image-name: premiscale
+      #     context: nexus
+      #     path: docker/premiscale/Dockerfile
+      #     nexus-domain: $DOCKER_DEVELOP_DOMAIN
+      #     args: >-
+      #       --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
+      #       --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
+      #       --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
+      #       --build-arg=PYTHON_REPOSITORY=python-develop
+      #     tag: 0.0.<< pipeline.number >>
+      #     requires:
+      #       - twine upload [python-develop]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - general/helm-release-nexus:
-          name: helm build and push [helm/premiscale] [develop]
-          context: nexus
-          path: helm/premiscale
-          repo: $HELM_DEVELOP_REPOSITORY_URL
-          version: 0.0.<< pipeline.number >>
-          image-tag: 0.0.<< pipeline.number >>
-          image-tag-path: .deployment.image.tag
-          pre-command: |+
-            helm repo add premiscale "$HELM_DEVELOP_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
-          requires:
-            - docker [docker/premiscale] [develop]
-          filters:
-            branches:
-              ignore:
-                - master
+      # - general/helm-release-nexus:
+      #     name: helm build and push [helm/premiscale] [develop]
+      #     context: nexus
+      #     path: helm/premiscale
+      #     repo: $HELM_DEVELOP_REPOSITORY_URL
+      #     version: 0.0.<< pipeline.number >>
+      #     image-tag: 0.0.<< pipeline.number >>
+      #     image-tag-path: .deployment.image.tag
+      #     pre-command: |+
+      #       helm repo add premiscale "$HELM_DEVELOP_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
+      #     requires:
+      #       - docker [docker/premiscale] [develop]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - slack/on-hold:
-          name: 'slack: notify release development deployment hold'
-          context: slack
-          requires:
-            - helm build and push [helm/premiscale] [develop]
-          filters:
-            branches:
-              ignore:
-                - master
+      # - slack/on-hold:
+      #     name: 'slack: notify release development deployment hold'
+      #     context: slack
+      #     requires:
+      #       - helm build and push [helm/premiscale] [develop]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - request-approval:
-          name: 'hold: release develop deployment'
-          requires:
-            - 'slack: notify release development deployment hold'
-          type: approval
-          filters:
-            branches:
-              ignore:
-                - master
+      # - request-approval:
+      #     name: 'hold: release develop deployment'
+      #     requires:
+      #       - 'slack: notify release development deployment hold'
+      #     type: approval
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - general/helm-upgrade:
-          name: helm upgrade install [helm/premiscale] [develop]
-          cluster: $CHELSEA_CLUSTER
-          namespace: agent-develop
-          repo: $HELM_DEVELOP_REPOSITORY_URL
-          version: 0.0.<< pipeline.number >>
-          additional-values: >-
-            --set global.imageRegistry="$DOCKER_DEVELOP_DOMAIN"
-            --set global.platform.hostname="$APP_DEVELOP_DOMAIN"
-            --set mysql.enabled=true
-            --set mysql.deployment.image.tag=0.0.<< pipeline.number >>
-            --set influxdb.enabled=true
-            --set influxdb.influxdb.image.repository="$DOCKER_DEVELOP_DOMAIN"/influxdb
-            --set influxdb.influxdb.image.tag=0.0.<< pipeline.number >>
-          requires:
-            - 'hold: release develop deployment'
-          context:
-            - kubeconfig
-            - premiscale
-            - nexus
-          filters:
-            branches:
-              ignore:
-                - master
+      # - general/helm-upgrade:
+      #     name: helm upgrade install [helm/premiscale] [develop]
+      #     cluster: $CHELSEA_CLUSTER
+      #     namespace: agent-develop
+      #     repo: $HELM_DEVELOP_REPOSITORY_URL
+      #     version: 0.0.<< pipeline.number >>
+      #     additional-values: >-
+      #       --set global.imageRegistry="$DOCKER_DEVELOP_DOMAIN"
+      #       --set global.platform.hostname="$APP_DEVELOP_DOMAIN"
+      #       --set mysql.enabled=true
+      #       --set mysql.deployment.image.tag=0.0.<< pipeline.number >>
+      #       --set influxdb.enabled=true
+      #       --set influxdb.influxdb.image.repository="$DOCKER_DEVELOP_DOMAIN"/influxdb
+      #       --set influxdb.influxdb.image.tag=0.0.<< pipeline.number >>
+      #     requires:
+      #       - 'hold: release develop deployment'
+      #     context:
+      #       - kubeconfig
+      #       - premiscale
+      #       - nexus
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
       # master
 
-      - general/python-release-poetry:
-          name: twine upload [python-master]
-          executor: python-3-10-libvirt
-          resource-class: premiscale/small
-          context: nexus
-          repository: python-master
-          version: 0.0.<< pipeline.number >>
-          requires:
-            - pylint
-          filters:
-            branches:
-              only:
-                - master
+      # - general/python-release-poetry:
+      #     name: twine upload [python-master]
+      #     executor: python-3-10-libvirt
+      #     resource-class: premiscale/small
+      #     context: nexus
+      #     repository: python-master
+      #     version: 0.0.<< pipeline.number >>
+      #     requires:
+      #       - pylint
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
 
-      - general/docker-nexus:
-          name: docker [docker/premiscale] [master]
-          image-name: premiscale
-          context: nexus
-          path: docker/premiscale/Dockerfile
-          nexus-domain: $DOCKER_MASTER_DOMAIN
-          args: >-
-            --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
-            --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
-            --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
-            --build-arg=PYTHON_REPOSITORY=python-master
-          tag: 0.0.<< pipeline.number >>
-          requires:
-            - twine upload [python-master]
-          filters:
-            branches:
-              only:
-                - master
+      # - general/docker-nexus:
+      #     name: docker [docker/premiscale] [master]
+      #     image-name: premiscale
+      #     context: nexus
+      #     path: docker/premiscale/Dockerfile
+      #     nexus-domain: $DOCKER_MASTER_DOMAIN
+      #     args: >-
+      #       --build-arg=PYTHON_PACKAGE_VERSION=0.0.<< pipeline.number >>
+      #       --build-arg=PYTHON_USERNAME=$NEXUS_USERNAME
+      #       --build-arg=PYTHON_PASSWORD=$NEXUS_PASSWORD
+      #       --build-arg=PYTHON_REPOSITORY=python-master
+      #     tag: 0.0.<< pipeline.number >>
+      #     requires:
+      #       - twine upload [python-master]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
 
-      - general/helm-release-nexus:
-          name: helm build and push [helm/premiscale] [master]
-          context: nexus
-          path: helm/premiscale
-          repo: $HELM_MASTER_REPOSITORY_URL
-          version: 0.0.<< pipeline.number >>
-          image-tag: 0.0.<< pipeline.number >>
-          image-tag-path: .deployment.image.tag
-          pre-command: |+
-            helm repo add premiscale "$HELM_MASTER_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
-          requires:
-            - docker [docker/premiscale] [master]
-          filters:
-            branches:
-              only:
-                - master
+      # - general/helm-release-nexus:
+      #     name: helm build and push [helm/premiscale] [master]
+      #     context: nexus
+      #     path: helm/premiscale
+      #     repo: $HELM_MASTER_REPOSITORY_URL
+      #     version: 0.0.<< pipeline.number >>
+      #     image-tag: 0.0.<< pipeline.number >>
+      #     image-tag-path: .deployment.image.tag
+      #     pre-command: |+
+      #       helm repo add premiscale "$HELM_MASTER_REPOSITORY_URL" --username "$HELM_USERNAME" --password "$HELM_PASSWORD"
+      #     requires:
+      #       - docker [docker/premiscale] [master]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
 
-      - slack/on-hold:
-          name: 'slack: notify release master deployment hold'
-          context: slack
-          requires:
-            - helm build and push [helm/premiscale] [master]
-          filters:
-            branches:
-              ignore:
-                - master
+      # - slack/on-hold:
+      #     name: 'slack: notify release master deployment hold'
+      #     context: slack
+      #     requires:
+      #       - helm build and push [helm/premiscale] [master]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - request-approval:
-          name: 'hold: release master deployment'
-          requires:
-            - 'slack: notify release master deployment hold'
-          type: approval
-          filters:
-            branches:
-              ignore:
-                - master
+      # - request-approval:
+      #     name: 'hold: release master deployment'
+      #     requires:
+      #       - 'slack: notify release master deployment hold'
+      #     type: approval
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
 
-      - general/helm-upgrade:
-          name: helm upgrade install [helm/premiscale] [master]
-          cluster: $CHELSEA_CLUSTER
-          namespace: agent-master
-          repo: $HELM_MASTER_REPOSITORY_URL
-          version: 0.0.<< pipeline.number >>
-          additional-values: >-
-            --set global.imageRegistry="$DOCKER_MASTER_DOMAIN"
-            --set global.platform.hostname="$APP_MASTER_DOMAIN"
-            --set mysql.enabled=true
-            --set mysql.deployment.image.tag=0.0.<< pipeline.number >>
-            --set influxdb.enabled=true
-            --set influxdb.influxdb.image.repository="$DOCKER_MASTER_DOMAIN"/influxdb
-            --set influxdb.influxdb.image.tag=0.0.<< pipeline.number >>
-          requires:
-            - 'hold: release master deployment'
-          context:
-            - kubeconfig
-            - nexus
-          filters:
-            branches:
-              only:
-                - master
+      # - general/helm-upgrade:
+      #     name: helm upgrade install [helm/premiscale] [master]
+      #     cluster: $CHELSEA_CLUSTER
+      #     namespace: agent-master
+      #     repo: $HELM_MASTER_REPOSITORY_URL
+      #     version: 0.0.<< pipeline.number >>
+      #     additional-values: >-
+      #       --set global.imageRegistry="$DOCKER_MASTER_DOMAIN"
+      #       --set global.platform.hostname="$APP_MASTER_DOMAIN"
+      #       --set mysql.enabled=true
+      #       --set mysql.deployment.image.tag=0.0.<< pipeline.number >>
+      #       --set influxdb.enabled=true
+      #       --set influxdb.influxdb.image.repository="$DOCKER_MASTER_DOMAIN"/influxdb
+      #       --set influxdb.influxdb.image.tag=0.0.<< pipeline.number >>
+      #     requires:
+      #       - 'hold: release master deployment'
+      #     context:
+      #       - kubeconfig
+      #       - nexus
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master

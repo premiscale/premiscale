@@ -1,7 +1,7 @@
 ARG IMAGE=python
 ARG TAG=3.10.13
 
-FROM --platform=linux/amd64 ${IMAGE}:${TAG}
+FROM ${IMAGE}:${TAG} AS base
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -10,8 +10,10 @@ ENV PREMISCALE_TOKEN="" \
     PREMISCALE_PID_FILE=/opt/premiscale/premiscale.pid \
     PREMISCALE_LOG_LEVEL=info \
     PREMISCALE_PLATFORM=app.premiscale.com \
+    PREMISCALE_CACERT="" \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1 \
+    # Poetry isn't used in production.
     POETRY_VIRTUALENVS_CREATE=true \
     POETRY_VERSION=1.8.2
 
@@ -34,18 +36,21 @@ RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIR
     && groupadd premiscale \
     && useradd -rm -d /opt/premiscale -s /bin/bash -g premiscale -u 1001 premiscale
 
+ENV PATH=/opt/premiscale/.local/bin:/opt/premiscale/bin:${PATH}
 WORKDIR /opt/premiscale
 
 RUN chown -R premiscale:premiscale .
 USER premiscale
+
+## Production image
+
+FROM base AS production
 
 ARG PYTHON_USERNAME
 ARG PYTHON_PASSWORD
 ARG PYTHON_REPOSITORY
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
-
-ENV PATH=/opt/premiscale/.local/bin:/opt/premiscale/bin:${PATH}
 
 # Install and initialize PremiScale.
 RUN mkdir -p "$HOME"/.local/bin \
@@ -54,4 +59,20 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "premiscale --log-stdout --daemon --token ${PREMISCALE_TOKEN} --config ${PREMISCALE_CONFIG_PATH} --pid-file ${PREMISCALE_PID_FILE} --log-level ${PREMISCALE_LOG_LEVEL} --log-file ${PREMISCALE_LOG_FILE} --platform ${PREMISCALE_PLATFORM}" ]
+CMD [ "bash", "-c", "premiscale --log-stdout --daemon --token ${PREMISCALE_TOKEN} --config ${PREMISCALE_CONFIG_PATH} --pid-file ${PREMISCALE_PID_FILE} --log-level ${PREMISCALE_LOG_LEVEL} --platform ${PREMISCALE_PLATFORM}" ]
+
+## Development image
+
+FROM base AS develop
+
+COPY src/ ./src/
+COPY README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
+
+# Install and initialize PremiScale.
+RUN mkdir -p "$HOME"/.local/bin \
+    && curl -sSL https://install.python-poetry.org | python3 - \
+    && poetry install \
+    && poetry run premiscale --version
+
+ENTRYPOINT [ "/tini", "--" ]
+CMD [ "bash", "-c", "poetry run premiscale --log-stdout --daemon --token ${PREMISCALE_TOKEN} --config ${PREMISCALE_CONFIG_PATH} --pid-file ${PREMISCALE_PID_FILE} --log-level ${PREMISCALE_LOG_LEVEL} --platform ${PREMISCALE_PLATFORM} --cacert=${PREMISCALE_CACERT}" ]

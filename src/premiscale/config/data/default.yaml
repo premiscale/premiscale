@@ -1,140 +1,177 @@
+## @param version [string] The version of the configuration file.
 version: v1alpha1
 
-# Configure the controller, such as database connection criteria and how often to take certain controller-specific actions.
+## @section Controller Configuration
+
+## @param controller [object] Configure the controller, such as database connection criteria and how often to take certain controller-specific actions.
 controller:
+
+  ## @param contoller.databases [object] Configure the databases the controller uses to store state and metrics.
   databases:
-    # State is where the ASGs current state is stored so it can be queried without making additional calls to libvirt.
+    ## @param controller.databases.state [object] State is where the ASGs' current state as of the (latest reconciliation loop execution) is stored so it can be queried without making additional calls through libvirt.
     state:
-      type: mysql
-      connection:
-        url: $MYSQL_HOST
-        database: premiscale
-        credentials:
-          username: $MYSQL_USERNAME
-          password: $MYSQL_PASSWORD
-
-      # How often the agent compares collected metrics against current state of the database (leads to Actions the
-      # autoscaler needs to take on infrastructure being added to a queue)
-      reconcileInterval: 60
-
-    # How often metrics collection is performed from every host.
-    metrics:
-      type: influxdb
-      connection:
-        url: $INFLUXDB_HOST
-        database: premiscale
-        credentials:
-          username: $INFLUXDB_USERNAME
-          password: $INFLUXDB_PASSWORD
-
-      # How often the agent retrieves metrics from all of the connected hosts.
+      ## @param controller.databases.state.collectionInterval [default: 60] How often the agent collects metrics and stores them in the database.
       collectionInterval: 60
 
-      # Establish connections to hosts in max_threads-batches.
+      ## @param controller.databases.state.type [string, default: mysql] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
+      type: mysql
+      ## @param controller.databases.state.connection [object] Connection details for the state database.
+      connection:
+        ## @param controller.databases.state.connection.url [string, default: $MYSQL_HOST] The URL of the database.
+        url: $MYSQL_HOST
+        ## @param controller.databases.state.connection.database [string, default: premiscale] The name of the database to create or use, if it already exists.
+        database: premiscale
+        ## @param controller.databases.state.connection.credentials [object] The credentials to use to connect to the database.
+        credentials:
+          ## @param controller.databases.state.connection.credentials.username [string, default: $MYSQL_USERNAME] The username to use to connect to the database.
+          username: $MYSQL_USERNAME
+          ## @param controller.databases.state.connection.credentials.password [string, default: $MYSQL_PASSWORD] The password to use to connect to the database.
+          password: $MYSQL_PASSWORD
+
+    ## @param controller.databases.metrics [object] How often metrics collection is performed from every host.
+    metrics:
+      ## @param controller.databases.metrics.collectionInterval [default: 60] How often the agent retrieves metrics from all of the connected hosts.
+      collectionInterval: 60
+
+      ## @param controller.databases.metrics.maxThreads [default: 10] Establish connections to hosts in maxThreads-batches.
       maxThreads: 10
+
+      ## @param controller.databases.metrics.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
       hostConnectionTimeout: 60
 
-      # Seconds of collected metrics to keep and evaluate upon (must be >=interval)
-      trailing: 1260
+      ## @param controller.databases.metrics.trailing [default: 1200] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes
+      trailing: 1200
 
+      ## @param controller.databases.metrics.type [string, default: influxdb] The type of database to use for storing metrics. Can be 'influxdb' or 'memory'.
+      type: influxdb
+
+      ## @param controller.databases.metrics.connection [object] Connection details for the metrics database.
+      connection:
+        ## @param controller.databases.metrics.connection.url [string, default: $INFLUXDB_HOST] The URL of the database.
+        url: $INFLUXDB_HOST
+
+        ## @param controller.databases.metrics.connection.database [string, default: premiscale] The name of the database to create or use.
+        database: premiscale
+
+        ## @param controller.databases.metrics.connection.credentials [object] The credentials to use to connect to the database.
+        credentials:
+
+          ## @param controller.databases.metrics.connection.credentials.username [string, default: $INFLUXDB_USERNAME] The username to use to connect to the database.
+          username: $INFLUXDB_USERNAME
+
+          ## @param controller.databases.metrics.connection.credentials.password [string, default: $INFLUXDB_PASSWORD] The password to use to connect to the database.
+          password: $INFLUXDB_PASSWORD
+
+  ## @param controller.platform [object] Configure the platform
   platform:
+
+    ## @param controller.platform.actionsQueueMax [default: 0] The maximum number of actions to queue up FIFO before dropping them. 0 means no limit.
     actionsQueueMax: 0
+
+    ## @param controller.platform.domain [string, default: $PREMISCALE_PLATFORM] The domain of the platform.
     domain: $PREMISCALE_PLATFORM
 
-# Configure hosts and autoscaling groups on those hosts.
-autoscale:
-  # Groups of hosts to assign to ASGs.
-  hosts:
-    group-1:
-      # All hosts in group-1 should be pretty similar. Hosts differing by any great amount should be
-      # managed as a separate group? But they should all be within reach of an ~/.ssh/config.
-      - name: domain-1
-        address: domain-1
-        protocol: ssh
-        port: 22
-        hypervisor: kvm
-        # # Override collected resource metrics, or allow the setting of resources, instead of relying on the agent to determine what the values are.
-        # resources:
-        #   # MiB/s
-        #   io: 100
-        #   # Number of CPUs
-        #   cpu: 2
-        #   # GiB of memory
-        #   memory: 96
-      - name: domain-2
-        address: domain-2
-        protocol: tls
-        port: 6910
-        hypervisor: kvm
-      - name: domain-3
-        address: domain-3
-        protocol: ssh
-        port: 22
-        hypervisor: kvm
-    # group-2
+    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates to the controller for connection to the platform services.
+    certificates:
+      ## @param controller.platform.certificates.path [string, default: /opt/premiscale/certs] Path to a directory containing the controller's certificates.
+      path: /opt/premiscale/certs
 
-  # Autoscaling groups.
-  groups:
-    # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
-    asg-1:
-      # This image and an associated libvirt template should exist on one of the hosts.
-      image: root.qcow
-      name: template-ubuntu20.04-server
+  ## @section Reconciliation Configuration
 
-      # Options could be
-      #   'migrate' - migrate a copy of the domain to every host, or
-      #   'centralized' - hosts are using a centralized block store over a share. In other words, don't attempt to migrate any disks to individual hosts.
-      imageMigration: migrate
+  reconciliation: {}
 
-      cloud-init:
-        inline: |
-          # Should contain an inline cloud-init script by which to customize VMs in this group, or you can
-          # specify a "file: "-keyword to read it from some location on-disk. All environment variables are
-          # evaluated and replaced before copying to hosts.
-        file: <path-to-file-instead>
+  ## @section Autoscaling Configuration
 
-      # Groups of hosts on which to provision VMs.
-      hosts:
-        - group-1
+  ## @param autoscale [object] Configure hosts and autoscaling groups on those hosts.
+  autoscale:
+    ## @param autoscale.hosts [object] Groups of hosts to assign to ASGs.
+    hosts:
+      ## @param autoscale.hosts.group-1 [array] An example group of hosts to assign to an ASG.
+      group-1:
+        - name: domain-1
+          address: domain-1
+          protocol: ssh
+          port: 22
+          hypervisor: kvm
+          resources:
+            io: 100
+            cpu: 2
+            memory: 96
+        - name: domain-2
+          address: domain-2
+          protocol: tls
+          port: 6910
+          hypervisor: kvm
+        - name: domain-3
+          address: domain-3
+          protocol: ssh
+          port: 22
+          hypervisor: kvm
+      # group-2
 
-      replacement:
-        strategy: rollingUpdate
-        # replace one VM at a time if there's an image update in a group in this file, etc.
-        maxUnavailable: 0
-        maxSurge: 1
+    # Autoscaling groups.
+    groups:
+      # Unique keys defining separate VM groups to track. These keys should represent naming prefixes (?)
+      asg-1:
+        # This image and an associated libvirt template should exist on one of the hosts.
+        image: root.qcow
+        name: template-ubuntu20.04-server
 
-      networking:
-        # A static IP range or list of IPs should be given to a group.
-        type: dynamic
-        addresses:
-          - 192.168.5.2-192.168.5.254
-        subnet: 255.255.255.0
-        gateway: 192.168.1.1
+        # Options could be
+        #   'migrate' - migrate a copy of the domain to every host, or
+        #   'centralized' - hosts are using a centralized block store over a share. In other words, don't attempt to migrate any disks to individual hosts.
+        imageMigration: migrate
 
-      scaling:
-        # maxNodes should not be larger than the number of IP addresses determined to be available in the range.
-        maxNodes: 10
-        minNodes: 3
-        # Increment by up-to or down-by this many nodes any time a change is required to state. Limits how large of an action the ASG can make every cooldown period.
-        increment: 1
-        # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics reconciliation once an action has been taken.
-        cooldown: 60
+        cloud-init:
+          inline: |+
+            # Should contain an inline cloud-init script by which to customize VMs in this group, or you can
+            # specify a "file: "-keyword to read it from some location on-disk. All environment variables are
+            # evaluated and replaced before copying to hosts.
+          file: <path-to-file-instead>
 
-        # random: schedule VMs anywhere on any host.
-        # linear-random: don't reuse server racks immediately once drained, but once a VM is scheduled on a host, prioritize scheduling to that host.
-        # linear: reuse server racks immediately once drained.
-        # vacancy: prioritize hosts with the most vacancy.
-        method: vacancy
+        # Groups of hosts on which to provision VMs.
+        hosts:
+          - group-1
 
-        overProvision:
-          # Percentages to go over collected host max while scheduling host resources.
-          io: 0
-          cpu: 0
-          memory: 0
+        replacement:
+          strategy: rollingUpdate
+          # replace one VM at a time if there's an image update in a group in this file, etc.
+          maxUnavailable: 0
+          maxSurge: 1
 
-        resourceTarget:
-          # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
-          io: 80
-          cpu: 80
-          memory: 80
-    # asg-2: {}
+        networking:
+          # A static IP range or list of IPs should be given to a group.
+          type: dynamic
+          addresses:
+            - 192.168.5.2-192.168.5.254
+          subnet: 255.255.255.0
+          gateway: 192.168.1.1
+
+        scaling:
+          # maxNodes should not be larger than the number of IP addresses determined to be available in the range.
+          maxNodes: 10
+          minNodes: 3
+          # Increment by up-to or down-by this many nodes any time a change is required to state. Limits how large of an action the ASG can make every cooldown period.
+          increment: 1
+          # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics reconciliation once an action has been taken.
+          cooldown: 60
+
+          # The ASG scheduling methods are as follows:
+          # random: schedule VMs anywhere on any host.
+          # linear-random: don't reuse server racks immediately once drained, but once a VM is scheduled on a host, prioritize scheduling to that host.
+          # linear: reuse server racks immediately once drained.
+          # vacancy: prioritize hosts with the most vacancy.
+          method: vacancy
+
+          overProvision:
+            # Percentages to go over collected host max while scheduling host resources.
+            io: 0
+            cpu: 0
+            memory: 0
+
+          resourceTarget:
+            # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
+            io: 80
+            cpu: 80
+            memory: 80
+      # asg-2: {}

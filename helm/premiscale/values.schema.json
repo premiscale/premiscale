@@ -1,0 +1,262 @@
+{
+    "title": "Chart Values",
+    "type": "object",
+    "properties": {
+        "global": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "registry": {
+                            "type": "string",
+                            "description": "The global docker registry for all of the image.",
+                            "default": "docker.io"
+                        },
+                        "pullSecrets": {
+                            "type": "array",
+                            "description": "] Container registry pull secrets applied to every container image.",
+                            "default": "",
+                            "items": {}
+                        }
+                    }
+                }
+            }
+        },
+        "deployment": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the controller image.",
+                            "default": "premiscale/premiscale"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "The tag of the controller image.",
+                            "default": "0.0.1"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "The pull policy of the controller image.",
+                            "default": "Always"
+                        },
+                        "pullSecrets": {
+                            "type": "array",
+                            "description": "] Container registry pull secrets that only pertain to this container image.",
+                            "default": "",
+                            "items": {}
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "number",
+                                    "description": "The CPU request for the controller container.",
+                                    "default": "0.5"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "The memory request for the controller container.",
+                                    "default": "1Gi"
+                                }
+                            }
+                        },
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "number",
+                                    "description": "The CPU limit for the controller container.",
+                                    "default": "4.0"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "The memory limit for the controller container.",
+                                    "default": "2Gi"
+                                }
+                            }
+                        }
+                    }
+                },
+                "ports": {
+                    "type": "array",
+                    "description": "The ports that the controller container exposes.",
+                    "default": "[]",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "controller": {
+            "type": "object",
+            "properties": {
+                "registration": {
+                    "type": "object",
+                    "properties": {
+                        "createSecret": {
+                            "type": "boolean",
+                            "description": "If true, the controller will create a secret with the registration token. If false, the secret must already exist.",
+                            "default": "false"
+                        },
+                        "secretName": {
+                            "type": "string",
+                            "description": "The name of the secret that contains the registration token. If createSecret is true, the controller will create this secret. If createSecret is false, the controller will use this secret and expects it to exist.",
+                            "default": "premiscale-registration-token"
+                        },
+                        "key": {
+                            "type": "string",
+                            "description": "The key in the secret that contains the registration token.",
+                            "default": "token"
+                        },
+                        "value": {
+                            "type": "string",
+                            "description": "User-provided platform registration key.",
+                            "default": "\"\""
+                        },
+                        "immutable": {
+                            "type": "boolean",
+                            "description": "If true, the registration secret cannot be updated. If false, the registration secret can be updated.",
+                            "default": "true"
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "mountPath": {
+                            "type": "string",
+                            "description": "The path where the controller config file is mounted.",
+                            "default": "/opt/premiscale/config.yaml"
+                        }
+                    }
+                },
+                "logging": {
+                    "type": "object",
+                    "properties": {
+                        "level": {
+                            "type": "string",
+                            "description": "Can be one of info|debug|warn|error.",
+                            "default": "info"
+                        }
+                    }
+                },
+                "extraEnv": {
+                    "type": "array",
+                    "description": "] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.",
+                    "default": "",
+                    "items": {}
+                }
+            }
+        },
+        "configMap": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable or disable the ConfigMap. If enabled, the controller will read its config from the specified ConfigMap.",
+                    "default": "false"
+                },
+                "config": {
+                    "type": "string",
+                    "description": "The controller config file.",
+                    "default": "\"\""
+                },
+                "immutable": {
+                    "type": "boolean",
+                    "description": "If true, the ConfigMap cannot be updated. If false, the ConfigMap can be updated.",
+                    "default": "false"
+                }
+            }
+        },
+        "service": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable or disable the service. If ingress is enabled, the service type is automatically enabled and the type switched to LoadBalancer.",
+                    "default": "true"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "The service type.",
+                    "default": "ClusterIP"
+                }
+            }
+        },
+        "cluster-autoscaler": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides.",
+                    "default": "false"
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "The repository of the autoscaler image.",
+                            "default": "kubernetes/cluster-autoscaler"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "The tag of the autoscaler image.",
+                            "default": "v1.28.2"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "The pull policy of the autoscaler image.",
+                            "default": "IfNotPresent"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "The CPU limit for the autoscaler container.",
+                                    "default": "100m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "The memory limit for the autoscaler container.",
+                                    "default": "300Mi"
+                                }
+                            }
+                        },
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "The CPU request for the autoscaler container.",
+                                    "default": "100m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "The memory request for the autoscaler container.",
+                                    "default": "300Mi"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

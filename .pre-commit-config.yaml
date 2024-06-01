@@ -48,6 +48,31 @@ repos:
         # additional_dependencies:
         #   - cog
 
+  # Abuse the helm-readme-generator to generate READMEs for the CRDs and operator.
+  - repo: https://github.com/bitnami/readme-generator-for-helm
+    rev: 2.6.1
+    hooks:
+      - id: helm-readme-generator
+        name: controller-schema-generator
+        pass_filenames: false
+        always_run: true
+        # As new default configs are added and the versions bumped, we should be changing the '--readme' pointer.
+        args:
+          # - --config=./.github/readme-generator-config.json
+          - --readme=src/premiscale/config/data/v1alpha1.md
+          - --values=src/premiscale/config/data/default.yaml
+          - --schema=src/premiscale/config/data/default.schema.json
+      # Generate the Helm chart schema and documentation from the values.yaml.
+      - id: helm-readme-generator
+        name: controller-helm-chart-schema-generator
+        pass_filenames: false
+        always_run: true
+        args:
+          # - --config=./.github/readme-generator-config.json
+          - --readme=helm/premiscale/README.md
+          - --values=helm/premiscale/values.yaml
+          - --schema=helm/premiscale/values.schema.json
+
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
     hooks:
@@ -66,9 +91,6 @@ repos:
       - id: hadolint
         args:
           - Dockerfile
-          - Dockerfile.develop
-          - Dockerfile.imds
-          - Dockerfile.imds.develop
           - --config
           - .github/.hadolint.yaml
 

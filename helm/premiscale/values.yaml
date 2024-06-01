@@ -1,105 +1,129 @@
 global:
   image:
+    ## @param global.image.registry [string, default: docker.io] The global docker registry for all of the image.
     registry: docker.io
 
+    ## @param global.image.pullSecrets [array, default: []] Container registry pull secrets applied to every container image.
+    pullSecrets: []
 
-## @section PremiScale Controller
+## @section Controller Deployment
 
-
-controller:
-  deployment:
+deployment:
     image:
-      name: premiscale
+      ## @param deployment.image.name [string, default: premiscale/premiscale] The name of the controller image.
+      name: premiscale/premiscale
+
+      ## @param deployment.image.tag [string, default: 0.0.1] The tag of the controller image.
       tag: 0.0.1
+
+      ## @param deployment.image.pullPolicy [string, default: Always] The pull policy of the controller image.
       pullPolicy: Always
+
+      ## @param deployment.image.pullSecrets [array, default: []] Container registry pull secrets that only pertain to this container image.
       pullSecrets: []
 
     resources:
       requests:
+        ## @param deployment.resources.requests.cpu [default: 0.5] The CPU request for the controller container.
         cpu: 0.5
+
+        ## @param deployment.resources.requests.memory [default: 1Gi] The memory request for the controller container.
         memory: 1Gi
       limits:
+        ## @param deployment.resources.limits.cpu [default: 4.0] The CPU limit for the controller container.
         cpu: 4.0
+
+        ## @param deployment.resources.limits.memory [default: 2Gi] The memory limit for the controller container.
         memory: 2Gi
 
+    ## @param deployment.podSecurityContext [object] Configure the controller pod's security context.
     podSecurityContext: {}
+
+    ## @param deployment.containerSecurityContext [object] Configure the controller container's security context.
     containerSecurityContext: {}
 
+    ## @param deployment.annotations [object] Annotations to be added to the deployment.
     annotations: {}
+
+    ## @param deployment.labels [object] Labels to be added to the deployment.
     labels: {}
 
+    ## @param deployment.startupProbe [object] Configure the deployment's startup probe.
     startupProbe:
       enabled: false
       path: /health
       port: 8080
       config: {}
 
+    ## @param deployment.livenessProbe [object] Configure the deployment's liveness probe.
     livenessProbe:
       enabled: false
       path: /health
       port: 8080
       config: {}
 
+    ## @param deployment.readinessProbe [object] Configure the deployment's readiness probe.
     readinessProbe:
       enabled: false
       path: /ready
       port: 8080
       config: {}
 
+    ## @param deployment.ports [array] The ports that the controller container exposes.
     ports:
       - name: http
         containerPort: 8080
         protocol: TCP
 
+## @section PremiScale Controller
+
+controller:
   registration:
-    # If create is false, the secret must already exist, therefore 'name' and 'key' are used.
+    ## @param controller.registration.createSecret [default: false] If true, the controller will create a secret with the registration token. If false, the secret must already exist.
     createSecret: false
 
+    ## @param controller.registration.secretName [string, default: premiscale-registration-token] The name of the secret that contains the registration token. If createSecret is true, the controller will create this secret. If createSecret is false, the controller will use this secret and expects it to exist.
     secretName: premiscale-registration-token
 
+    ## @param controller.registration.key [string, default: token] The key in the secret that contains the registration token.
     key: token
 
+    ## @param controller.registration.value [string] User-provided platform registration key.
     value: ''
+
+    ## @param controller.registration.immutable [default: true] If true, the registration secret cannot be updated. If false, the registration secret can be updated.
     immutable: true
 
   config:
+    ## @param controller.config.mountPath [string, default: /opt/premiscale/config.yaml] The path where the controller config file is mounted.
     mountPath: /opt/premiscale/config.yaml
 
   logging:
-    ## @param controller.logging.level [string] Can be one of info|debug|warn|error.
+    ## @param controller.logging.level [string, default: info] Can be one of info|debug|warn|error.
     level: info
 
-  ## @param controller.extraEnv [list] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.
+  ## @param controller.extraEnv [array, default: []] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.
   extraEnv: []
-
-
-## @section IMDS
-
-
-imds:
-  ## @param imds.enabled [bool] Enable or disable the IMDS service. This API service is used to retrieve metadata from the controller databases.
-  enabled: false
-  port: 8085
-
-  labels: {}
-  annotations: {}
-
-  ingress:
-    ## @param imds.ingress.enabled [bool] Enable or disable the ingress. If the ingress is enabled, the controller service must also be enabled; the service type is automatically switched to LoadBalancer as well.
-    enabled: false
 
 
 ## @section PremiScale Controller Config
 
 
 configMap:
+  ## @param configMap.enabled [default: false] Enable or disable the ConfigMap. If enabled, the controller will read its config from the specified ConfigMap.
   enabled: false
+
+  ## @param configMap.config [string] The controller config file.
   config: |+
     Your PremiScale controller config file.
-  mountPath: /opt/premiscale
+
+  ## @param configMap.immutable [default: false] If true, the ConfigMap cannot be updated. If false, the ConfigMap can be updated.
   immutable: false
 
+  ## @param configMap.labels [object] Labels to be added to the ConfigMap.
   labels: {}
+
+  ## @param configMap.annotations [object] Annotations to be added to the ConfigMap.
   annotations: {}
 
 
@@ -107,42 +131,47 @@ configMap:
 
 
 service:
-  ## @param service.enabled [bool] Enable or disable the service. If ingress is enabled, the service type is automatically enabled and the type switched to LoadBalancer.
+  ## @param service.enabled [default: true] Enable or disable the service. If ingress is enabled, the service type is automatically enabled and the type switched to LoadBalancer.
   enabled: true
+
+  ## @param service.type [string, default: ClusterIP] The service type.
   type: ClusterIP
 
   ports:
+    ## @param service.ports.liveness [object] Configure the liveness probe port.
     liveness:
       protocol: TCP
       port: 8080
       targetPort: 8080
-    imds:
-      protocol: TCP
-      port: 8085
-      targetPort: 8085
 
 
 ## @section Kubernetes autoscaler
 
 
-kubernetes-autoscaler:
-  ## @param kubernetes-autoscaler.enabled [bool] Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides.
+cluster-autoscaler:
+  ## @param cluster-autoscaler.enabled [default: false] Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides.
   enabled: false
 
   image:
+    ## @param cluster-autoscaler.image.repository [string, default: kubernetes/cluster-autoscaler] The repository of the autoscaler image.
     repository: kubernetes/cluster-autoscaler
+
+    ## @param cluster-autoscaler.image.tag [string, default: v1.28.2] The tag of the autoscaler image.
     tag: v1.28.2
+
+    ## @param cluster-autoscaler.image.pullPolicy [string, default: IfNotPresent] The pull policy of the autoscaler image.
     pullPolicy: IfNotPresent
 
   resources:
     limits:
+      ## @param cluster-autoscaler.resources.limits.cpu [default: 100m] The CPU limit for the autoscaler container.
       cpu: 100m
+
+      ## @param cluster-autoscaler.resources.limits.memory [default: 300Mi] The memory limit for the autoscaler container.
       memory: 300Mi
     requests:
+      ## @param cluster-autoscaler.resources.requests.cpu [default: 100m] The CPU request for the autoscaler container.
       cpu: 100m
+
+      ## @param cluster-autoscaler.resources.requests.memory [default: 300Mi] The memory request for the autoscaler container.
       memory: 300Mi
-
-  revisionHistoryLimit: 1
-
-  # Pod securityContext
-  securityContext: {}

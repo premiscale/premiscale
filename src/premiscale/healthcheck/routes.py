@@ -40,3 +40,23 @@ def create_healthcheck_api(app: Flask) -> None:
             status=HTTPStatus.OK,
             mimetype='application/json'
         )
+
+    @app.get('/ready')
+    def ready() -> Response:
+        """
+        Quick unauthenticated ready endpoint.
+
+        Returns:
+            dict: an object with schema like
+
+            {
+                "status": "OK"
+            }
+        """
+        return Response(
+            {
+                'status': 'OK'
+            },
+            status=HTTPStatus.OK,
+            mimetype='application/json'
+        )
