@@ -235,7 +235,7 @@ services:
       retries: 3
   redis:
     container_name: redis
-    image: redis:7.2.4
+    image: redis:7.2.5
     environment:
       - REDIS_PASSWORD=premiscale
     ports:
