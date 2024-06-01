@@ -1,7 +1,7 @@
 ARG IMAGE=python
 ARG TAG=3.10.13
 
-FROM ${IMAGE}:${TAG} AS base
+FROM --platform=arm64 ${IMAGE}:${TAG} AS base
 
 SHELL [ "/bin/bash", "-c" ]
 
