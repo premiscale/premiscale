@@ -63,13 +63,15 @@ See the [chart README](https://github.com/premiscale/premiscale/tree/master/helm
 
 Install [asdf](https://asdf-vm.com/guide/getting-started.html#_1-install-dependencies), followed by running `asdf install` in the root of this project.
 
-### Local
+### Docker Compose
+
+> **Note:** Some tweaks may need to be made to the repository's [compose.yaml](./compose.yaml) file to get the stack to run on your system.
 
 ```shell
 yarn compose:up
 ```
 
-This will bring up a number of services, including platform services that the controller registers and connects to for billing. When you're finished, run
+This will bring up a number of local services for running the agent. To tear the stack down, simply run
 
 ```shell
 yarn compose:down
@@ -83,9 +85,15 @@ Connect to your development cluster of choice with kubectl access, followed by
 devspace
 ```
 
-This will bring up a development stack in a local or remote Kubernetes cluster of your choice.
+This will bring up a development stack in a local or remote Kubernetes cluster of your choice. To start a local development minikube cluster for deploying the devspace stack to, run
 
-### Tests
+```shell
+yarn minikube:up
+```
+
+This cluster is also used for [running e2e tests](#end-to-end-tests), locally.
+
+### Unit tests
 
 Run unit tests with
 
@@ -93,13 +101,26 @@ Run unit tests with
 yarn test:unit
 ```
 
-e2e tests against a mock, minikube-based environment with
+### End-to-end tests
+
+Run e2e tests against a live (local) environment with
 
 ```shell
 yarn test:e2e
 ```
 
-and check test coverage with
+This command will
+
+1. Stand up a local 1-node minikube cluster with 4 cores, 4GiB memory and 30GiB storage. *(Modify [./scripts/minikube.sh](./scripts/minikube.sh) if these resources are unsuitable for your local development environment.)*
+2. Create a `localhost` docker registry redirect container.
+3. Build both e2e (hosts a git repository with encrypted pass secrets that match paths found in [./src/test/data/crd](./src/test/data/crd/)) and operator container images, as well as push these images to the local redirect for minikube to access.
+4. Installs both e2e and pass-operator Helm charts.
+5. Run e2e tests.
+6. Tear down the cluster and local registry, as well as cleans up locally-built artifacts.
+
+### Coverage
+
+Test coverage against the codebase with
 
 ```shell
 poetry run coverage run -m pytest
