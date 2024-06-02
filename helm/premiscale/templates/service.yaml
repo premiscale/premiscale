@@ -1,4 +1,4 @@
-{{- if .Values.service.create }}
+{{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -19,8 +19,14 @@ spec:
     {{- toYaml . }}
   {{- end }}
   ports:
-    {{- with .Values.service.ports }}
-    {{- toYaml . | nindent 4 }}
+    {{- range $k, $values := .Values.service.ports }}
+    - name: {{ $k }}
+      port: {{ $values.port }}
+      targetPort: {{ $values.targetPort }}
+      protocol: {{ $values.protocol }}
+      {{- with $values.nodePort }}
+      nodePort: {{ $values.nodePort }}
+      {{- end }}
     {{- end }}
   selector: {{ include "premiscale.selectorLabels" . | nindent 4 }}
   {{- with .Values.service.healthCheckNodePort }}

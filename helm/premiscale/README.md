@@ -47,12 +47,13 @@ On your hosts, create a new user with XXX permissions and generate a new set of 
 | `controller.config.mountPath`          | The path where the controller config file is mounted.                                                                                                                                                                | `/opt/premiscale/config.yaml`   |
 | `controller.logging.level`             | Can be one of info|debug|warn|error.                                                                                                                                                                                 | `info`                          |
 | `controller.extraEnv`                  | ] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.                     | `""`                            |
+| `controller.libvirt`                   | Configuration for the libvirt provider.                                                                                                                                                                              | `{}`                            |
 
 ### RBAC configuration
 
-| Name                    | Description                                 | Value  |
-| ----------------------- | ------------------------------------------- | ------ |
-| `serviceAccount.create` | If true, a service account will be created. | `true` |
+| Name                    | Description                                 | Value   |
+| ----------------------- | ------------------------------------------- | ------- |
+| `serviceAccount.create` | If true, a service account will be created. | `false` |
 
 ### PremiScale Controller Config
 

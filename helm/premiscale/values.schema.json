@@ -168,7 +168,7 @@
                 "create": {
                     "type": "boolean",
                     "description": "If true, a service account will be created.",
-                    "default": "true"
+                    "default": "false"
                 }
             }
         },

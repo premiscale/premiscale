@@ -60,9 +60,12 @@ spec:
           {{- with .Values.deployment.livenessProbe }}
             {{- if .enabled }}
           ports:
-            - containerPort: {{ .port }}
-              name: healthcheck
+            - name: healthcheck
+              containerPort: 8080
               protocol: TCP
+            {{- with .Values.deployment.extraPorts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
             {{- end }}
           {{- end }}
           env:
@@ -79,8 +82,6 @@ spec:
                 secretKeyRef:
                   key: {{ .Values.controller.registration.key }}
                   name: {{ .Values.controller.registration.secretName }}
-            # This I dunno what to do with, yet, because users will have to specify some sort of connection info to reach hosts but I don't think
-            # it has to be via SSH.
             # - name: CONTROLLER_HOST_SSH_PRIVATE_KEY
             #   {{- with .Values.controller.ssh }}
             #     {{- if .createSecret }}
@@ -92,10 +93,9 @@ spec:
             #   value: {{ .value }}
             #     {{- end }}
             #   {{- end }}
-          # For additional user-defined environment variables.
-          {{- with .Values.controller.extraEnv }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- with .Values.controller.extraEnv }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- with .Values.deployment.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -139,13 +139,6 @@ spec:
             {{- end }}
             {{- end }}
           {{- end }}
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-            {{- with .Values.deployment.extraPorts }}
-              {{- toYaml . | nindent 12 }}
-            {{- end }}
           {{- with .Values.deployment.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

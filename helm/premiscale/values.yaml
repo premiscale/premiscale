@@ -8,6 +8,7 @@ global:
     ## @param global.image.pullSecrets [array, default: []] Container registry pull secrets applied to every container image.
     pullSecrets: []
 
+
 ## @section Controller Deployment
 
 deployment:
@@ -107,13 +108,29 @@ controller:
   ## @param controller.extraEnv [array, default: []] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.
   extraEnv: []
 
+  ## @param controller.libvirt [object] Configuration for the libvirt provider.
+  libvirt: {}
+    # TODO: Add libvirt provider configuration here.
+    # ssh:
+    #   secretName1:
+    #     createSecret: false
+    #     ## @param controller.libvirt.ssh.secretName1.value [string] The SSH private key for the libvirt provider.
+    #     value: ''
+
+    # tls:
+    #   secretName2:
+    #     createSecret: false
+    #     ## @param controller.libvirt.tls.secretName2.value [string] The TLS certificate for the libvirt provider.
+    #     value: ''
+
+
 
 ## @section RBAC configuration
 
 
 serviceAccount:
-  ## @param serviceAccount.create [default: true] If true, a service account will be created.
-  create: true
+  ## @param serviceAccount.create [default: false] If true, a service account will be created.
+  create: false
 
 
 ## @section PremiScale Controller Config
