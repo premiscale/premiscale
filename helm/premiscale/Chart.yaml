@@ -1,6 +1,6 @@
 apiVersion: v2
 name: premiscale
-description: Deploy the PremiScale autoscaling controller
+description: The PremiScale autoscaling controller
 type: application
 version: 0.0.1
 appVersion: "0.0.1"

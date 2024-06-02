@@ -1,8 +1,17 @@
 ## Install PremiScale
 
+Paraphrased, this should look like...
 
+On your hosts, create a new user with XXX permissions and generate a new set of RSA keys for use with SSH (if that's your method of authentication with libvirt or the hosts, qemu+ssh:// e.g.) or, alternatively, we set up connectivity over TLS.
 
 ## Parameters
+
+### Global Configuration
+
+| Name                       | Description                                                         | Value       |
+| -------------------------- | ------------------------------------------------------------------- | ----------- |
+| `global.image.registry`    | The global docker registry for all of the image.                    | `docker.io` |
+| `global.image.pullSecrets` | ] Container registry pull secrets applied to every container image. | `""`        |
 
 ### Controller Deployment
 
@@ -23,7 +32,8 @@
 | `deployment.startupProbe`              | Configure the deployment's startup probe.                                    | `{}`                    |
 | `deployment.livenessProbe`             | Configure the deployment's liveness probe.                                   | `{}`                    |
 | `deployment.readinessProbe`            | Configure the deployment's readiness probe.                                  | `{}`                    |
-| `deployment.ports`                     | The ports that the controller container exposes.                             | `[]`                    |
+| `deployment.extraEnv`                  | ] Extra environment variables to be passed to the controller container.      | `""`                    |
+| `deployment.extraPorts`                | ] Extra ports to be exposed on the controller container.                     | `""`                    |
 
 ### PremiScale Controller
 
@@ -37,6 +47,13 @@
 | `controller.config.mountPath`          | The path where the controller config file is mounted.                                                                                                                                                                | `/opt/premiscale/config.yaml`   |
 | `controller.logging.level`             | Can be one of info|debug|warn|error.                                                                                                                                                                                 | `info`                          |
 | `controller.extraEnv`                  | ] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.                     | `""`                            |
+| `controller.libvirt`                   | Configuration for the libvirt provider.                                                                                                                                                                              | `{}`                            |
+
+### RBAC configuration
+
+| Name                    | Description                                 | Value   |
+| ----------------------- | ------------------------------------------- | ------- |
+| `serviceAccount.create` | If true, a service account will be created. | `false` |
 
 ### PremiScale Controller Config
 
@@ -58,13 +75,6 @@
 
 ### Kubernetes autoscaler
 
-| Name                                           | Description                                                                                                                                                       | Value                           |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `cluster-autoscaler.enabled`                   | Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides. | `false`                         |
-| `cluster-autoscaler.image.repository`          | The repository of the autoscaler image.                                                                                                                           | `kubernetes/cluster-autoscaler` |
-| `cluster-autoscaler.image.tag`                 | The tag of the autoscaler image.                                                                                                                                  | `v1.28.2`                       |
-| `cluster-autoscaler.image.pullPolicy`          | The pull policy of the autoscaler image.                                                                                                                          | `IfNotPresent`                  |
-| `cluster-autoscaler.resources.limits.cpu`      | The CPU limit for the autoscaler container.                                                                                                                       | `100m`                          |
-| `cluster-autoscaler.resources.limits.memory`   | The memory limit for the autoscaler container.                                                                                                                    | `300Mi`                         |
-| `cluster-autoscaler.resources.requests.cpu`    | The CPU request for the autoscaler container.                                                                                                                     | `100m`                          |
-| `cluster-autoscaler.resources.requests.memory` | The memory request for the autoscaler container.                                                                                                                  | `300Mi`                         |
+| Name                         | Description                                                                                                                                                       | Value   |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `cluster-autoscaler.enabled` | Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides. | `false` |

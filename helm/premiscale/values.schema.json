@@ -87,13 +87,17 @@
                         }
                     }
                 },
-                "ports": {
+                "extraEnv": {
                     "type": "array",
-                    "description": "The ports that the controller container exposes.",
-                    "default": "[]",
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "] Extra environment variables to be passed to the controller container.",
+                    "default": "",
+                    "items": {}
+                },
+                "extraPorts": {
+                    "type": "array",
+                    "description": "] Extra ports to be exposed on the controller container.",
+                    "default": "",
+                    "items": {}
                 }
             }
         },
@@ -158,6 +162,16 @@
                 }
             }
         },
+        "serviceAccount": {
+            "type": "object",
+            "properties": {
+                "create": {
+                    "type": "boolean",
+                    "description": "If true, a service account will be created.",
+                    "default": "false"
+                }
+            }
+        },
         "configMap": {
             "type": "object",
             "properties": {
@@ -200,61 +214,6 @@
                     "type": "boolean",
                     "description": "Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides.",
                     "default": "false"
-                },
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "The repository of the autoscaler image.",
-                            "default": "kubernetes/cluster-autoscaler"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "The tag of the autoscaler image.",
-                            "default": "v1.28.2"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "The pull policy of the autoscaler image.",
-                            "default": "IfNotPresent"
-                        }
-                    }
-                },
-                "resources": {
-                    "type": "object",
-                    "properties": {
-                        "limits": {
-                            "type": "object",
-                            "properties": {
-                                "cpu": {
-                                    "type": "string",
-                                    "description": "The CPU limit for the autoscaler container.",
-                                    "default": "100m"
-                                },
-                                "memory": {
-                                    "type": "string",
-                                    "description": "The memory limit for the autoscaler container.",
-                                    "default": "300Mi"
-                                }
-                            }
-                        },
-                        "requests": {
-                            "type": "object",
-                            "properties": {
-                                "cpu": {
-                                    "type": "string",
-                                    "description": "The CPU request for the autoscaler container.",
-                                    "default": "100m"
-                                },
-                                "memory": {
-                                    "type": "string",
-                                    "description": "The memory request for the autoscaler container.",
-                                    "default": "300Mi"
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

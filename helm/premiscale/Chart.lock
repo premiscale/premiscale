@@ -3,4 +3,4 @@ dependencies:
   repository: https://kubernetes.github.io/autoscaler
   version: 9.37.0
 digest: sha256:b0d0b2222d14a4fd7c433b828ba92aecf49ca2f1ffe4f6794bdf189cfc5da20f
-generated: "2024-06-01T15:42:57.071043294Z"
+generated: "2024-06-02T17:38:46.021621-04:00"

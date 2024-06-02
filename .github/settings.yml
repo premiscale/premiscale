@@ -4,4 +4,4 @@ repository:
   name: premiscale
   description: PremiScale autoscaler
   homepage: https://github.com/premiscale/premiscale
-  topics: KVM, libvirt, autoscaling
+  topics: KVM, libvirt, autoscaling, virtualization, Kubernetes
