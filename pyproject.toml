@@ -22,7 +22,7 @@ keywords = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-yamale = "^4.0.4"
+yamale = "^5.0.0"
 Flask = "^3.0.0"
 flask-cors = "^3.0.10"
 websockets = "^11.0"

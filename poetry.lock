@@ -1841,13 +1841,13 @@ watchdog = ["watchdog (>=2.3)"]
 
 [[package]]
 name = "yamale"
-version = "4.0.4"
+version = "5.2.1"
 description = "A schema and validator for YAML."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "yamale-4.0.4-py3-none-any.whl", hash = "sha256:04f914c0886bda03ac20f8468272cfd9374a634a062549490eff2beedeb30497"},
-    {file = "yamale-4.0.4.tar.gz", hash = "sha256:e524caf71cbbbd15aa295e8bdda01688ac4b5edaf38dd60851ddff6baef383ba"},
+    {file = "yamale-5.2.1-py3-none-any.whl", hash = "sha256:e44cd30cf3055ee4b34c1c71d6fe35490a127dcbd36f82f27859d105a9989922"},
+    {file = "yamale-5.2.1.tar.gz", hash = "sha256:19bbe713d588f07177bc519a46070c0793ed126ea37f425a76055b99703f835a"},
 ]
 
 [package.dependencies]
@@ -1871,4 +1871,4 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-it
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f7d17d6821413b6a1e2bd47ce854c1912c86fbe4fc79929f01e9c9a90db0e41c"
+content-hash = "3fd2b6721ac4175b9033bd0ee26b12371c6975900fbb1660b7bd247cf569171e"
