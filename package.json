@@ -13,12 +13,6 @@
     "clean": "./scripts/clean.sh",
     "freeze": "pip freeze | grep -v \"file:///\" | grep -v \"ssh://\" > \"$(git rev-parse --show-toplevel)\"/requirements.txt",
     "strace": "sudo strace -p \"$(cat /opt/premiscale/premiscale.pid)\"",
-    "docker:compose:up": "./scripts/docker/compose/up.sh",
-    "docker:compose:build": "./scripts/docker/compose/build.sh",
-    "docker:compose:down": "./scripts/docker/compose/down.sh",
-    "docker:build:premiscale": "./scripts/docker/build-premiscale.sh",
-    "docker:build:mysql": "./scripts/docker/build-mysql.sh",
-    "docker:build:influxdb": "./scripts/docker/build-influxdb.sh",
     "docker:run": "./scripts/docker/run.sh",
     "helm:dependency:update": "for p in helm/*; do echo \"$p\" && helm dependency update \"$p\"/; done",
     "helm:install:influxdb": "./scripts/helm/influxdb-install.sh",
@@ -33,13 +27,14 @@
     "poetry:lock": "poetry lock",
     "ps": "./scripts/pstree.sh",
     "pst": "./scripts/psthread.sh",
+    "test:e2e": "yarn minikube:up && poetry run pytest -vrP src/test/e2e; yarn minikube:delete",
+    "test:unit": "poetry run pytest -vrP src/test/unit",
+    "test:e2e:test": "./src/test_hook.py",
     "compose:up": "./scripts/docker/compose-up.sh",
+    "compose:platform:up": "./scripts/docker/compose-up.sh platform",
     "compose:down": "./scripts/docker/compose-down.sh",
     "minikube:up": "./scripts/minikube.sh start",
     "minikube:down": "./scripts/minikube.sh stop",
-    "minikube:delete": "./scripts/minikube.sh delete",
-    "test:e2e": "yarn minikube:up && poetry run pytest -vrP src/test/e2e; yarn minikube:delete",
-    "test:unit": "poetry run pytest -vrP src/test/unit",
-    "test:e2e:test": "./src/test_hook.py"
+    "minikube:delete": "./scripts/minikube.sh delete"
   }
 }

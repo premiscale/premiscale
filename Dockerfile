@@ -1,7 +1,7 @@
 ARG IMAGE=python
-ARG TAG=3.10.13
+ARG TAG=3.10.14
 
-FROM --platform=arm64 ${IMAGE}:${TAG} AS base
+FROM ${IMAGE}:${TAG} AS base
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -15,7 +15,7 @@ ENV PREMISCALE_TOKEN="" \
     PYTHONUNBUFFERED=1 \
     # Poetry isn't used in production.
     POETRY_VIRTUALENVS_CREATE=true \
-    POETRY_VERSION=1.8.2
+    POETRY_VERSION=1.8.3
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2024"

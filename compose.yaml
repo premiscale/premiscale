@@ -2,10 +2,12 @@ services:
   # Controller network
   premiscale:
     container_name: premiscale
+    platform: linux/amd64
     build:
       context: .
       dockerfile: ./Dockerfile
       target: develop
+      pull: true
     environment:
       - PREMISCALE_TOKEN=123
       - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
