@@ -1,3 +1,5 @@
+## @section Global Configuration
+
 global:
   image:
     ## @param global.image.registry [string, default: docker.io] The global docker registry for all of the image.
@@ -9,71 +11,71 @@ global:
 ## @section Controller Deployment
 
 deployment:
-    image:
-      ## @param deployment.image.name [string, default: premiscale/premiscale] The name of the controller image.
-      name: premiscale/premiscale
+  image:
+    ## @param deployment.image.name [string, default: premiscale/premiscale] The name of the controller image.
+    name: premiscale/premiscale
 
-      ## @param deployment.image.tag [string, default: 0.0.1] The tag of the controller image.
-      tag: 0.0.1
+    ## @param deployment.image.tag [string, default: 0.0.1] The tag of the controller image.
+    tag: 0.0.1
 
-      ## @param deployment.image.pullPolicy [string, default: Always] The pull policy of the controller image.
-      pullPolicy: Always
+    ## @param deployment.image.pullPolicy [string, default: Always] The pull policy of the controller image.
+    pullPolicy: Always
 
-      ## @param deployment.image.pullSecrets [array, default: []] Container registry pull secrets that only pertain to this container image.
-      pullSecrets: []
+    ## @param deployment.image.pullSecrets [array, default: []] Container registry pull secrets that only pertain to this container image.
+    pullSecrets: []
 
-    resources:
-      requests:
-        ## @param deployment.resources.requests.cpu [default: 0.5] The CPU request for the controller container.
-        cpu: 0.5
+  resources:
+    requests:
+      ## @param deployment.resources.requests.cpu [default: 0.5] The CPU request for the controller container.
+      cpu: 0.5
 
-        ## @param deployment.resources.requests.memory [default: 1Gi] The memory request for the controller container.
-        memory: 1Gi
-      limits:
-        ## @param deployment.resources.limits.cpu [default: 4.0] The CPU limit for the controller container.
-        cpu: 4.0
+      ## @param deployment.resources.requests.memory [default: 1Gi] The memory request for the controller container.
+      memory: 1Gi
+    limits:
+      ## @param deployment.resources.limits.cpu [default: 4.0] The CPU limit for the controller container.
+      cpu: 4.0
 
-        ## @param deployment.resources.limits.memory [default: 2Gi] The memory limit for the controller container.
-        memory: 2Gi
+      ## @param deployment.resources.limits.memory [default: 2Gi] The memory limit for the controller container.
+      memory: 2Gi
 
-    ## @param deployment.podSecurityContext [object] Configure the controller pod's security context.
-    podSecurityContext: {}
+  ## @param deployment.podSecurityContext [object] Configure the controller pod's security context.
+  podSecurityContext: {}
 
-    ## @param deployment.containerSecurityContext [object] Configure the controller container's security context.
-    containerSecurityContext: {}
+  ## @param deployment.containerSecurityContext [object] Configure the controller container's security context.
+  containerSecurityContext: {}
 
-    ## @param deployment.annotations [object] Annotations to be added to the deployment.
-    annotations: {}
+  ## @param deployment.annotations [object] Annotations to be added to the deployment.
+  annotations: {}
 
-    ## @param deployment.labels [object] Labels to be added to the deployment.
-    labels: {}
+  ## @param deployment.labels [object] Labels to be added to the deployment.
+  labels: {}
 
-    ## @param deployment.startupProbe [object] Configure the deployment's startup probe.
-    startupProbe:
-      enabled: false
-      path: /health
-      port: 8080
-      config: {}
+  ## @param deployment.startupProbe [object] Configure the deployment's startup probe.
+  startupProbe:
+    enabled: false
+    path: /health
+    port: 8080
+    config: {}
 
-    ## @param deployment.livenessProbe [object] Configure the deployment's liveness probe.
-    livenessProbe:
-      enabled: false
-      path: /health
-      port: 8080
-      config: {}
+  ## @param deployment.livenessProbe [object] Configure the deployment's liveness probe.
+  livenessProbe:
+    enabled: false
+    path: /health
+    port: 8080
+    config: {}
 
-    ## @param deployment.readinessProbe [object] Configure the deployment's readiness probe.
-    readinessProbe:
-      enabled: false
-      path: /ready
-      port: 8080
-      config: {}
+  ## @param deployment.readinessProbe [object] Configure the deployment's readiness probe.
+  readinessProbe:
+    enabled: false
+    path: /ready
+    port: 8080
+    config: {}
 
-    ## @param deployment.ports [array] The ports that the controller container exposes.
-    ports:
-      - name: http
-        containerPort: 8080
-        protocol: TCP
+  ## @param deployment.extraEnv [array, default: []] Extra environment variables to be passed to the controller container.
+  extraEnv: []
+
+  ## @param deployment.extraPorts [array, default: []] Extra ports to be exposed on the controller container.
+  extraPorts: []
 
 ## @section PremiScale Controller
 
@@ -104,6 +106,14 @@ controller:
 
   ## @param controller.extraEnv [array, default: []] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.
   extraEnv: []
+
+
+## @section RBAC configuration
+
+
+serviceAccount:
+  ## @param serviceAccount.create [default: true] If true, a service account will be created.
+  create: true
 
 
 ## @section PremiScale Controller Config
@@ -151,27 +161,3 @@ service:
 cluster-autoscaler:
   ## @param cluster-autoscaler.enabled [default: false] Enable or disable the autoscaler dependency of the PremiScale controller. Enable this if you would like to autoscale the cluster on which the controller resides.
   enabled: false
-
-  image:
-    ## @param cluster-autoscaler.image.repository [string, default: kubernetes/cluster-autoscaler] The repository of the autoscaler image.
-    repository: kubernetes/cluster-autoscaler
-
-    ## @param cluster-autoscaler.image.tag [string, default: v1.28.2] The tag of the autoscaler image.
-    tag: v1.28.2
-
-    ## @param cluster-autoscaler.image.pullPolicy [string, default: IfNotPresent] The pull policy of the autoscaler image.
-    pullPolicy: IfNotPresent
-
-  resources:
-    limits:
-      ## @param cluster-autoscaler.resources.limits.cpu [default: 100m] The CPU limit for the autoscaler container.
-      cpu: 100m
-
-      ## @param cluster-autoscaler.resources.limits.memory [default: 300Mi] The memory limit for the autoscaler container.
-      memory: 300Mi
-    requests:
-      ## @param cluster-autoscaler.resources.requests.cpu [default: 100m] The CPU request for the autoscaler container.
-      cpu: 100m
-
-      ## @param cluster-autoscaler.resources.requests.memory [default: 300Mi] The memory request for the autoscaler container.
-      memory: 300Mi

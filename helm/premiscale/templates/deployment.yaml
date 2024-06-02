@@ -32,9 +32,14 @@ spec:
       labels: {{ include "premiscale.selectorLabels" . | nindent 8 }}
     spec:
       ## PodSpec v1core
-      {{- if gt (len ((((.Values).deployment).pullSecrets) | default "")) 0 }}
+      {{- if gt (len (((((.Values).deployment).image).pullSecrets) | default "")) 0 }}
       imagePullSecrets:
-        {{- range $secret := .Values.deployment.pullSecrets }}
+        {{- range $secret := .Values.deployment.image.pullSecrets }}
+        - name: {{ $secret }}
+        {{- end }}
+      {{- else if gt (len (((((.Values).global).image).pullSecrets) | default "")) 0 }}
+      imagePullSecrets:
+        {{- range $secret := .Values.global.image.pullSecrets }}
         - name: {{ $secret }}
         {{- end }}
       {{- end }}
@@ -134,10 +139,13 @@ spec:
             {{- end }}
             {{- end }}
           {{- end }}
-          {{- with .Values.deployment.ports }}
           ports:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            {{- with .Values.deployment.extraPorts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- with .Values.deployment.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
