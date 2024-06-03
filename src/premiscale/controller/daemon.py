@@ -86,7 +86,7 @@ def start(
                     registration=registration,
                     version=controller_version,
                     host=f'wss://{host}',
-                    path='controller/websocket',
+                    path='agent/websocket',
                     cacert=cacert
                 ),
                 platform_message_queue
@@ -94,7 +94,7 @@ def start(
                 token=token,
                 version=controller_version,
                 host=f'https://{host}',
-                path='controller/registration',
+                path='agent/registration',
                 cacert=cacert
             )) else None,
 
