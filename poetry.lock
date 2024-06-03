@@ -690,12 +690,12 @@ testing = ["pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "py
 
 [[package]]
 name = "libvirt-python"
-version = "9.10.0"
+version = "10.4.0"
 description = "The libvirt virtualization API python binding"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "libvirt-python-9.10.0.tar.gz", hash = "sha256:60b4a32200093d1287de544cdd310f01a1066dbff4cee62d45fa504141aa7577"},
+    {file = "libvirt-python-10.4.0.tar.gz", hash = "sha256:a20273a3374fcacb45b5ac4fd135e2c40460bb4a3a290d26c4aa8d0eaf1225b5"},
 ]
 
 [[package]]
@@ -1871,4 +1871,4 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-it
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "3fd2b6721ac4175b9033bd0ee26b12371c6975900fbb1660b7bd247cf569171e"
+content-hash = "c5d680bff8d21d17c5653efbd18825f4bc47305fca3829fa07b8a2b17b84f994"
