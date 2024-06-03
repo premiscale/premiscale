@@ -75,4 +75,4 @@ RUN mkdir -p "$HOME"/.local/bin \
     && poetry run premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "poetry run premiscale --log-stdout --daemon --cacert=${PREMISCALE_CACERT}" ]
+CMD [ "bash", "-c", "poetry run premiscale --log-stdout --daemon --cacert=${PREMISCALE_CACERT} --platform ${PREMISCALE_PLATFORM}" ]

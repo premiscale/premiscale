@@ -109,7 +109,7 @@ def register(
         version (str): agent version.
         host (str): platform domain.
         path (str): endpoint to hit at the platform domain.
-        cacert (str): path to the CA certificate file.
+        cacert (str): path to the CA certificate file, if provided.
 
     Returns:
         Dict[str, str] | None: registration service response, or an empty dict if the registration was not successful.
