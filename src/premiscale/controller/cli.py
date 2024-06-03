@@ -34,7 +34,7 @@ def main() -> None:
 
     parser.add_argument(
         '--token', type=str, default='',
-        help='Platform registration token.'
+        help='Platform registration token. Also available as the environment variable \'PREMISCALE_TOKEN\'.'
     )
 
     parser.add_argument(
@@ -44,7 +44,7 @@ def main() -> None:
 
     parser.add_argument(
         '-c', '--config', type=str, default='/opt/premiscale/config.yaml',
-        help='Configuration file path to use.'
+        help='Configuration file path to use. Also available as the environment variable \'PREMISCALE_CONFIG_PATH\'.'
     )
 
     parser.add_argument(
@@ -54,7 +54,7 @@ def main() -> None:
 
     parser.add_argument(
         '--platform', type=str, default='app.premiscale.com',
-        help='URL of the PremiScale platform.'
+        help='URL of the PremiScale platform. Also available as the environment variable \'PREMISCALE_PLATFORM\'.'
     )
 
     parser.add_argument(
@@ -64,19 +64,19 @@ def main() -> None:
 
     parser.add_argument(
         '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for the controller daemon.'
+        help='Pidfile name to use for the controller daemon. Also available as the environment variable \'PREMISCALE_PID_FILE\'.'
     )
 
     parser.add_argument(
         '--log-level', default='info', choices=list(LogLevel), type=LogLevel.from_string,
-        help='Set the logging level.'
+        help='Set the logging level. Also available as the environment variable \'PREMISCALE_LOG_LEVEL\'.'
     )
 
     log_group = parser.add_mutually_exclusive_group()
 
     log_group.add_argument(
         '--log-file', type=str, default='/opt/premiscale/controller.log',
-        help='Specify the file the service logs to if --log-stdout is not set.'
+        help='Specify the file the service logs to if --log-stdout is not set. Also available as the environment variable \'PREMISCALE_LOG_FILE\'.'
     )
 
     log_group.add_argument(
@@ -86,7 +86,7 @@ def main() -> None:
 
     parser.add_argument(
         '--cacert', type=str, default='',
-        help='Path to the certificate file (for use with self-signed certificates).'
+        help='Path to the certificate file (for use with self-signed certificates). Also available as the environment variable \'PREMISCALE_CACERT\'.'
     )
 
     args = parser.parse_args()

@@ -42,7 +42,7 @@ repos:
         name: cog
         entry: /usr/bin/env poetry run cog --check -r -c -U README.md
         args: []
-        files: README.md
+        files: ^(README.md|src/premiscale/controller/cli.py)$
         types:
           - markdown
         # additional_dependencies:

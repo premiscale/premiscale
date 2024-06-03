@@ -19,29 +19,39 @@ PremiScale autoscaler. © PremiScale, Inc. 2024
 
 options:
   -h, --help            show this help message and exit
-  --token TOKEN         Platform registration token. (default: )
+  --token TOKEN         Platform registration token. Also available as the
+                        environment variable 'PREMISCALE_TOKEN'. (default: )
   -d, --daemon          Start controller as a daemon. (default: False)
   -c CONFIG, --config CONFIG
-                        Configuration file path to use. (default:
-                        /opt/premiscale/config.yaml)
+                        Configuration file path to use. Also available as the
+                        environment variable 'PREMISCALE_CONFIG_PATH'.
+                        (default: /opt/premiscale/config.yaml)
   --validate            Validate the provided configuration file and exit.
                         (default: False)
-  --platform PLATFORM   URL of the PremiScale platform. (default:
+  --platform PLATFORM   URL of the PremiScale platform. Also available as the
+                        environment variable 'PREMISCALE_PLATFORM'. (default:
                         app.premiscale.com)
   --version             Display controller version. (default: False)
-  --pid-file PID_FILE   Pidfile name to use for the controller daemon.
-                        (default: /opt/premiscale/premiscale.pid)
+  --pid-file PID_FILE   Pidfile name to use for the controller daemon. Also
+                        available as the environment variable
+                        'PREMISCALE_PID_FILE'. (default:
+                        /opt/premiscale/premiscale.pid)
   --log-level {info,error,warn,debug}
-                        Set the logging level. (default: info)
+                        Set the logging level. Also available as the
+                        environment variable 'PREMISCALE_LOG_LEVEL'. (default:
+                        info)
   --log-file LOG_FILE   Specify the file the service logs to if --log-stdout
-                        is not set. (default: /opt/premiscale/controller.log)
+                        is not set. Also available as the environment variable
+                        'PREMISCALE_LOG_FILE'. (default:
+                        /opt/premiscale/controller.log)
   --log-stdout          Log to stdout (for use in containerized deployments).
                         (default: False)
   --cacert CACERT       Path to the certificate file (for use with self-signed
-                        certificates). (default: )
+                        certificates). Also available as the environment
+                        variable 'PREMISCALE_CACERT'. (default: )
 
 ```
-<!-- [[[end]]] (checksum: 581a2399ae1ce56b76349ea501875d4a) (checksum: ) -->
+<!-- [[[end]]] (checksum: ff800657536b55180a25605531425279) (checksum: ) -->
 
 ## Architecture
 
