@@ -10,7 +10,9 @@ import signal
 import sys
 import concurrent
 import os
+import threading
 
+from functools import partial
 from multiprocessing.queues import Queue
 from typing import cast
 from setproctitle import setproctitle
@@ -54,10 +56,15 @@ def start(
     setproctitle('premiscale')
 
     # Start the healthcheck API in a separate thread as a daemon.
-    with concurrent.futures.ThreadPoolExecutor() as main_process_tp:
-        main_process_tp.submit(
-            healthcheck.run, host=host, port=8085
+    _main_process_threads = [
+        threading.Thread(
+            target=partial(healthcheck.run, host='127.0.0.1', port=8085, debug=True, use_reloader=False),
+            daemon=True
         )
+    ]
+
+    for thread in _main_process_threads:
+        thread.start()
 
     with concurrent.futures.ProcessPoolExecutor() as executor, mp.Manager() as manager:
         # DaemonContext(
@@ -125,5 +132,8 @@ def start(
         for process in processes:
             if process is not None:
                 process.result()
+
+    for thread in _main_process_threads:
+        thread.join()
 
     return 0
