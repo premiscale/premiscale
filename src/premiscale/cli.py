@@ -5,20 +5,18 @@ PremiScale autoscaler.
 """
 
 
+from __future__ import annotations, absolute_import
 import sys
 import logging
 import os
 
 from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from importlib import metadata as meta
-
 from premiscale.config.parse import initialize, validate, configparse
 from premiscale.controller.daemon import start
 from premiscale.controller.utils import LogLevel
+from premiscale import env, version
 
-
-version = meta.version('premiscale')
 
 log = logging.getLogger(__name__)
 
@@ -33,17 +31,12 @@ def main() -> None:
     )
 
     parser.add_argument(
-        '--token', type=str, default='',
+        '--token', type=str, default=env['PREMISCALE_TOKEN'],
         help='Platform registration token. Also available as the environment variable \'PREMISCALE_TOKEN\'.'
     )
 
     parser.add_argument(
-        '-d', '--daemon', action='store_true',
-        help='Start controller as a daemon.'
-    )
-
-    parser.add_argument(
-        '-c', '--config', type=str, default='/opt/premiscale/config.yaml',
+        '-c', '--config', type=str, default=env['PREMISCALE_CONFIG_PATH'],
         help='Configuration file path to use. Also available as the environment variable \'PREMISCALE_CONFIG_PATH\'.'
     )
 
@@ -52,20 +45,20 @@ def main() -> None:
         help='Validate the provided configuration file and exit.'
     )
 
-    parser.add_argument(
-        '--platform', type=str, default='app.premiscale.com',
-        help='URL of the PremiScale platform. Also available as the environment variable \'PREMISCALE_PLATFORM\'.'
-    )
+    # parser.add_argument(
+    #     '--platform', type=str, default='app.premiscale.com',
+    #     help='URL of the PremiScale platform. Also available as the environment variable \'PREMISCALE_PLATFORM\'.'
+    # )
 
     parser.add_argument(
         '--version', action='store_true',
         help='Display controller version.'
     )
 
-    parser.add_argument(
-        '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-        help='Pidfile name to use for the controller daemon. Also available as the environment variable \'PREMISCALE_PID_FILE\'.'
-    )
+    # parser.add_argument(
+    #     '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
+    #     help='Pidfile name to use for the controller daemon. Also available as the environment variable \'PREMISCALE_PID_FILE\'.'
+    # )
 
     parser.add_argument(
         '--log-level', default='info', choices=list(LogLevel), type=LogLevel.from_string,
@@ -84,10 +77,10 @@ def main() -> None:
         help='Log to stdout (for use in containerized deployments).'
     )
 
-    parser.add_argument(
-        '--cacert', type=str, default='',
-        help='Path to the certificate file (for use with self-signed certificates). Also available as the environment variable \'PREMISCALE_CACERT\'.'
-    )
+    # parser.add_argument(
+    #     '--cacert', type=str, default='',
+    #     help='Path to the certificate file (for use with self-signed certificates). Also available as the environment variable \'PREMISCALE_CACERT\'.'
+    # )
 
     args = parser.parse_args()
 
@@ -121,30 +114,21 @@ def main() -> None:
     if args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
 
-    if args.daemon:
-        initialize(args.config)
-        config = configparse(args.config)
-        log.info(f'Starting PremiScale controller v{version}')
+    initialize(args.config)
+    config = configparse(args.config)
+    log.info(f'Starting PremiScale controller v{version}')
 
-        if (token := args.token) != '':
-            log.debug('Registering controller with provided token')
-        elif (token := os.getenv('PREMISCALE_TOKEN')) != '':
-            log.debug('Registering controller with provided environment variable')
-        else:
-            token = ''
-
-        # Start the premiscale controller.
-        sys.exit(
-            start(
-                '/opt/premiscale',
-                args.pid_file,
-                config,
-                version,
-                token,
-                args.platform,
-                args.cacert
-            )
-        )
+    if (token := args.token) != '':
+        log.info('Using provided platform token for registration.')
     else:
-        initialize(args.config)
-        log.info('PremiScale successfully initialized. Use \'--daemon\' to start the controller.')
+        token = ''
+
+    # Start the premiscale controller.
+    sys.exit(
+        start(
+            working_dir='/opt/premiscale',
+            controller_config=config,
+            controller_version=version,
+            token=token
+        )
+    )

@@ -31,12 +31,9 @@ log = logging.getLogger(__name__)
 
 def start(
         working_dir: str,
-        pid_file: str,
         controller_config: Config,
         controller_version: str,
-        token: str,
-        host: str,
-        cacert: str
+        token: str
     ) -> int:
     """
     Start our four daemon processes passing along relevant configuration.
@@ -92,7 +89,7 @@ def start(
                 Platform(
                     registration=registration,
                     version=controller_version,
-                    host=f'wss://{host}',
+                    host=f'wss://{platform}',
                     path='agent/websocket',
                     cacert=cacert
                 ),
@@ -100,7 +97,7 @@ def start(
             ) if (registration := register(
                 token=token,
                 version=controller_version,
-                host=f'https://{host}',
+                host=f'https://{platform}',
                 path='agent/registration',
                 cacert=cacert
             )) else None,

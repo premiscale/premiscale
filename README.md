@@ -10,10 +10,9 @@ cog.outl(f'```text\n$ premiscale --help\n{subprocess.run("poetry run premiscale 
 ]]] -->
 ```text
 $ premiscale --help
-usage: premiscale [-h] [--token TOKEN] [-d] [-c CONFIG] [--validate]
-                  [--platform PLATFORM] [--version] [--pid-file PID_FILE]
+usage: premiscale [-h] [--token TOKEN] [-c CONFIG] [--validate] [--version]
                   [--log-level {info,error,warn,debug}]
-                  [--log-file LOG_FILE | --log-stdout] [--cacert CACERT]
+                  [--log-file LOG_FILE | --log-stdout]
 
 PremiScale autoscaler. © PremiScale, Inc. 2024
 
@@ -21,21 +20,13 @@ options:
   -h, --help            show this help message and exit
   --token TOKEN         Platform registration token. Also available as the
                         environment variable 'PREMISCALE_TOKEN'. (default: )
-  -d, --daemon          Start controller as a daemon. (default: False)
   -c CONFIG, --config CONFIG
                         Configuration file path to use. Also available as the
                         environment variable 'PREMISCALE_CONFIG_PATH'.
                         (default: /opt/premiscale/config.yaml)
   --validate            Validate the provided configuration file and exit.
                         (default: False)
-  --platform PLATFORM   URL of the PremiScale platform. Also available as the
-                        environment variable 'PREMISCALE_PLATFORM'. (default:
-                        app.premiscale.com)
   --version             Display controller version. (default: False)
-  --pid-file PID_FILE   Pidfile name to use for the controller daemon. Also
-                        available as the environment variable
-                        'PREMISCALE_PID_FILE'. (default:
-                        /opt/premiscale/premiscale.pid)
   --log-level {info,error,warn,debug}
                         Set the logging level. Also available as the
                         environment variable 'PREMISCALE_LOG_LEVEL'. (default:
@@ -46,12 +37,9 @@ options:
                         /opt/premiscale/controller.log)
   --log-stdout          Log to stdout (for use in containerized deployments).
                         (default: False)
-  --cacert CACERT       Path to the certificate file (for use with self-signed
-                        certificates). Also available as the environment
-                        variable 'PREMISCALE_CACERT'. (default: )
 
 ```
-<!-- [[[end]]] (checksum: ff800657536b55180a25605531425279) (checksum: ) -->
+<!-- [[[end]]] (checksum: fb6a8e7153c7b4eb58ed9a46abf9d3c1) (checksum: ) -->
 
 ## Architecture
 
@@ -66,6 +54,10 @@ See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffE
 ## Installation
 
 See the [chart README](https://github.com/premiscale/premiscale/tree/master/helm/premiscale) for an overview of controller installation and configuration options.
+
+## Configuration
+
+The controller can be configured through the required config file, all versions of which are documented [here](./src/premiscale/config/data/README.md).
 
 ## Development
 

@@ -1,5 +1,5 @@
 minimum_pre_commit_version: 3.0.4
-fail_fast: true
+# fail_fast: true
 
 default_stages:
   - commit
@@ -61,7 +61,7 @@ repos:
           # - --config=./.github/readme-generator-config.json
           - --readme=src/premiscale/config/data/v1alpha1.md
           - --values=src/premiscale/config/data/default.yaml
-          - --schema=src/premiscale/config/data/default.schema.json
+          # - --schema=src/premiscale/config/data/default.schema.json
       # Generate the Helm chart schema and documentation from the values.yaml.
       - id: helm-readme-generator
         name: controller-helm-chart-schema-generator

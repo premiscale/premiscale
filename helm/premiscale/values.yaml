@@ -53,23 +53,44 @@ deployment:
 
   ## @param deployment.startupProbe [object] Configure the deployment's startup probe.
   startupProbe:
+    ## @param deployment.startupProbe.enabled [default: false] Enable or disable the startup probe.
     enabled: false
+
+    ## @param deployment.startupProbe.path [string, default: /health] The startup probe endpoint's path.
     path: /health
-    port: 8080
+
+    ## @param deployment.startupProbe.port [default: 8085] The startup probe endpoint's port.
+    port: 8085
+
+    ## @param deployment.startupProbe.config [object] Additional configuration for the startup probe.
     config: {}
 
   ## @param deployment.livenessProbe [object] Configure the deployment's liveness probe.
   livenessProbe:
+    ## @param deployment.livenessProbe.enabled [default: false] Enable or disable the liveness probe.
     enabled: false
+
+    ## @param deployment.livenessProbe.path [string, default: /health] The liveness probe endpoint's path.
     path: /health
-    port: 8080
+
+    ## @param deployment.livenessProbe.port [default: 8085] The liveness probe endpoint's port.
+    port: 8085
+
+    ## @param deployment.livenessProbe.config [object] Additional configuration for the liveness probe.
     config: {}
 
   ## @param deployment.readinessProbe [object] Configure the deployment's readiness probe.
   readinessProbe:
+    ## @param deployment.readinessProbe.enabled [default: false] Enable or disable the readiness probe.
     enabled: false
+
+    ## @param deployment.readinessProbe.path [string, default: /ready] The readiness probe endpoint's path.
     path: /ready
-    port: 8080
+
+    ## @param deployment.readinessProbe.port [default: 8085] The readiness probe endpoint's port.
+    port: 8085
+
+    ## @param deployment.readinessProbe.config [object] Additional configuration for the readiness probe.
     config: {}
 
   ## @param deployment.extraEnv [array, default: []] Extra environment variables to be passed to the controller container.
@@ -122,6 +143,15 @@ controller:
     #     createSecret: false
     #     ## @param controller.libvirt.tls.secretName2.value [string] The TLS certificate for the libvirt provider.
     #     value: ''
+
+  platform:
+    ## @param controller.platform.domain [string, default: $PREMISCALE_PLATFORM] The domain of the platform.
+    domain: app.premiscale.com
+
+    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates to the controller for connection to the platform services.
+    certificates:
+      ## @param controller.platform.certificates.path [string, default: ''] If using a self-signed certificate for development purposes, specify the path.
+      path: ''
 
 
 

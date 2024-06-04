@@ -87,6 +87,66 @@
                         }
                     }
                 },
+                "startupProbe": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable or disable the startup probe.",
+                            "default": "false"
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "The startup probe endpoint's path.",
+                            "default": "/health"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "The startup probe endpoint's port.",
+                            "default": "8085"
+                        }
+                    }
+                },
+                "livenessProbe": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable or disable the liveness probe.",
+                            "default": "false"
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "The liveness probe endpoint's path.",
+                            "default": "/health"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "The liveness probe endpoint's port.",
+                            "default": "8085"
+                        }
+                    }
+                },
+                "readinessProbe": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable or disable the readiness probe.",
+                            "default": "false"
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "The readiness probe endpoint's path.",
+                            "default": "/ready"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "The readiness probe endpoint's port.",
+                            "default": "8085"
+                        }
+                    }
+                },
                 "extraEnv": {
                     "type": "array",
                     "description": "] Extra environment variables to be passed to the controller container.",
@@ -159,6 +219,26 @@
                     "description": "] Extra environment variables to be passed to the controller container. These are useful for injecting and referencing environment variables in the config that's read from the ConfigMap below.",
                     "default": "",
                     "items": {}
+                },
+                "platform": {
+                    "type": "object",
+                    "properties": {
+                        "domain": {
+                            "type": "string",
+                            "description": "The domain of the platform.",
+                            "default": "$PREMISCALE_PLATFORM"
+                        },
+                        "certificates": {
+                            "type": "object",
+                            "properties": {
+                                "path": {
+                                    "type": "string",
+                                    "description": "If using a self-signed certificate for development purposes, specify the path.",
+                                    "default": "''"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
