@@ -41,10 +41,10 @@ def start(
         working_dir (str): working directory.
         config (Config): controller config file as a Config object.
         version (str): controller version.
-        token (str): controller token.
+        token (str): controller registration token.
 
     Returns:
-        int: return code.
+        int: status code of the first subprocess to exit.
     """
     setproctitle('premiscale')
 
@@ -90,8 +90,10 @@ def start(
             executor.submit(
                 Platform.register(
                     version=version,
-                    host=f'wss://{config.controller.platform.domain}',
-                    path='agent/websocket',
+                    token=token,
+                    host=config.controller.platform.domain,
+                    websocket_path='agent/websocket',
+                    registration_path='agent/register',
                     cacert=config.controller.platform.certificates.path
                 ),
                 platform_message_queue
