@@ -59,7 +59,7 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "premiscale --log-stdout --daemon" ]
+CMD [ "bash", "-c", "premiscale --log-stdout" ]
 
 ## Development image
 
@@ -75,4 +75,4 @@ RUN mkdir -p "$HOME"/.local/bin \
     && poetry run premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "poetry run premiscale --log-stdout --log-level=${PREMISCALE_LOG_LEVEL} --daemon --cacert=${PREMISCALE_CACERT} --platform ${PREMISCALE_PLATFORM}" ]
+CMD [ "bash", "-c", "poetry run premiscale --log-stdout --log-level=${PREMISCALE_LOG_LEVEL}" ]

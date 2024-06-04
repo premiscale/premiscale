@@ -1,5 +1,5 @@
 """
-PremiScale autoscaler.
+The PremiScale autoscaling controller for Kubernetes.
 
 © PremiScale, Inc. 2024
 """

@@ -28,7 +28,7 @@ usage: premiscale [-h] [--token TOKEN] [-c CONFIG] [--validate] [--version]
                   [--log-level {info,error,warn,debug}]
                   [--log-file LOG_FILE | --log-stdout]
 
-PremiScale autoscaler.
+The PremiScale autoscaling controller for Kubernetes.
 
 © PremiScale, Inc. 2024
 
@@ -55,7 +55,7 @@ options:
                         (default: false)
 
 ```
-<!-- [[[end]]] (checksum: ff66130d37122a72ac23b4e37df25567) (checksum: ) -->
+<!-- [[[end]]] (checksum: 6f533482db7b6efc43c0e6eb498e5b85) (checksum: ) -->
 
 ## Installation
 

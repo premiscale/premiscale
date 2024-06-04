@@ -3,6 +3,7 @@ Methods relating to connecting to PremiScale's platform.
 """
 
 from __future__ import annotations
+
 import asyncio
 import logging
 import time
@@ -12,7 +13,6 @@ import json
 import ssl
 
 from typing import Dict, Callable, Any
-
 from websockets import client as ws, exceptions as wse
 from socket import gaierror
 from functools import wraps
@@ -21,7 +21,6 @@ from urllib.parse import urljoin
 from urllib.error import URLError
 from http import HTTPStatus
 from setproctitle import setproctitle
-
 from premiscale.utils import write_json, read_json
 
 
