@@ -4,17 +4,13 @@ PremiScale is a controller that brings autoscaling of virtual infrastructure to 
 
 ## Architecture
 
-PremiScale is, again, a controller that administers hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a very flexible open source hypervisor API.
+PremiScale is a controller that administers hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a very flexible open source hypervisor API.
 
 See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.
 
 <p align="center" width="100%">
   <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
 </p>
-
-## Installation
-
-See the [chart README](https://github.com/premiscale/premiscale/tree/master/helm/premiscale) for an overview of controller installation and configuration options.
 
 ## Configuration
 
@@ -58,6 +54,12 @@ options:
 
 ```
 <!-- [[[end]]] (checksum: fb6a8e7153c7b4eb58ed9a46abf9d3c1) (checksum: ) -->
+
+## Installation
+
+This project is intended to be deployed to Kubernetes, whether you intend to integrate with the cluster autoscaler or not.
+
+See the Helm [chart README](https://github.com/premiscale/premiscale/tree/master/helm/premiscale) for an overview of controller installation.
 
 ## Development
 

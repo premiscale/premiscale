@@ -122,7 +122,7 @@ class Autoscale:
     """
     Autoscale configuration options.
     """
-    hosts: List
+    hosts: Domains
     groups: List
 
 

@@ -91,8 +91,19 @@ controller:
   autoscale:
     ## @param autoscale.hosts [object] Groups of hosts to assign to ASGs.
     hosts:
-      ## @param autoscale.hosts.group-1 [array] An example group of hosts to assign to an ASG.
-      group-1:
+      discovery: 
+        enabled: false
+        interval: 60
+        # https://medium.com/@chapatwaladev/mastering-network-scanning-and-reconnaissance-with-python-and-nmap-bc869326cad1
+        mode: syn-scan
+        ports: 
+          - 22
+          - 6910
+        subnets:
+          - 10.0.0.0/24
+      
+      ## @param controller.autoscale.hosts.hostList [object] If controller.autoscale.hosts.discovery is false, you must specify hosts manually.
+      hostList:
         - name: domain-1
           address: domain-1
           protocol: ssh
@@ -112,7 +123,6 @@ controller:
           protocol: ssh
           port: 22
           hypervisor: kvm
-      # group-2
 
     ## @param controller.autoscale.groups [object] Specify and configure autoscaling groups on the hosts above.
     groups:
