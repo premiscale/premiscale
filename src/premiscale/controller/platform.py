@@ -13,87 +13,18 @@ import requests
 import json
 import ssl
 
-from typing import Dict, Callable, Any
+from typing import Dict
 from websockets import client as ws, exceptions as wse
 from socket import gaierror
-from functools import wraps
 from multiprocessing.queues import Queue
 from urllib.parse import urljoin
-from urllib.error import URLError
 from http import HTTPStatus
 from setproctitle import setproctitle
-from premiscale.utils import write_json, read_json
+from premiscale.exceptions import RateLimitedError
+from premiscale.utils import write_json, read_json, retry
 
 
 log = logging.getLogger(__name__)
-
-
-class RateLimitedError(Exception):
-    """
-    Raised when an HTTPStatus.TOO_MANY_REQUESTS code is received.
-    """
-    def __init__(self, message: str ='', delay: float =30.0) -> None:
-        super().__init__(message)
-        self.message = message
-        self.delay = delay
-
-    def __str__(self):
-        return f'RateLimitedError(message="{self.message}", code="{HTTPStatus.TOO_MANY_REQUESTS}", "x-rate-limit-reset={self.delay}")'
-
-
-def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0.25) -> Callable:
-    """
-    A request retry decorator that catches common exceptions and retries the wrapped function call.
-
-    Args:
-        retries: number of times to retry the wrapped function call. When `0`, retries indefinitely. (default: 0)
-        retry_delay: if retries is 0, this delay value (in seconds) is used between retries. (default: 1.0)
-        ratelimit_buffer: a buffer (in seconds) to add to the delay when a rate limit is hit. (default: 0.25)
-
-    Returns:
-        Either the result of a successful function call (be it via retrying or not).
-
-    Raises:
-        ValueError: if `retries` is less than 0.
-    """
-    if retries < 0:
-        raise ValueError(f'Expected positive `retries` values, received: "{retries}"')
-
-    def decorator(f: Callable) -> Callable:
-        @wraps(f)
-        def wrapper(*args: Any, **kwargs: Any) -> Dict | None:
-            res: Any = None
-
-            def call() -> Dict[str, str] | None:
-                nonlocal res
-
-                try:
-                    return f(*args, **kwargs)
-                except RateLimitedError as msg:
-                    log.warning(f'Ratelimited, waiting "{msg.delay + ratelimit_buffer}"s before trying again')
-                    time.sleep(msg.delay + ratelimit_buffer)
-                    return None
-                except URLError as msg:
-                    log.warning(msg)
-                    return None
-
-            if retries > 0:
-                # Finite number of user-specified retries.
-                for _ in range(retries):
-                    if (res := call()) is not None:
-                        return res
-                else:
-                    log.error(f'Retry attempt limit exceeded.')
-                    return None
-            else:
-                # Infinite retries.
-                while (res := call()) is None:
-                    time.sleep(retry_delay)
-
-                return res
-
-        return wrapper
-    return decorator
 
 
 class Platform:
@@ -109,13 +40,15 @@ class Platform:
         wspath (str): path to the websocket endpoint.
         cacert (str): path to the certificate file (for use with self-signed certificates).
     """
-    def __init__(self,
-                 registration: Dict[str, str],
-                 version: str,
-                 host: str = 'app.premiscale.com',
+    def __init__(self, registration: Dict[str, str], version: str, host: str = 'app.premiscale.com',
                  wspath: str = '/agent/websocket',
                  cacert: str = '') -> None:
-        self.host = urljoin(host, wspath)
+
+        self.host = urljoin(
+            f'wss://{host}',
+            wspath
+        )
+
         self.version = version
         self._registration = registration
         self._cacert = cacert
@@ -125,7 +58,7 @@ class Platform:
         self._websocket: ws.WebSocketClientProtocol
 
     @classmethod
-    @retry()
+    @retry(retries=3, retry_delay=5.0)
     def register(
             cls,
             token: str,
@@ -167,9 +100,10 @@ class Platform:
             try:
                 response = requests.post(
                     url=urljoin(
-                        host,
+                        f'https://{host}',
                         registration_path
                     ),
+
                     data=json.dumps({
                         'version': version,
                         'type': 'agent',
@@ -181,6 +115,10 @@ class Platform:
                     },
                     verify=cacert
                 )
+
+                if response.status_code != HTTPStatus.OK:
+                    log.error(f'Failed to register with PremiScale platform: {response.text}')
+                    return None
 
                 registration_response = json.loads(response.json())
 
@@ -246,7 +184,7 @@ class Platform:
                         log.error(f'Websocket connection to \'{self.host}\' closed unexpectedly, reconnecting...')
             except (gaierror, ssl.SSLError) as msg:
                 log.error(f'Could not connect to \'{self.host}\', retrying: {msg}')
-                time.sleep(1)
+                time.sleep(2)
 
     async def _sync_platform_queue(self) -> None:
         """
