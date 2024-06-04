@@ -2,6 +2,7 @@
 Methods relating to connecting to PremiScale's platform.
 """
 
+
 from __future__ import annotations
 
 import asyncio

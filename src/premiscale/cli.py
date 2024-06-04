@@ -1,11 +1,10 @@
 """
 The PremiScale autoscaling controller for Kubernetes.
-
-© PremiScale, Inc. 2024
 """
 
 
 from __future__ import annotations, absolute_import
+
 import sys
 import logging
 
@@ -26,7 +25,8 @@ def main() -> None:
     """
     parser = ArgumentParser(
         formatter_class=RawDescriptionHelpFormatter,
-        description=__doc__
+        description=__doc__,
+        epilog='For more information, visit https://www.premiscale.com.\n\n© PremiScale, Inc. 2024.'
     )
 
     parser.add_argument(

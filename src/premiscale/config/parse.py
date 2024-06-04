@@ -66,7 +66,7 @@ def validate(data: dict, schema: str = 'schema.yaml', strict: bool = True) -> Tu
         bool: Whether or not the config conforms to our expected schema.
     """
     try:
-        with resources.open_text('premiscale.config.data', schema) as schema_f:
+        with resources.open_text('premiscale.config.schemas', schema) as schema_f:
             schema = yamale.make_schema(schema_f.name)
     except FileNotFoundError:
         log.error(f'Could not find schema "{schema}" for config: are you using a supported config version?')
@@ -96,7 +96,7 @@ def makeDefaultConfig(path: Union[str, Path], default_config: Union[str, Path] =
         if not Path(path).exists():
             log.debug(f'Config file at {path} does not exist. Creating default config file.')
 
-            with resources.open_text('premiscale.config.data', str(default_config)) as default_f, open(str(path), 'x', encoding='utf-8') as f:
+            with resources.open_text('premiscale.config', str(default_config)) as default_f, open(str(path), 'x', encoding='utf-8') as f:
                 f.write(default_f.read().strip())
 
             log.debug(f'Successfully created default config file at \'{str(path)}\'')

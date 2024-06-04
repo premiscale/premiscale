@@ -4,14 +4,15 @@ Parse v1alpha1 configuration files into a Config object with attrs and cattrs.
 
 
 from __future__ import annotations
-from typing import List, Dict
-from attrs import define, field
-from cattrs import structure as from_dict
-from ipaddress import IPv4Address as IPv4
 
 import logging
 import os
 import sys
+
+from typing import List, Dict
+from attrs import define
+from attr import ib
+from cattrs import structure as from_dict
 
 
 log = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ class State:
     """
     type: str
     collectionInterval: int
-    connection: Connection
+    connection: Connection | None = ib(default=None)
 
 
 @define
@@ -71,11 +72,11 @@ class Metrics:
     Metrics database configuration options.
     """
     type: str
-    connection: Connection
     collectionInterval: int
     maxThreads: int
     hostConnectionTimeout: int
     trailing: int
+    connection: Connection | None = ib(default=None)
 
 
 @define
@@ -88,13 +89,33 @@ class Databases:
 
 
 @define
+class Certificates:
+    """
+    Certificate configuration options.
+    """
+    path: str
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        self.expand()
+
+    def expand(self):
+        """
+        Expand environment variables in the certificate configuration.
+        """
+        self.path = os.path.expandvars(self.path)
+
+
+@define
 class Platform:
     """
     Platform configuration options.
     """
-    host: str
+    domain: str
     token: str
-    cacert: str
+    certificates: Certificates
     actionsQueueMaxSize: int
 
     def __attrs_post_init__(self):
@@ -107,7 +128,7 @@ class Platform:
         """
         Expand environment variables in the platform configuration.
         """
-        self.host = os.path.expandvars(self.host)
+        self.platform = os.path.expandvars(self.platform)
         self.token = os.path.expandvars(self.token)
         self.cacert = os.path.expandvars(self.cacert)
 
@@ -169,10 +190,10 @@ class Network:
     Network configuration options.
     """
     dhcp: bool     # true, false
-    addressRange: str = field() # e.g., if dhcp is true, '192.168.1.2-192.168.1.59'
-    gateway: IPv4  # 192.168.1.1
-    netmask: IPv4  # 255.255.255.0
-    subnet: IPv4   # 192.168.1.0
+    gateway: str  # 192.168.1.1
+    netmask: str  # 255.255.255.0
+    subnet: str   # 192.168.1.0
+    addressRange: str | None = ib(default=None) # e.g., if dhcp is true, '192.168.1.2-192.168.1.59'
 
     def __attrs_post_init__(self):
         """
@@ -245,7 +266,7 @@ class Healthcheck:
     """
     Healthcheck configuration options.
     """
-    host: IPv4
+    host: str
     port: int
     path: str
 
