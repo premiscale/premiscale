@@ -1,6 +1,24 @@
 # PremiScale
 
-PremiScale is a controller that brings autoscaling to on-premise infrastructure, with a particular focus on integrating with the [Kubernetes autoscaler](https://github.com/kubernetes/autoscaler).
+PremiScale is a controller that brings autoscaling of virtual infrastructure to loca, self-hosted and private datacenters, with a particular focus on integrating with the Kubernetes [autoscaler](https://github.com/kubernetes/autoscaler).
+
+## Architecture
+
+PremiScale is, again, a controller that administers hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a very flexible open source hypervisor API.
+
+See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.
+
+<p align="center" width="100%">
+  <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
+</p>
+
+## Installation
+
+See the [chart README](https://github.com/premiscale/premiscale/tree/master/helm/premiscale) for an overview of controller installation and configuration options.
+
+## Configuration
+
+The controller is configured in a couple ways, including its command line interface, environment variables (as indicated in the help text below), and through the required config file (all versions of which are documented [here](./src/premiscale/config/data/README.md) in this repository).
 
 <!-- [[[cog
 import subprocess
@@ -41,24 +59,6 @@ options:
 ```
 <!-- [[[end]]] (checksum: fb6a8e7153c7b4eb58ed9a46abf9d3c1) (checksum: ) -->
 
-## Architecture
-
-PremiScale is a controller (or agent, depending on how you look at it) that administers virtual machine hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a stable (open source) hypervisor SDK and interface.
-
-See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.
-
-<p align="center" width="100%">
-  <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
-</p>
-
-## Installation
-
-See the [chart README](https://github.com/premiscale/premiscale/tree/master/helm/premiscale) for an overview of controller installation and configuration options.
-
-## Configuration
-
-The controller can be configured through the required config file, all versions of which are documented [here](./src/premiscale/config/data/README.md).
-
 ## Development
 
 ### Dependencies
@@ -79,7 +79,7 @@ This will bring up a number of local services for running the agent. To tear the
 yarn compose:down
 ```
 
-### Remote
+### Kubernetes
 
 Connect to your development cluster of choice with kubectl access, followed by
 
@@ -87,21 +87,33 @@ Connect to your development cluster of choice with kubectl access, followed by
 devspace
 ```
 
-This will bring up a development stack in a local or remote Kubernetes cluster of your choice. To start a local development minikube cluster for deploying the devspace stack to, run
+This will bring up a development stack in a local or remote Kubernetes cluster of your choice. 
+
+#### Minikube
+
+To start a local development minikube cluster for deploying the devspace stack to, run
 
 ```shell
 yarn minikube:up
 ```
 
-This cluster is also used for [running e2e tests](#end-to-end-tests), locally.
+When you're done and want to clean it up, run
+
+```shell
+yarn minikube:down
+```
+
+This cluster can also used for [running e2e tests](#end-to-end-tests), locally.
 
 ### Unit tests
 
-Run unit tests with
+Run [unit tests](./src/tests/unit/) with
 
 ```shell
 yarn test:unit
 ```
+
+Unit tests require you to install the relevant dependencies in your local virtualenv with poetry (`poetry install`).
 
 ### End-to-end tests
 
@@ -113,11 +125,11 @@ yarn test:e2e
 
 This command will
 
-1. Stand up a local 1-node minikube cluster with 4 cores, 4GiB memory and 30GiB storage. *(Modify [./scripts/minikube.sh](./scripts/minikube.sh) if these resources are unsuitable for your local development environment.)*
-2. Create a `localhost` docker registry redirect container.
-3. Build both e2e (hosts a git repository with encrypted pass secrets that match paths found in [./src/test/data/crd](./src/test/data/crd/)) and operator container images, as well as push these images to the local redirect for minikube to access.
-4. Installs both e2e and pass-operator Helm charts.
-5. Run e2e tests.
+1. Stand up a local 2-node minikube cluster with 4 cores, 4GiB memory and 30GiB storage, each. *(Modify [./scripts/minikube.sh](./scripts/minikube.sh) if these resources are unsuitable for your local development environment.)*
+2. Create a `localhost` docker registry redirect container based on `socat`.
+3. Build both e2e and PremiScale controller container images, as well as push these images to the local redirect for minikube to access.
+4. Installs both [`premiscale`](./helm/premiscale/) and [`premiscale-e2e`](./helm/premiscale-e2e/) Helm charts.
+5. Runs the [e2e tests](./src/tests/e2e/).
 6. Tear down the cluster and local registry, as well as cleans up locally-built artifacts.
 
 ### Coverage

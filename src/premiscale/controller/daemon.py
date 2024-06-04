@@ -18,7 +18,7 @@ from typing import cast
 from setproctitle import setproctitle
 from daemon import DaemonContext, pidfile
 
-from premiscale.config._config import Config
+from premiscale.config.v1alpha1 import Config
 from premiscale.controller.platform import Platform, register
 from premiscale.controller.autoscaling import ASG
 from premiscale.controller.metrics import Metrics
@@ -39,25 +39,26 @@ def start(
     Start our four daemon processes passing along relevant configuration.
 
     Args:
-        working_dir (str): working directory for this daemon.
-        pid_file (str): PID file to use for the main daemon process.
-        controller_config (Config): controller config object.
-        controller_version (str): controller version (from the package metadata).
-        token (str): controller registration token.
-        host (str): PremiScale platform host.
-        cacert (str): Path to the certificate file (for use with self-signed certificates).
+        working_dir (str): the working directory of the daemon context.
+        controller_config (Config): 
 
     Returns:
         int: return code.
     """
     setproctitle('premiscale')
 
-    # Start the healthcheck API in a separate thread as a daemon.
+    # Start the healthcheck API in a separate thread off our main process as a daemon.
     _main_process_threads = [
         threading.Thread(
-            target=partial(healthcheck.run, host='127.0.0.1', port=8085, debug=True, use_reloader=False),
+            target=partial(
+                healthcheck.run,
+                host='127.0.0.1',
+                port=8085,
+                debug=True,
+                use_reloader=False
+            ),
             daemon=True
-        )
+        ),
     ]
 
     for thread in _main_process_threads:

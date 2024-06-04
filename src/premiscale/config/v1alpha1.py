@@ -4,7 +4,6 @@ Parse config files with the v1alpha1 config-parsing class.
 
 
 from typing import List
-from premiscale.config._config import Config
 from attrs import define
 
 import logging
@@ -13,6 +12,10 @@ import sys
 
 
 log = logging.getLogger(__name__)
+
+__all__ = [
+    'Config'
+]
 
 
 @define
@@ -135,10 +138,11 @@ class Controller:
 
 
 @define
-class V1Alpha1Config(Config):
+class Config:
     """
     Parse config files of version v1alpha1.
     """
+    version: str
     controller: Controller
 
 
