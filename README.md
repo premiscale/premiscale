@@ -14,7 +14,7 @@ See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffE
 
 ## Configuration
 
-The controller is configured in a couple ways, including its command line interface, environment variables (as indicated in the help text below), and through the required config file (all versions of which are documented [here](./src/premiscale/config/data/README.md) in this repository).
+The controller is configured in a couple ways, including its command line interface, environment variables (as indicated in the help text below), and through the required config file (all versions of which are documented [here](./src/premiscale/config/docs/README.md) in this repository).
 
 <!-- [[[cog
 import subprocess
@@ -28,19 +28,21 @@ usage: premiscale [-h] [--token TOKEN] [-c CONFIG] [--validate] [--version]
                   [--log-level {info,error,warn,debug}]
                   [--log-file LOG_FILE | --log-stdout]
 
-PremiScale autoscaler. © PremiScale, Inc. 2024
+PremiScale autoscaler.
+
+© PremiScale, Inc. 2024
 
 options:
   -h, --help            show this help message and exit
   --token TOKEN         Platform registration token. Also available as the
-                        environment variable 'PREMISCALE_TOKEN'. (default: )
+                        environment variable 'PREMISCALE_TOKEN'.
   -c CONFIG, --config CONFIG
                         Configuration file path to use. Also available as the
                         environment variable 'PREMISCALE_CONFIG_PATH'.
                         (default: /opt/premiscale/config.yaml)
   --validate            Validate the provided configuration file and exit.
-                        (default: False)
-  --version             Display controller version. (default: False)
+                        (default: false)
+  --version             Display controller version.
   --log-level {info,error,warn,debug}
                         Set the logging level. Also available as the
                         environment variable 'PREMISCALE_LOG_LEVEL'. (default:
@@ -50,10 +52,10 @@ options:
                         'PREMISCALE_LOG_FILE'. (default:
                         /opt/premiscale/controller.log)
   --log-stdout          Log to stdout (for use in containerized deployments).
-                        (default: False)
+                        (default: false)
 
 ```
-<!-- [[[end]]] (checksum: fb6a8e7153c7b4eb58ed9a46abf9d3c1) (checksum: ) -->
+<!-- [[[end]]] (checksum: ff66130d37122a72ac23b4e37df25567) (checksum: ) -->
 
 ## Installation
 
@@ -89,7 +91,7 @@ Connect to your development cluster of choice with kubectl access, followed by
 devspace
 ```
 
-This will bring up a development stack in a local or remote Kubernetes cluster of your choice. 
+This will bring up a development stack in a local or remote Kubernetes cluster of your choice.
 
 #### Minikube
 

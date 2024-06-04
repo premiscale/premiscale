@@ -6,7 +6,7 @@ On your hosts, create a new user with XXX permissions and generate a new set of 
 
 ## Configuration File
 
-The controller requires a user-provided config file in order to interact with hosts and virtual machines in your infrastructure. Please see the latest configuration file's [documentation](../../src/premiscale/config/data/README.md) and configure `controller.config` in the parameters below, accordingly.
+The controller requires a user-provided config file in order to interact with hosts and virtual machines in your infrastructure. Please see the latest configuration file's [documentation](../../src/premiscale/config/docs/README.md) and configure `controller.config` in the parameters below, accordingly.
 
 ## Parameters
 
@@ -35,12 +35,12 @@ The controller requires a user-provided config file in order to interact with ho
 | `deployment.labels`                    | Labels to be added to the deployment.                                        | `{}`                    |
 | `deployment.startupProbe`              | Configure the deployment's startup probe.                                    | `{}`                    |
 | `deployment.startupProbe.enabled`      | Enable or disable the startup probe.                                         | `false`                 |
-| `deployment.startupProbe.path`         | The startup probe endpoint's path.                                           | `/health`               |
+| `deployment.startupProbe.path`         | The startup probe endpoint's path.                                           | `/healthz`              |
 | `deployment.startupProbe.port`         | The startup probe endpoint's port.                                           | `8085`                  |
 | `deployment.startupProbe.config`       | Additional configuration for the startup probe.                              | `{}`                    |
 | `deployment.livenessProbe`             | Configure the deployment's liveness probe.                                   | `{}`                    |
 | `deployment.livenessProbe.enabled`     | Enable or disable the liveness probe.                                        | `false`                 |
-| `deployment.livenessProbe.path`        | The liveness probe endpoint's path.                                          | `/health`               |
+| `deployment.livenessProbe.path`        | The liveness probe endpoint's path.                                          | `/healthz`              |
 | `deployment.livenessProbe.port`        | The liveness probe endpoint's port.                                          | `8085`                  |
 | `deployment.livenessProbe.config`      | Additional configuration for the liveness probe.                             | `{}`                    |
 | `deployment.readinessProbe`            | Configure the deployment's readiness probe.                                  | `{}`                    |

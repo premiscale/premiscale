@@ -56,8 +56,8 @@ deployment:
     ## @param deployment.startupProbe.enabled [default: false] Enable or disable the startup probe.
     enabled: false
 
-    ## @param deployment.startupProbe.path [string, default: /health] The startup probe endpoint's path.
-    path: /health
+    ## @param deployment.startupProbe.path [string, default: /healthz] The startup probe endpoint's path.
+    path: /healthz
 
     ## @param deployment.startupProbe.port [default: 8085] The startup probe endpoint's port.
     port: 8085
@@ -70,8 +70,8 @@ deployment:
     ## @param deployment.livenessProbe.enabled [default: false] Enable or disable the liveness probe.
     enabled: false
 
-    ## @param deployment.livenessProbe.path [string, default: /health] The liveness probe endpoint's path.
-    path: /health
+    ## @param deployment.livenessProbe.path [string, default: /healthz] The liveness probe endpoint's path.
+    path: /healthz
 
     ## @param deployment.livenessProbe.port [default: 8085] The liveness probe endpoint's port.
     port: 8085

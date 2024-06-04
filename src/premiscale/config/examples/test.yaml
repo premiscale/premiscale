@@ -5,6 +5,19 @@ version: v1alpha1
 
 ## @param controller [object] Configure the controller, such as database connection criteria and how often to take certain controller-specific actions.
 controller:
+  ## @param controller.pidFile [string, default: /opt/premiscale/premiscale.pid] Path to the file where the controller daemon process writes its PID.
+  pidFile: /opt/premiscale/premiscale.pid
+
+  ## @param controller.healthcheck [object] Configure the healthcheck endpoint for the controller.
+  healthcheck:
+    ## @param controller.healthcheck.host [string, default: 127.0.0.1] The host to bind the healthcheck endpoint to.
+    host: 127.0.0.1
+
+    ## @param controller.healthcheck.port [default: 8085] The port to bind the healthcheck endpoint to.
+    port: 8085
+
+    ## @param controller.healthcheck.path [string, default: /healthz] The path to bind the healthcheck endpoint to.
+    path: /healthz
 
   ## @param contoller.databases [object] Configure the databases the controller uses to store state and metrics.
   databases:
@@ -91,38 +104,24 @@ controller:
   autoscale:
     ## @param autoscale.hosts [object] Groups of hosts to assign to ASGs.
     hosts:
-      discovery: 
-        enabled: false
-        interval: 60
-        # https://medium.com/@chapatwaladev/mastering-network-scanning-and-reconnaissance-with-python-and-nmap-bc869326cad1
-        mode: syn-scan
-        ports: 
-          - 22
-          - 6910
-        subnets:
-          - 10.0.0.0/24
-      
-      ## @param controller.autoscale.hosts.hostList [object] If controller.autoscale.hosts.discovery is false, you must specify hosts manually.
-      hostList:
-        - name: domain-1
-          address: domain-1
-          protocol: ssh
-          port: 22
-          hypervisor: kvm
-          resources:
-            io: 100
-            cpu: 2
-            memory: 96
-        - name: domain-2
-          address: domain-2
-          protocol: tls
-          port: 6910
-          hypervisor: kvm
-        - name: domain-3
-          address: domain-3
-          protocol: ssh
-          port: 22
-          hypervisor: kvm
+      - name: domain-1
+        address: domain-1
+        protocol: ssh
+        port: 22
+        hypervisor: kvm
+        resources:
+          cpu: 2
+          memory: 96
+      - name: domain-2
+        address: domain-2
+        protocol: tls
+        port: 6910
+        hypervisor: kvm
+      - name: domain-3
+        address: domain-3
+        protocol: ssh
+        port: 22
+        hypervisor: kvm
 
     ## @param controller.autoscale.groups [object] Specify and configure autoscaling groups on the hosts above.
     groups:
@@ -132,21 +131,20 @@ controller:
         image: root.qcow
 
         ## @param controller.autoscale.groups.asg-1.name [string] The name of the Libvirt domain to use as a template for VMs in this group.
-        name: template-ubuntu20.04-server
+        domainName: template-ubuntu20.04-server
 
         ## @param controller.autoscale.groups.asg-1.imageMigration [string, default: migrate] Options could be 'migrate' or 'centralized'. If set to migrate, the controller will copy the specified domain to every host, or, if centralized, the controller will not attempt to move the domain to every host a VM is created on.
-        imageMigration: migrate
+        imageMigrationType: migrate
 
-        cloud-init:
-          inline: |+
-            # Should contain an inline cloud-init script by which to customize VMs in this group, or you can
-            # specify a "file: "-keyword to read it from some location on-disk. All environment variables are
-            # evaluated and replaced before copying to hosts.
-          file: <path-to-file-instead>
+        cloudInit:
+          user_data: ''
+          meta_data: ''
+          network_data: ''
+          vendor_data: ''
 
         # Groups of hosts on which to provision VMs.
         hosts:
-          - group-1
+          - domain-1
 
         replacement:
           strategy: rollingUpdate
@@ -155,7 +153,7 @@ controller:
           maxSurge: 1
 
         networking:
-          # A static IP range or list of IPs should be given to a group.
+          # A static IP range or list of IPs that should be given to a group.
           type: dynamic
           addresses:
             - 192.168.5.2-192.168.5.254
@@ -164,8 +162,8 @@ controller:
 
         scaling:
           # maxNodes should not be larger than the number of IP addresses determined to be available in the range.
-          maxNodes: 10
-          minNodes: 3
+          max: 10
+          min: 3
           # Increment by up-to or down-by this many nodes any time a change is required to state. Limits how large of an action the ASG can make every cooldown period.
           increment: 1
           # Seconds, minutes or hours until another action can be taken once a change is made. Basically puts a pause on metrics reconciliation once an action has been taken.
@@ -178,15 +176,9 @@ controller:
           # vacancy: prioritize hosts with the most vacancy.
           method: vacancy
 
-          overProvision:
-            # Percentages to go over collected host max while scheduling host resources.
-            io: 0
-            cpu: 0
-            memory: 0
-
-          resourceTarget:
+          ## @param controller.autoscale.groups.asg-1.targetUtilization [object] The target utilization of the ASG before scaling up or down.
+          targetUtilization:
             # I need to work out how to determine percentages and such here. Disk IO isn't as straightforward. CPU could be based on VM load average? And memory could be based more-easily on a percentage.
-            io: 80
             cpu: 80
             memory: 80
       # asg-2: {}

@@ -98,7 +98,7 @@
                         "path": {
                             "type": "string",
                             "description": "The startup probe endpoint's path.",
-                            "default": "/health"
+                            "default": "/healthz"
                         },
                         "port": {
                             "type": "number",
@@ -118,7 +118,7 @@
                         "path": {
                             "type": "string",
                             "description": "The liveness probe endpoint's path.",
-                            "default": "/health"
+                            "default": "/healthz"
                         },
                         "port": {
                             "type": "number",

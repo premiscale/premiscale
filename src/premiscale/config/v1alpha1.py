@@ -1,10 +1,13 @@
 """
-Parse config files with the v1alpha1 config-parsing class.
+Parse v1alpha1 configuration files into a Config object with attrs and cattrs.
 """
 
 
-from typing import List
-from attrs import define
+from __future__ import annotations
+from typing import List, Dict
+from attrs import define, field
+from cattrs import structure as from_dict
+from ipaddress import IPv4Address as IPv4
 
 import logging
 import os
@@ -118,12 +121,133 @@ class Reconciliation:
 
 
 @define
+class Resources:
+    """
+    Resource configuration options.
+    """
+    cpu: int
+    memory: int
+
+
+@define
+class Host:
+    """
+    Host configuration options.
+    """
+    name: str
+    address: str
+    protocol: str
+    port: int
+    hypervisor: str
+    resources: Resources
+
+
+@define
+class CloudInit:
+    """
+    Cloud-init configuration options.
+    """
+    user_data: str
+    meta_data: str
+    network_data: str
+    vendor_data: str
+
+
+@define
+class HostReplacementStrategy:
+    """
+    Host replacement strategy configuration options.
+    """
+    strategy: str
+    maxUnavailable: int
+    maxSurge: int
+
+
+@define
+class Network:
+    """
+    Network configuration options.
+    """
+    dhcp: bool     # true, false
+    addressRange: str = field() # e.g., if dhcp is true, '192.168.1.2-192.168.1.59'
+    gateway: IPv4  # 192.168.1.1
+    netmask: IPv4  # 255.255.255.0
+    subnet: IPv4   # 192.168.1.0
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        if self.dhcp and self.addressRange is None:
+            log.error(f'Address range must be provided if DHCP is enabled.')
+            sys.exit(1)
+
+
+@define
+class ScaleStrategy:
+    """
+    Scale strategy configuration options.
+    """
+    min: int
+    max: int
+    desired: int
+    increment: int
+    cooldown: int
+    method: str
+    targetUtilization: Dict[str, int]
+
+
+@define
+class AutoscalingGroup:
+    """
+    Autoscale group configuration options.
+    """
+    image: str
+    domainName: str
+    imageMigrationType: str
+    cloudInit: CloudInit
+    hosts: List[Host]
+    replacement: HostReplacementStrategy
+    networking: Network
+    scaling: ScaleStrategy
+
+
+@define(frozen=False)
+class AutoscalingGroups:
+    """
+    Because keys are variable, we need to define a custom init method for autoscaling groups.
+    """
+
+    # https://www.attrs.org/en/stable/init.html#custom-init
+    def __init__(self, **kwargs: Dict[str, AutoscalingGroup]):
+        """
+        Initialize the AutoscalingGroup object with autoscaling keys.
+        """
+        for key, value in kwargs.items():
+            # This ends up being like,
+            # asg_1: AutoscalingGroup
+            # asg_2: AutoscalingGroup
+            # etc. But we don't know how many ASGs users will configure so we can't statically type the keys.
+            setattr(self, key, value)
+
+
+@define
 class Autoscale:
     """
     Autoscale configuration options.
     """
-    hosts: Domains
-    groups: List
+    hosts: List[Host]
+    groups: AutoscalingGroups
+
+
+@define
+class Healthcheck:
+    """
+    Healthcheck configuration options.
+    """
+    host: IPv4
+    port: int
+    path: str
 
 
 @define
@@ -135,6 +259,7 @@ class Controller:
     platform: Platform
     reconciliation: Reconciliation
     autoscale: Autoscale
+    healthcheck: Healthcheck
 
 
 @define
@@ -145,151 +270,15 @@ class Config:
     version: str
     controller: Controller
 
+    @classmethod
+    def from_dict(cls, config: dict):
+        """
+        Create a Config object from a dictionary.
 
-# class Config_v1alpha1(Config):
-#     """
-#     Class that encapsulates access methods and parsing config version v1alpha1.
-#     """
-
-#     # Top-level.
-
-#     def controller(self) -> Dict:
-#         """
-#         Get the controller config dict.
-
-#         Returns:
-#             Dict: the controller config dict.
-#         """
-#         return self.config['controller']
-
-#     def autoscale(self) -> Dict:
-#         """
-#         Get the autoscale config dict.
-
-#         Returns:
-#             Dict: _description_
-#         """
-#         return self.config['autoscaling']
-
-#     ## Secondary-level.
-
-#     def controller_daemon(self) -> Dict:
-#         """
-#         Get the daemon configuration options as a flat map.
-
-#         Returns:
-#             Dict: The daemon configuration options.
-#         """
-#         return self.controller()['daemon']
-
-#     def controller_databases(self) -> Dict:
-#         """
-#         Get the autoscaling databases configuration map.
-
-#         Returns:
-#             Dict: The autoscale.databases config map.
-#         """
-#         return self.controller()['databases']
-
-#     def autoscale_hosts(self) -> Dict:
-#         """
-#         Get the host groups list from the autoscaling map.
-
-#         Returns:
-#             Dict: The host groups list.
-#         """
-#         return self.autoscale()['hosts']
-
-#     def autoscale_groups(self) -> Dict:
-#         """
-#         Get the autoscaling groups list from the autoscaling map.
-
-#         Returns:
-#             Dict: The autoscaling groups list.
-#         """
-#         return self.autoscale()['groups']
-
-#     ### Databases
-
-#     #### state
-
-#     def controller_databases_state_connection(self) -> Dict:
-#         """
-#         Get the state database credentials (MySQL).
-
-#         Returns:
-#             Dict: MySQL configuration and credentials.
-#         """
-#         match (state := self.controller_databases()['state'])['type']:
-#             case 'mysql':
-#                 mysql_connect = state['connection']
-#                 return {
-#                     'type': 'mysql',
-#                     'url': os.path.expandvars(mysql_connect['url']),
-#                     'database': os.path.expandvars(mysql_connect['database']),
-#                     'username': os.path.expandvars(mysql_connect['credentials']['username']),
-#                     'password': os.path.expandvars(mysql_connect['credentials']['password'])
-#                 }
-#             case _:
-#                 log.error(f'State database type \'{state["type"]}\' unsupported')
-#                 sys.exit(1)
-
-#     def controller_databases_state_configuration(self) -> Dict:
-#         """
-#         Get the state database credentials (MySQL).
-
-#         Returns:
-#             Dict: MySQL configuration and credentials.
-#         """
-#         match (state := self.controller_databases()['state'])['type']:
-#             case 'mysql':
-#                 return {
-#                     'type': 'mysql',
-#                     'reconcile_interval': state['reconcileInterval']
-#                 }
-#             case _:
-#                 log.error(f'State database type \'{state["type"]}\' unsupported')
-#                 sys.exit(1)
-
-#     #### metrics
-
-#     def controller_databases_metrics_connection(self) -> Dict:
-#         """
-#         Get the metrics database credentials (InfluxDB).
-
-#         Returns:
-#             Dict: Metrics database credentials.
-#         """
-#         match (metrics := self.controller_databases()['metrics'])['type']:
-#             case 'influxdb':
-#                 influxdb_connect = metrics['connection']
-#                 return {
-#                     'type': 'influxdb',
-#                     'url': os.path.expandvars(influxdb_connect['url']),
-#                     'database': os.path.expandvars(influxdb_connect['database']),
-#                     'username': os.path.expandvars(influxdb_connect['credentials']['username']),
-#                     'password': os.path.expandvars(influxdb_connect['credentials']['password'])
-#                 }
-#             case _:
-#                 log.error(f'Metrics database type \'{metrics["type"]}\' unsupported')
-#                 sys.exit(1)
-
-#     def controller_databases_metrics_configuration(self) -> Dict:
-#         """
-#         Get the metrics database configuration (whereas the last method retrieved the credentials/auth data).
-
-#         Returns:
-#             Dict: configuration instead of credentials.
-#         """
-#         match (metrics := self.controller_databases()['metrics'])['type']:
-#             case 'influxdb':
-#                 return {
-#                     'type': 'influxdb',
-#                     'collection_interval': metrics['collectionInterval'],
-#                     'max_threads': metrics['maxThreads'],
-#                     'host_connection_timeout': metrics['hostConnectionTimeout'],
-#                     'trailing': metrics['trailing']
-#                 }
-#             case _:
-#                 log.error(f'Metrics database type \'{metrics["type"]}\' unsupported')
-#                 sys.exit(1)
+        Args:
+            config (dict): The config dictionary.
+        """
+        return from_dict(
+            config,
+            cls
+        )

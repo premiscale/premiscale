@@ -17,9 +17,8 @@ from multiprocessing.queues import Queue
 from typing import cast
 from setproctitle import setproctitle
 from daemon import DaemonContext, pidfile
-
 from premiscale.config.v1alpha1 import Config
-from premiscale.controller.platform import Platform, register
+from premiscale.controller.platform import Platform
 from premiscale.controller.autoscaling import ASG
 from premiscale.controller.metrics import Metrics
 from premiscale.controller.reconciliation import Reconcile
@@ -31,16 +30,18 @@ log = logging.getLogger(__name__)
 
 def start(
         working_dir: str,
-        controller_config: Config,
-        controller_version: str,
+        config: Config,
+        version: str,
         token: str
     ) -> int:
     """
-    Start our four daemon processes passing along relevant configuration.
+    Start our subprocesses and the healthcheck API for Docker and Kubernetes.
 
     Args:
-        working_dir (str): the working directory of the daemon context.
-        controller_config (Config): 
+        working_dir (str): working directory.
+        config (Config): controller config file as a Config object.
+        version (str): controller version.
+        token (str): controller token.
 
     Returns:
         int: return code.
@@ -87,21 +88,14 @@ def start(
         processes = [
             # Platform websocket connection subprocess. Maintains registration, connection and data stream -> premiscale platform).
             executor.submit(
-                Platform(
-                    registration=registration,
-                    version=controller_version,
-                    host=f'wss://{platform}',
+                Platform.register(
+                    version=version,
+                    host=f'wss://{config.controller.platform.host}',
                     path='agent/websocket',
-                    cacert=cacert
+                    cacert=config.controller.platform.cacert
                 ),
                 platform_message_queue
-            ) if (registration := register(
-                token=token,
-                version=controller_version,
-                host=f'https://{platform}',
-                path='agent/registration',
-                cacert=cacert
-            )) else None,
+            ),
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(

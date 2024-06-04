@@ -8,13 +8,12 @@ PremiScale autoscaler.
 from __future__ import annotations, absolute_import
 import sys
 import logging
-import os
 
 from pathlib import Path
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from premiscale.config.parse import initialize, validate, configparse
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from premiscale.config.parse import validate, configParse
 from premiscale.controller.daemon import start
-from premiscale.controller.utils import LogLevel
+from premiscale.utils import LogLevel
 from premiscale import env, version
 
 
@@ -26,7 +25,7 @@ def main() -> None:
     Set up the CLI for PremiScale autoscaler.
     """
     parser = ArgumentParser(
-        formatter_class=ArgumentDefaultsHelpFormatter,
+        formatter_class=RawDescriptionHelpFormatter,
         description=__doc__
     )
 
@@ -37,50 +36,35 @@ def main() -> None:
 
     parser.add_argument(
         '-c', '--config', type=str, default=env['PREMISCALE_CONFIG_PATH'],
-        help='Configuration file path to use. Also available as the environment variable \'PREMISCALE_CONFIG_PATH\'.'
+        help='Configuration file path to use. Also available as the environment variable \'PREMISCALE_CONFIG_PATH\'. (default: /opt/premiscale/config.yaml)'
     )
 
     parser.add_argument(
         '--validate', action='store_true',
-        help='Validate the provided configuration file and exit.'
+        help='Validate the provided configuration file and exit. (default: false)'
     )
-
-    # parser.add_argument(
-    #     '--platform', type=str, default='app.premiscale.com',
-    #     help='URL of the PremiScale platform. Also available as the environment variable \'PREMISCALE_PLATFORM\'.'
-    # )
 
     parser.add_argument(
         '--version', action='store_true',
         help='Display controller version.'
     )
 
-    # parser.add_argument(
-    #     '--pid-file', type=str, default='/opt/premiscale/premiscale.pid',
-    #     help='Pidfile name to use for the controller daemon. Also available as the environment variable \'PREMISCALE_PID_FILE\'.'
-    # )
-
     parser.add_argument(
-        '--log-level', default='info', choices=list(LogLevel), type=LogLevel.from_string,
-        help='Set the logging level. Also available as the environment variable \'PREMISCALE_LOG_LEVEL\'.'
+        '--log-level', default=env['PREMISCALE_LOG_LEVEL'], choices=list(LogLevel), type=LogLevel.from_string,
+        help='Set the logging level. Also available as the environment variable \'PREMISCALE_LOG_LEVEL\'. (default: info)'
     )
 
     log_group = parser.add_mutually_exclusive_group()
 
     log_group.add_argument(
         '--log-file', type=str, default='/opt/premiscale/controller.log',
-        help='Specify the file the service logs to if --log-stdout is not set. Also available as the environment variable \'PREMISCALE_LOG_FILE\'.'
+        help='Specify the file the service logs to if --log-stdout is not set. Also available as the environment variable \'PREMISCALE_LOG_FILE\'. (default: /opt/premiscale/controller.log)'
     )
 
     log_group.add_argument(
         '--log-stdout', action='store_true',
-        help='Log to stdout (for use in containerized deployments).'
+        help='Log to stdout (for use in containerized deployments). (default: false)'
     )
-
-    # parser.add_argument(
-    #     '--cacert', type=str, default='',
-    #     help='Path to the certificate file (for use with self-signed certificates). Also available as the environment variable \'PREMISCALE_CACERT\'.'
-    # )
 
     args = parser.parse_args()
 
@@ -114,8 +98,6 @@ def main() -> None:
     if args.validate:
         sys.exit(0 if validate(args.config)[1] else 1)
 
-    initialize(args.config)
-    config = configparse(args.config)
     log.info(f'Starting PremiScale controller v{version}')
 
     if (token := args.token) != '':
@@ -127,8 +109,8 @@ def main() -> None:
     sys.exit(
         start(
             working_dir='/opt/premiscale',
-            controller_config=config,
-            controller_version=version,
+            config=configParse(args.config),
+            version=version,
             token=token
         )
     )

@@ -21,7 +21,7 @@ def create_healthcheck_api(app: Flask) -> None:
         app (Flask): Flask app instance.
     """
 
-    @app.get('/healthcheck')
+    @app.get('/healthz')
     def healthcheck() -> Response:
         """
         Quick unauthenticated healthcheck endpoint.

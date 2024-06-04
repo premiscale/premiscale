@@ -2,6 +2,7 @@
 Methods relating to connecting to PremiScale's platform.
 """
 
+from __future__ import annotations
 import asyncio
 import logging
 import time
@@ -21,7 +22,7 @@ from urllib.error import URLError
 from http import HTTPStatus
 from setproctitle import setproctitle
 
-from premiscale.controller.utils import write_json, read_json
+from premiscale.utils import write_json, read_json
 
 
 log = logging.getLogger(__name__)
@@ -42,23 +43,25 @@ class RateLimitedError(Exception):
 
 def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0.25) -> Callable:
     """
-    A request retry decorator. If singledispatch becomes compatible with `typing`, it'd be cool to duplicate this
-    registering another dispatch on `f`, allowing us to remove a layer of function calls.
+    A request retry decorator that catches common exceptions and retries the wrapped function call.
 
     Args:
         retries: number of times to retry the wrapped function call. When `0`, retries indefinitely. (default: 0)
-        retry_delay: if retries is 0, this delay value is used between retries. (default: 1.0s)
-        ratelimit_buffer: a buffer to add to the delay when a rate limit is hit. (default: 0.25s)
+        retry_delay: if retries is 0, this delay value (in seconds) is used between retries. (default: 1.0)
+        ratelimit_buffer: a buffer (in seconds) to add to the delay when a rate limit is hit. (default: 0.25)
 
     Returns:
         Either the result of a successful function call (be it via retrying or not).
+
+    Raises:
+        ValueError: if `retries` is less than 0.
     """
     if retries < 0:
         raise ValueError(f'Expected positive `retries` values, received: "{retries}"')
 
-    def _f(f: Callable) -> Callable:
+    def decorator(f: Callable) -> Callable:
         @wraps(f)
-        def new_f(*args: Any, **kwargs: Any) -> Dict | None:
+        def wrapper(*args: Any, **kwargs: Any) -> Dict | None:
             res: Any = None
 
             def call() -> Dict[str, str] | None:
@@ -80,7 +83,7 @@ def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0
                     if (res := call()) is not None:
                         return res
                 else:
-                    log.error(f'Could not register controller with platform, retry attempt limit exceeded.')
+                    log.error(f'Retry attempt limit exceeded.')
                     return None
             else:
                 # Infinite retries.
@@ -89,76 +92,8 @@ def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0
 
                 return res
 
-        return new_f
-    return _f
-
-
-@retry()
-def register(
-    token: str,
-    version: str,
-    host: str,
-    path: str = '/agent/registration',
-    cacert: str = ''
-) -> Dict[str, str] | None:
-    """
-    Make a request to the registration service.
-
-    Args:
-        token (str): registration API token.
-        version (str): agent version.
-        host (str): platform domain.
-        path (str): endpoint to hit at the platform domain.
-        cacert (str): path to the CA certificate file, if provided.
-
-    Returns:
-        Dict[str, str] | None: registration service response, or an empty dict if the registration was not successful.
-
-    Raises:
-        RateLimitedError: if the request is rate limited.
-    """
-    platform_url = urljoin(host, path)
-
-    if token == '':
-        log.warning('No registration token provided, starting controller in standalone mode')
-        return {}
-
-    # If the controller has already registered, skip the registration request.
-    if (registration_response := read_json('registration.json')) is not None:
-        log.info('Agent already registered with platform. Skipping agent registration request.')
-        return registration_response
-
-    try:
-        response = requests.post(
-            url=platform_url,
-            data=json.dumps({
-                'version': version,
-                'type': 'agent',
-                'registration_key': token
-            }),
-            headers={
-                # 'Authorization': header,
-                'Content-Type': 'application/json'
-            },
-            verify=cacert
-        )
-    except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
-        log.error(f'Could not verify SSL certificate: {msg}. Skipping registration.')
-        return None
-
-    try:
-        registration_response = response.json()
-        log.info(f'Registration response: {json.dumps(registration_response)}')
-        write_json(registration_response, 'registration.json')
-        return registration_response
-    except json.JSONDecodeError:
-        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
-            raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000)
-        else:
-            log.error(
-                f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
-            )
-            return None
+        return wrapper
+    return decorator
 
 
 class Platform:
@@ -171,16 +106,16 @@ class Platform:
         registration (Dict[str, str]): registration response from the registration service.
         version (str): controller version.
         host (str): platform host.
-        path (str): path to the websocket endpoint.
+        wspath (str): path to the websocket endpoint.
         cacert (str): path to the certificate file (for use with self-signed certificates).
     """
     def __init__(self,
                  registration: Dict[str, str],
                  version: str,
                  host: str = 'app.premiscale.com',
-                 path: str = '/agent/websocket',
+                 wspath: str = '/agent/websocket',
                  cacert: str = '') -> None:
-        self.host = urljoin(host, path)
+        self.host = urljoin(host, wspath)
         self.version = version
         self._registration = registration
         self._cacert = cacert
@@ -188,6 +123,92 @@ class Platform:
         self._queue: Queue
         self._received_platform_messages: asyncio.Queue = asyncio.Queue()
         self._websocket: ws.WebSocketClientProtocol
+
+    @classmethod
+    @retry()
+    def register(
+            cls,
+            token: str,
+            version: str,
+            host: str,
+            registration_path: str = '/agent/registration',
+            websocket_path: str = '/agent/websocket',
+            cacert: str = ''
+        ) -> 'Platform' | None:
+        """
+        Register the controller with the PremiScale platform before starting this process. If registration fails, this
+        classmethod returns None to the upstream caller.
+
+        Args:
+            token (str): registration API token.
+            version (str): agent version.
+            host (str): platform domain.
+            registration_path (str): path to the registration endpoint.
+            websocket_path (str): path to the controller websocket endpoint.
+            cacert (str): path to the CA certificate file, if provided.
+
+        Returns:
+            Dict[str, str] | None: registration service response, or an empty dict if the registration was not successful.
+
+        Raises:
+            RateLimitedError: if the request is rate limited.
+        """
+
+        # If the controller has already registered, skip the registration request.
+        if (cached_registration_response := read_json('registration.json')) is not None and cached_registration_response.get('host') == host:
+            log.info(f'Agent already registered with PremiScale platform at "{host}". Skipping controller registration request.')
+        else:
+            # If no token is provided and a cached registration response is not found, simply start the controller
+            # in standalone mode for development purposes.
+            if token == '':
+                log.warning('No registration token provided, starting controller in standalone mode')
+                return None
+
+            try:
+                response = requests.post(
+                    url=urljoin(
+                        host,
+                        registration_path
+                    ),
+                    data=json.dumps({
+                        'version': version,
+                        'type': 'agent',
+                        'registration_key': token
+                    }),
+                    headers={
+                        # 'Authorization': header,
+                        'Content-Type': 'application/json'
+                    },
+                    verify=cacert
+                )
+
+                registration_response = json.loads(response.json())
+
+                log.debug(f'Registration response: {registration_response}')
+
+                # Append the host used to make the registration request to the registration response and write it to disk.
+                registration_response['host'] = host
+                write_json(registration_response, 'registration.json')
+            except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
+                log.error(f'Could not verify SSL certificate: {msg}. Skipping registration.')
+                return None
+            except json.JSONDecodeError:
+                if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                    # Kick a RateLimitedError exception to the retry decorator to attempt the request again.
+                    raise RateLimitedError(delay=float(response.headers['x-rate-limit-reset']) / 1_000)
+                else:
+                    log.error(
+                        f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
+                    )
+                    return None
+
+        return cls(
+            registration=registration_response,
+            version=version,
+            host=host,
+            wspath=websocket_path,
+            cacert=cacert
+        )
 
     def __call__(self, platform_queue: Queue) -> None:
         setproctitle('platform')
