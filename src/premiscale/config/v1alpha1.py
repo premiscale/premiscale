@@ -30,6 +30,19 @@ class DatabaseCredentials:
     username: str
     password: str
 
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        self.expand()
+
+    def expand(self):
+        """
+        Expand environment variables in the database credentials.
+        """
+        self.username = os.path.expandvars(self.username)
+        self.password = os.path.expandvars(self.password)
+
 
 @define
 class Connection:
@@ -52,8 +65,6 @@ class Connection:
         """
         self.url = os.path.expandvars(self.url)
         self.database = os.path.expandvars(self.database)
-        self.credentials.username = os.path.expandvars(self.credentials.username)
-        self.credentials.password = os.path.expandvars(self.credentials.password)
 
 
 @define
@@ -128,9 +139,8 @@ class Platform:
         """
         Expand environment variables in the platform configuration.
         """
-        self.platform = os.path.expandvars(self.platform)
+        self.domain = os.path.expandvars(self.domain)
         self.token = os.path.expandvars(self.token)
-        self.cacert = os.path.expandvars(self.cacert)
 
 
 @define

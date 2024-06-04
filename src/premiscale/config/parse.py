@@ -11,6 +11,7 @@ import sys
 from typing import Union, Tuple
 from pathlib import Path
 from importlib import resources
+from cattrs import unstructure
 from premiscale.config.v1alpha1 import Config
 
 
@@ -49,7 +50,7 @@ def configParse(config: str) -> Config:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)
 
-    log.debug(f'Successfully parsed config version {_config.version}: {_config.to_dict()}')
+    log.debug(f'Successfully parsed config version {_config.version}: {unstructure(_config)}')
     return _config
 
 

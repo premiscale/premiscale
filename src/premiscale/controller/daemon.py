@@ -90,9 +90,9 @@ def start(
             executor.submit(
                 Platform.register(
                     version=version,
-                    host=f'wss://{config.controller.platform.host}',
+                    host=f'wss://{config.controller.platform.domain}',
                     path='agent/websocket',
-                    cacert=config.controller.platform.cacert
+                    cacert=config.controller.platform.certificates.path
                 ),
                 platform_message_queue
             ),

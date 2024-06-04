@@ -31,7 +31,7 @@ def main() -> None:
 
     parser.add_argument(
         '--token', type=str, default=env['PREMISCALE_TOKEN'],
-        help='Platform registration token. Also available as the environment variable \'PREMISCALE_TOKEN\'.'
+        help='Platform registration token. Also available as the environment variable \'PREMISCALE_TOKEN\'. If no token is provided, the controller will not register with the platform and start in standalone mode.'
     )
 
     parser.add_argument(

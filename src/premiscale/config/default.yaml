@@ -19,9 +19,7 @@ controller:
     ## @param controller.healthcheck.path [string, default: /healthz] The path to bind the healthcheck endpoint to.
     path: /healthz
 
-  ## @param contoller.databases [object] Configure the databases the controller uses to store state and metrics.
   databases:
-    ## @param controller.databases.state [object] State is where the ASGs' current state as of the (latest reconciliation loop execution) is stored so it can be queried without making additional calls through libvirt.
     state:
       ## @param controller.databases.state.type [string, default: memory] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
       type: memory
@@ -29,10 +27,6 @@ controller:
       ## @param controller.databases.state.collectionInterval [default: 60] How often the agent collects metrics and stores them in the database.
       collectionInterval: 60
 
-      ## @param controller.databases.state.connection [object] Connection details for the state database. If type 'memory' is used, this is ignored.
-      connection: {}
-
-    ## @param controller.databases.metrics [object] How often metrics collection is performed from every host.
     metrics:
       ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
       type: memory
@@ -48,9 +42,6 @@ controller:
 
       ## @param controller.databases.metrics.trailing [default: 1200] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes
       trailing: 1200
-
-      ## @param controller.databases.metrics.connection [object] Connection details for the metrics database. If type 'memory' is used, this is ignored.
-      connection: {}
 
   ## @param controller.platform [object] Configure the platform
   platform:

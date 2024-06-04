@@ -69,8 +69,8 @@ COPY src/ ./src/
 COPY README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
 
 # Install and initialize PremiScale.
-RUN mkdir -p "$HOME"/.local/bin \
-    && curl -sSL https://install.python-poetry.org | python3 -
+RUN mkdir -p "$HOME"/.local/bin
+RUN curl -sSL https://install.python-poetry.org | python3 -
 RUN poetry install --without=dev \
     && poetry run premiscale --version
 
