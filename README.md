@@ -1,10 +1,10 @@
 # PremiScale
 
-PremiScale is a controller that brings autoscaling of virtual infrastructure to loca, self-hosted and private datacenters, with a particular focus on integrating with the Kubernetes [autoscaler](https://github.com/kubernetes/autoscaler).
+PremiScale is a controller that brings autoscaling of virtual infrastructure to local, self-hosted and private datacenters, with a particular focus on integrating with the Kubernetes cluster [autoscaler](https://github.com/kubernetes/autoscaler).
 
 ## Architecture
 
-PremiScale is a controller that administers hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a very flexible open source hypervisor API.
+PremiScale is a controller that administers hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a very flexible open source hypervisor API and daemon that runs on hosts.
 
 See the [architecture diagram](https://drive.google.com/file/d/1hjwaMVQESdU2KffEJ4FpWDC1hjVHCLZX/view?usp=sharing) for PremiScale, or check out the diagram below, for an overview of just the controller.
 
