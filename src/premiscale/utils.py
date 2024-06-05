@@ -3,6 +3,8 @@ Controller utils.
 """
 
 
+from __future__ import annotations
+
 import sys
 import logging
 import json
@@ -24,7 +26,7 @@ class LogLevel(Enum):
         return self.name
 
     @classmethod
-    def from_string(cls, s: str) -> 'LogLevel':
+    def from_string(cls, s: str) -> LogLevel:
         """
         Convert a string to the enum value.
 
@@ -46,7 +48,8 @@ def validate_port(number: str | int, port_name: str | None = None) -> int:
     Validates port number as a string or int.
 
     Args:
-        number (Union[int, str]): the port number as either an int or a str.
+        number (str | int): the port number as either an int or a str.
+        port_name (str | None): the name of the port (to use in error messages).
 
     Returns:
         int: the port number, if it passes all checks.
@@ -94,7 +97,7 @@ def read_json(path: str) -> dict | None:
         path (str): the path to the JSON file.
 
     Returns:
-        dict: the data from the JSON file.
+        dict | None: the data from the JSON file, or None if the file does not exist.
     """
     try:
         if Path(path).exists():

@@ -59,7 +59,7 @@ RUN mkdir -p "$HOME"/.local/bin \
     && premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "premiscale --log-stdout --daemon" ]
+CMD [ "bash", "-c", "premiscale --log-stdout" ]
 
 ## Development image
 
@@ -69,10 +69,10 @@ COPY src/ ./src/
 COPY README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
 
 # Install and initialize PremiScale.
-RUN mkdir -p "$HOME"/.local/bin \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry install \
+RUN mkdir -p "$HOME"/.local/bin
+RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN poetry install --without=dev \
     && poetry run premiscale --version
 
 ENTRYPOINT [ "/tini", "--" ]
-CMD [ "bash", "-c", "poetry run premiscale --log-stdout --log-level=${PREMISCALE_LOG_LEVEL} --daemon --cacert=${PREMISCALE_CACERT} --platform ${PREMISCALE_PLATFORM}" ]
+CMD [ "bash", "-c", "poetry run premiscale --log-stdout --log-level=${PREMISCALE_LOG_LEVEL}" ]

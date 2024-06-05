@@ -82,6 +82,10 @@ spec:
                 secretKeyRef:
                   key: {{ .Values.controller.registration.key }}
                   name: {{ .Values.controller.registration.secretName }}
+            - name: PREMISCALE_PLATFORM
+              value: {{ .Values.controller.platform.domain }}
+            - name: PREMISCALE_CACERT
+              value: {{ .Values.controller.platform.certificates.path }}
             # - name: CONTROLLER_HOST_SSH_PRIVATE_KEY
             #   {{- with .Values.controller.ssh }}
             #     {{- if .createSecret }}

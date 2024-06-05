@@ -21,13 +21,13 @@ def create_healthcheck_api(app: Flask) -> None:
         app (Flask): Flask app instance.
     """
 
-    @app.get('/healthcheck')
+    @app.get('/healthz')
     def healthcheck() -> Response:
         """
         Quick unauthenticated healthcheck endpoint.
 
         Returns:
-            dict: an object with schema like
+            Response: an object with schema like
 
             {
                 "status": "OK"
@@ -47,7 +47,7 @@ def create_healthcheck_api(app: Flask) -> None:
         Quick unauthenticated ready endpoint.
 
         Returns:
-            dict: an object with schema like
+            Response: an object with schema like
 
             {
                 "status": "OK"

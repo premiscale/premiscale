@@ -1,14 +1,25 @@
 version: enum('v1alpha1')
+controller: include('controller')
+---
+## controller has 5 top-level keys that roughly correspond to the 4 subprocesses and any threads that are spawned.
 controller:
-  platform: include('platform')
+  healthcheck: include('healthcheck')
   databases: include('databases')
+  platform: include('platform')
+  reconciliation: include('reconciliation')
+  autoscale: include('autoscale')
+---
+healthcheck:
+  host: str(min=1)
+  port: int(min=1, max=65535)
+  path: str(min=1)
+---
+reconciliation:
+  interval: int(min=5)
+---
 autoscale:
   hosts: include('hosts')
   groups: include('groups')
----
-platform:
-  actionsQueueMax: int(min=0)
-  domain: str(min=1)
 ---
 databases:
   state: include('state')
@@ -26,6 +37,12 @@ metrics:
   collectionInterval: int(min=5)
   hostConnectionTimeout: int(min=1)
   maxThreads: int(min=0)
+---
+platform:
+  host: str(min=1)
+  token: str(min=1)
+  cacert: str()
+  actionsQueueMaxSize: int(min=0)
 ---
 connection:
   url: str(min=1)
@@ -71,10 +88,8 @@ group:
     minNodes: int(min=0)
     increment: int(min=0)
     cooldown: int(min=0)
-    overProvision: include('resources')
     resourceTarget: include('resources')
 ---
 resources:
   cpu: int(min=0, max=100)
   memory: int(min=0, max=100)
-  io: int(min=0, max=100)

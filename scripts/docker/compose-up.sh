@@ -11,4 +11,8 @@ if [ ! -d "certs/" ]; then
 fi
 
 # docker compose build -f compose.yaml --no-cache
+COMPOSE_DOCKER_CLI_BUILD=1
+DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD DOCKER_BUILDKIT
+
 docker compose -f compose.yaml up -d --build premiscale platform echoes registration

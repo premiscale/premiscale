@@ -2,6 +2,9 @@
 Methods for interacting with the MySQL database.
 """
 
+
+from __future__ import annotations
+
 import logging
 
 from sqlmodel import Field, Session, SQLModel, create_engine
@@ -33,7 +36,7 @@ class MySQL(State):
         """
         return self._connection is not None
 
-    def open(self) -> 'MySQL':
+    def open(self) -> None:
         """
         Open a connection to the MySQL database.
         """
@@ -45,7 +48,6 @@ class MySQL(State):
         # )
         self._username = ''
         self._password = ''
-        return self
 
     def close(self) -> None:
         """
