@@ -3,6 +3,8 @@ Define actions the agent can take against infrastructure.
 """
 
 
+from __future__ import annotations
+
 import enum
 
 from typing import Any
@@ -48,7 +50,7 @@ class Action(ABC):
         Return a dictionary (JSON) object containing audit data about the action taken.
 
         Returns:
-            _type_: _description_
+            dict: generates an audit trail message based on what occurred with the Action's execution.
         """
         return {}
 
@@ -57,11 +59,11 @@ class Action(ABC):
         Return the type of action.
 
         Returns:
-            str: _description_
+            Verb: the type of action.
         """
         return self.action
 
-    def __enter__(self) -> 'Action':
+    def __enter__(self) -> Action:
         return self
 
     def __exit__(self, *args: Any) -> None:

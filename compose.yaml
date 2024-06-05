@@ -44,7 +44,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
     healthcheck:
-      test: curl http://localhost:8085/healthz
+      test: premiscale status
       start_period: 3s
       interval: 5s
       timeout: 5s

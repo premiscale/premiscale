@@ -251,9 +251,6 @@ class AutoscalingGroups:
 
     # https://www.attrs.org/en/stable/init.html#custom-init
     def __init__(self, **kwargs: Dict[str, AutoscalingGroup]):
-        """
-        Initialize the AutoscalingGroup object with autoscaling keys.
-        """
         for key, value in kwargs.items():
             # This ends up being like,
             # asg_1: AutoscalingGroup
@@ -278,14 +275,14 @@ class Healthcheck:
     """
     host: str
     port: int
-    path: str
-
 
 @define
 class Controller:
     """
     Controller configuration options.
     """
+    mode: str
+    pidFile: str
     databases: Databases
     platform: Platform
     reconciliation: Reconciliation
@@ -302,12 +299,15 @@ class Config:
     controller: Controller
 
     @classmethod
-    def from_dict(cls, config: dict):
+    def from_dict(cls, config: dict) -> Config:
         """
         Create a Config object from a dictionary.
 
         Args:
             config (dict): The config dictionary.
+
+        Returns:
+            Config: The Config object.
         """
         return from_dict(
             config,

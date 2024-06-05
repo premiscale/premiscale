@@ -8,7 +8,7 @@ import yaml
 import logging
 import sys
 
-from typing import Union, Tuple
+from typing import Tuple
 from pathlib import Path
 from importlib import resources
 from cattrs import unstructure
@@ -24,16 +24,16 @@ __all__ = [
 ]
 
 
-def configParse(config: str) -> Config:
+def configParse(config: str, validate: bool = True) -> Config:
     """
     Parse a config file and return it as a Config-object. Optionally validate types and structure against the Yamale schema.
 
     Args:
         config (str): path to the config file.
-        check (bool): whether or not to validate the provided config file.
+        validate (bool): whether or not to validate the provided config file. (default: True)
 
     Returns:
-        dict: The parsed config file.
+        Config: The parsed config file.
     """
     # Drop a default config for parsing.
     if not Path(config).exists():
@@ -46,11 +46,19 @@ def configParse(config: str) -> Config:
                     f.read().rstrip()
                 )
             )
+
+            # if validate:
+            #     msg, valid = validate(unstructure(_config))
+            #     if not valid:
+            #         log.error(f'Config file failed validation: {msg}')
+            #         sys.exit(1)
+
         except (yaml.YAMLError, ValueError, KeyError) as e:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)
 
     log.debug(f'Successfully parsed config version {_config.version}: {unstructure(_config)}')
+
     return _config
 
 
@@ -59,12 +67,12 @@ def validate(data: dict, schema: str = 'schema.yaml', strict: bool = True) -> Tu
     Validate users' config files against our schema.
 
     Args:
-        config: config file path/name to validate against the schema.
-        schema: schema file to use with config validation.
-        strict: whether or not to use strict mode on yamale.
+        data (dict): config file path/name to validate against the schema.
+        schema (str): schema file to use with config validation. (default: 'schema.yaml')
+        strict (bool): whether or not to use strict mode on yamale. (default: True)
 
     Returns:
-        bool: Whether or not the config conforms to our expected schema.
+        Tuple[str, bool]: a tuple containing the error message and a boolean indicating if the config is valid.
     """
     try:
         with resources.open_text('premiscale.config.schemas', schema) as schema_f:
@@ -80,15 +88,13 @@ def validate(data: dict, schema: str = 'schema.yaml', strict: bool = True) -> Tu
         return str(msg), False
 
 
-def makeDefaultConfig(path: Union[str, Path], default_config: Union[str, Path] = 'default.yaml') -> None:
+def makeDefaultConfig(path: str | Path, default_config: str | Path = 'default.yaml') -> None:
     """
     Make a default config file if one does not exist.
 
     Args:
-        path (Union[str, Path]): The default location to create an autoscale configuration file, if it doesn't exist.
-
-    Raises:
-        PermissionError: If the daemon doesn't have the required permissions to create the default conf.
+        path (str | Path): The default location to create an autoscale configuration file, if it doesn't exist.
+        default_config (str | Path): The default config file to use when creating a new config file. (default: 'default.yaml')
     """
     try:
         if not Path.exists(Path(path).parent):

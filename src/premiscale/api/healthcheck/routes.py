@@ -27,7 +27,7 @@ def create_healthcheck_api(app: Flask) -> None:
         Quick unauthenticated healthcheck endpoint.
 
         Returns:
-            dict: an object with schema like
+            Response: an object with schema like
 
             {
                 "status": "OK"
@@ -47,7 +47,7 @@ def create_healthcheck_api(app: Flask) -> None:
         Quick unauthenticated ready endpoint.
 
         Returns:
-            dict: an object with schema like
+            Response: an object with schema like
 
             {
                 "status": "OK"

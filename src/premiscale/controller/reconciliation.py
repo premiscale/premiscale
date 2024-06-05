@@ -4,8 +4,8 @@ import time
 from multiprocessing.queues import Queue
 from setproctitle import setproctitle
 from premiscale.config.v1alpha1 import Config
-from premiscale.controller.metrics import build_metrics
-from premiscale.controller._state import build_state
+from premiscale.metrics import build_metrics
+from premiscale.state import build_state
 
 
 log = logging.getLogger(__name__)

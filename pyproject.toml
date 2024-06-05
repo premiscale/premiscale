@@ -44,6 +44,7 @@ pylint = "^3.0.0"
 pre-commit = "^3.0.0"
 cogapp = "^3.4.1"
 mypy = "^1.10.0"
+pydoclint = "^0.4.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -56,6 +57,10 @@ premiscale = "premiscale.cli:main"
 python_version = "3.10"
 strict_optional = true
 ignore_missing_imports = true
+
+[tool.pydoclint]
+style = "google"
+require-return-section-when-returning-nothing = false
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = "invalid-name,wrong-import-order,superfluous-parens,line-too-long,missing-final-newline,logging-fstring-interpolation,too-many-instance-attributes,unused-argument,unused-import"

@@ -3,10 +3,19 @@ version: v1alpha1
 
 ## @section Controller Configuration
 
-## @param controller [object] Configure the controller, such as database connection criteria and how often to take certain controller-specific actions.
 controller:
   ## @param controller.pidFile [string, default: /opt/premiscale/premiscale.pid] Path to the file where the controller daemon process writes its PID.
   pidFile: /opt/premiscale/premiscale.pid
+
+  ## @param controller.mode [string, default: kubernetes] The mode of the controller. Can be 'kubernetes' or 'standalone'. If 'standalone', the controller will not attempt to connect to a Kubernetes cluster autoscaler. If 'kubernetes', the controller will attempt to connect to the Kubernetes cluster autoscaler.
+  mode: kubernetes
+
+  kubernetes:
+    ## @param controller.kubernetes.autoscalerPort [default: 8080] The port on which the Kubernetes autoscaler is listening.
+    autoscalerPort: 8085
+
+    ## @param controller.kubernetes.autoscalerHost [string, default: cluster-autoscaler] The host on which the Kubernetes autoscaler is running. See also the cluster autoscaler Helm chart: https://github.com/premiscale/kubernetes-autoscaler/tree/master/charts/cluster-autoscaler.
+    autoscalerHost: cluster-autoscaler
 
   ## @param controller.healthcheck [object] Configure the healthcheck endpoint for the controller.
   healthcheck:
@@ -15,9 +24,6 @@ controller:
 
     ## @param controller.healthcheck.port [default: 8085] The port to bind the healthcheck endpoint to.
     port: 8085
-
-    ## @param controller.healthcheck.path [string, default: /healthz] The path to bind the healthcheck endpoint to.
-    path: /healthz
 
   databases:
     state:
@@ -68,7 +74,7 @@ controller:
   ## @section Autoscaling Configuration
 
   autoscale:
-    ## @param autoscale.hosts [object, default: []] Groups of hosts to assign to ASGs.
+    ## @param controller.autoscale.hosts [array] Groups of hosts to assign to ASGs.
     hosts: []
 
     ## @param controller.autoscale.groups [object] Specify and configure autoscaling groups on the hosts above.

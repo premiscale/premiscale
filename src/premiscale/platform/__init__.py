@@ -21,7 +21,8 @@ from urllib.parse import urljoin
 from http import HTTPStatus
 from setproctitle import setproctitle
 from premiscale.exceptions import RateLimitedError
-from premiscale.utils import write_json, read_json, retry
+from premiscale.utils import write_json, read_json
+from premiscale.platform.utils import retry
 
 
 log = logging.getLogger(__name__)
@@ -40,9 +41,13 @@ class Platform:
         wspath (str): path to the websocket endpoint.
         cacert (str): path to the certificate file (for use with self-signed certificates).
     """
-    def __init__(self, registration: Dict[str, str], version: str, host: str = 'app.premiscale.com',
-                 wspath: str = '/agent/websocket',
-                 cacert: str = '') -> None:
+    def __init__(self,
+            registration: Dict[str, str],
+            version: str,
+            host: str = 'app.premiscale.com',
+            wspath: str = '/agent/websocket',
+            cacert: str = ''
+        ) -> None:
 
         self.host = urljoin(
             f'wss://{host}',
@@ -67,7 +72,7 @@ class Platform:
             registration_path: str = '/agent/registration',
             websocket_path: str = '/agent/websocket',
             cacert: str = ''
-        ) -> 'Platform' | None:
+        ) -> Platform | None:
         """
         Register the controller with the PremiScale platform before starting this process. If registration fails, this
         classmethod returns None to the upstream caller.
@@ -81,7 +86,7 @@ class Platform:
             cacert (str): path to the CA certificate file, if provided.
 
         Returns:
-            Dict[str, str] | None: registration service response, or an empty dict if the registration was not successful.
+            Platform | None: registration service response, or an empty dict if the registration was not successful.
 
         Raises:
             RateLimitedError: if the request is rate limited.

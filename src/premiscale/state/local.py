@@ -3,6 +3,8 @@ Methods for interacting with the in-memory database.
 """
 
 
+from __future__ import annotations
+
 import logging
 import sqlite3
 
@@ -17,7 +19,7 @@ class Local(State):
     Implement a high-level interface to an in-memory state database.
     """
     def __init__(self) -> None:
-        # url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
+        # sqlite3.connect("file::memory:?cache=shared")
         # self.url = url
 
         # self.database = database
@@ -34,7 +36,7 @@ class Local(State):
         """
         return self._connection is not None
 
-    def open(self) -> 'Local':
+    def open(self) -> None:
         """
         Open a connection to the MySQL database.
         """
@@ -46,7 +48,6 @@ class Local(State):
         # )
         self._username = ''
         self._password = ''
-        return self
 
     def close(self) -> None:
         """

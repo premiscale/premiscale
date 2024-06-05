@@ -3,8 +3,16 @@ ABCs for state storage methods.
 """
 
 
+from __future__ import annotations
+
+import logging
+
 from typing import Any
 from abc import ABC
+from setproctitle import setproctitle
+
+
+log = logging.getLogger(__name__)
 
 
 class State(ABC):
@@ -12,11 +20,16 @@ class State(ABC):
     An abstract base class with a skeleton interface for state class types.
     """
 
-    ## Boilerplate
+    def __call__(self) -> None:
+        setproctitle('state')
+        log.debug('Starting state subprocess')
 
-    def open(self) -> 'State':
+    def open(self) -> None:
         """
         Open a connection to the state backend these methods interact with.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -25,16 +38,22 @@ class State(ABC):
         Close the connection to the state backend.
 
         This method should also dereference any secrets that may be stored in memory.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
     def commit(self) -> None:
         """
-        Commit any changes.
+        Commit any changes to the database.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
-    def __enter__(self) -> 'State':
+    def __enter__(self) -> State:
         self.open()
         return self
 
@@ -53,6 +72,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -65,6 +87,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -74,6 +99,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -89,6 +117,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -102,6 +133,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -114,6 +148,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -128,6 +165,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -140,6 +180,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -153,6 +196,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -166,6 +212,9 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -178,5 +227,8 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
