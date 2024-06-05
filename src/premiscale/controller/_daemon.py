@@ -1,5 +1,6 @@
 """
-Define subprocesses and any main-process threads for the controller.
+This module is responsible for starting relevant subprocesses and main-process threads based on how the
+controller is configured. It also starts the healthcheck API for Docker and Kubernetes.
 """
 
 
@@ -8,8 +9,8 @@ import multiprocessing as mp
 import logging
 import signal
 import sys
-import concurrent
 import os
+import concurrent
 import threading
 
 from functools import partial
@@ -88,29 +89,31 @@ def start(
                     token=token,
                     host=config.controller.platform.domain,
                     websocket_path='agent/websocket',
-                    registration_path='agent/register',
+                    registration_path='agent/registration',
                     cacert=config.controller.platform.certificates.path
                 ),
                 platform_message_queue
             ),
 
-            # Autoscaling controller subprocess (works on Actions in the ASG queue)
-            executor.submit(
-                ASG(config),
-                autoscaling_action_queue
-            ),
+            # # Autoscaling controller subprocess (works on Actions in the ASG queue)
+            # executor.submit(
+            #     ASG(config),
+            #     autoscaling_action_queue
+            # ),
 
-            # Host metrics collection subprocess (populates metrics database)
-            executor.submit(
-                MetricsCollector(config)
-            ),
+            # kubernetes.interface - for the cluster autoscaler API.
 
-            # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
-            executor.submit(
-                Reconcile(config),
-                autoscaling_action_queue,
-                platform_message_queue
-            )
+            # # Host metrics collection subprocess (populates metrics database)
+            # executor.submit(
+            #     MetricsCollector(config)
+            # ),
+
+            # # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
+            # executor.submit(
+            #     Reconcile(config),
+            #     autoscaling_action_queue,
+            #     platform_message_queue
+            # )
         ]
 
         for _dthread in _main_process_threads:

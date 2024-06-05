@@ -122,15 +122,21 @@ class Platform:
                     log.error(f'Failed to register with PremiScale platform: {response.text}')
                     return None
 
-                registration_response = json.loads(response.json())
+                registration_response = response.json()
 
                 log.debug(f'Registration response: {registration_response}')
 
-                # Append the host used to make the registration request to the registration response and write it to disk.
+                # Append the host used to make the registration request to the registration response.
                 registration_response['host'] = host
+
+                # Write the registration response to disk for future reference; if the controller is restarted, it will
+                # Attempt to read this file to determine if it has already registered. If the host changes, the controller
+                # will re-register and be assigned a new agent ID by the platform.
                 write_json(registration_response, 'registration.json')
+
             except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
                 log.error(f'Could not verify SSL certificate: {msg}. Skipping registration.')
+
                 return None
             except json.JSONDecodeError:
                 if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
@@ -140,6 +146,7 @@ class Platform:
                     log.error(
                         f'Did not get valid JSON in response: {response.text if response.text else response.reason} ~ {response.status_code}'
                     )
+
                     return None
 
         return cls(
