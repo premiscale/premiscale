@@ -14,7 +14,7 @@ CORS(app)
 __all__ = ['app']
 
 
-from premiscale.healthcheck.routes import create_healthcheck_api
+from premiscale.api.healthcheck.routes import create_healthcheck_api
 
 
 create_healthcheck_api(app)
