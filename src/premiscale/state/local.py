@@ -16,13 +16,13 @@ class Local(State):
     """
     Implement a high-level interface to an in-memory state database.
     """
-    def __init__(self, url: str, database: str, username: str, password: str) -> None:
+    def __init__(self) -> None:
         # url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
-        self.url = url
+        # self.url = url
 
-        self.database = database
-        self._username = username
-        self._password = password
+        # self.database = database
+        # self._username = username
+        # self._password = password
         self._connection = None
 
     def is_connected(self) -> bool:

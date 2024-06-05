@@ -104,11 +104,13 @@ class Platform:
                         registration_path
                     ),
 
-                    data=json.dumps({
-                        'version': version,
-                        'type': 'agent',
-                        'registration_key': token
-                    }),
+                    data=json.dumps(
+                        {
+                            'version': version,
+                            'type': 'agent',
+                            'registration_key': token
+                        }
+                    ),
                     headers={
                         # 'Authorization': header,
                         'Content-Type': 'application/json'

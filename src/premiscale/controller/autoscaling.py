@@ -2,6 +2,7 @@ import logging
 
 from multiprocessing.queues import Queue
 from setproctitle import setproctitle
+from premiscale.config.v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)
@@ -15,7 +16,8 @@ class ASG:
     One of these classes gets instantiated for every autoscaling group defined in
     the config.
     """
-    def __init__(self) -> None:
+    def __init__(self, config: Config) -> None:
+        self.config = config
         self.queue: Queue
 
     def __call__(self, asg_queue: Queue) -> None:

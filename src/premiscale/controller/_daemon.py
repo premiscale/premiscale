@@ -1,5 +1,5 @@
 """
-Define subprocesses encapsulating each control loop.
+Define subprocesses and any main-process threads for the controller.
 """
 
 
@@ -20,7 +20,7 @@ from daemon import DaemonContext, pidfile
 from premiscale.config.v1alpha1 import Config
 from premiscale.controller.platform import Platform
 from premiscale.controller.autoscaling import ASG
-from premiscale.controller.metrics import Metrics
+from premiscale.controller.metrics import MetricsCollector
 from premiscale.controller.reconciliation import Reconcile
 from premiscale.healthcheck import app as healthcheck
 
@@ -29,7 +29,6 @@ log = logging.getLogger(__name__)
 
 
 def start(
-        working_dir: str,
         config: Config,
         version: str,
         token: str
@@ -38,7 +37,6 @@ def start(
     Start our subprocesses and the healthcheck API for Docker and Kubernetes.
 
     Args:
-        working_dir (str): working directory.
         config (Config): controller config file as a Config object.
         version (str): controller version.
         token (str): controller registration token.
@@ -62,9 +60,6 @@ def start(
         ),
     ]
 
-    for thread in _main_process_threads:
-        thread.start()
-
     with concurrent.futures.ProcessPoolExecutor() as executor, mp.Manager() as manager:
         # DaemonContext(
         #     stdin=sys.stdin,
@@ -74,7 +69,7 @@ def start(
         #     detach_process=False,
         #     prevent_core=True,
         #     pidfile=pidfile.TimeoutPIDLockFile(pid_file),
-        #     working_directory=working_dir,
+        #     working_directory=os.getenv('HOME'),
         #     signal_map={
         #         signal.SIGTERM: executor.shutdown,
         #         signal.SIGHUP: executor.shutdown,
@@ -101,27 +96,25 @@ def start(
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
-                ASG(),
+                ASG(config),
                 autoscaling_action_queue
             ),
 
             # Host metrics collection subprocess (populates metrics database)
             executor.submit(
-                Metrics(
-                    controller_config.controller_databases_metrics_connection() # type: ignore
-                )
+                MetricsCollector(config)
             ),
 
             # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
             executor.submit(
-                Reconcile(
-                    controller_config.controller_databases_state_connection(), # type: ignore
-                    controller_config.controller_databases_metrics_connection() # type: ignore
-                ),
+                Reconcile(config),
                 autoscaling_action_queue,
                 platform_message_queue
             )
         ]
+
+        for _dthread in _main_process_threads:
+            _dthread.start()
 
         for process in processes:
             if process is not None:

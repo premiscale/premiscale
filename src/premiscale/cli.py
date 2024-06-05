@@ -7,11 +7,12 @@ from __future__ import annotations, absolute_import
 
 import sys
 import logging
+import os
 
 from pathlib import Path
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from premiscale.config.parse import validate, configParse
-from premiscale.controller.daemon import start
+from premiscale.controller._daemon import start
 from premiscale.utils import LogLevel
 from premiscale import env, version
 
@@ -108,7 +109,6 @@ def main() -> None:
     # Start the premiscale controller.
     sys.exit(
         start(
-            working_dir='/opt/premiscale',
             config=configParse(args.config),
             version=version,
             token=token
