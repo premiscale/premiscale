@@ -4,7 +4,7 @@ PremiScale is a controller that brings autoscaling of virtual infrastructure to 
 
 ## Architecture
 
-PremiScale is a controller that administers hosts and virtual machines by leveraging [libvirt](https://libvirt.org/). Libvirt is a very flexible open source hypervisor API and daemon that runs on hosts.
+PremiScale leverages [libvirt](https://libvirt.org/) to connect to hosts and manage the lifecycle of virtual machines.
 
 The controller can be configured to run in two different modes, including a `kubernetes` (the default) and a `standalone` mode.
 
@@ -13,7 +13,7 @@ The controller can be configured to run in two different modes, including a `kub
 Starting the controller in `kubernetes` mode (the default) starts relevant components of the controller that allow it to interface with the cluster autoscaler.
 
 <p align="center" width="100%">
-  <img width="100%" src="img/premiscale-architecture-controller_internal_autoscaler_disabled.png" alt="premiscale architecture controller">
+  <img width="100%" src="img/premiscale-architecture-controller_internal_autoscaler_disabled.png" alt="premiscale architecture: internal autoscaler disabled">
 </p>
 
 ### Standalone
@@ -21,7 +21,7 @@ Starting the controller in `kubernetes` mode (the default) starts relevant compo
 In `standalone` mode, the controller starts its own metrics collection process. Users are required to provide a list of hosts on which virtual machines can be created. Users are also required to provide a list of autoscaling groups into which virtual machines the controller manages are organized.
 
 <p align="center" width="100%">
-  <img width="100%" src="img/premiscale-architecture-controller.png" alt="premiscale architecture controller">
+  <img width="100%" src="img/premiscale-architecture-controller_internal_autoscaler_enabled.png" alt="premiscale architecture: internal autoscaler enabled">
 </p>
 
 ## Configuration
