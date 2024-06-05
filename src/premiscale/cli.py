@@ -7,7 +7,6 @@ from __future__ import annotations, absolute_import
 
 import sys
 import logging
-import os
 
 from pathlib import Path
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
