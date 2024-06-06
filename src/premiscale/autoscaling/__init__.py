@@ -3,6 +3,7 @@ import logging
 from multiprocessing.queues import Queue
 from setproctitle import setproctitle
 from premiscale.config.v1alpha1 import Config
+from premiscale.autoscaling.actions import Action
 
 
 log = logging.getLogger(__name__)

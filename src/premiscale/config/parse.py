@@ -11,7 +11,6 @@ import sys
 from typing import Tuple
 from pathlib import Path
 from importlib import resources
-from cattrs import unstructure
 from premiscale.config.v1alpha1 import Config
 
 
@@ -24,13 +23,12 @@ __all__ = [
 ]
 
 
-def configParse(config: str, validate: bool = True) -> Config:
+def configParse(config: str) -> Config:
     """
     Parse a config file and return it as a Config-object. Optionally validate types and structure against the Yamale schema.
 
     Args:
         config (str): path to the config file.
-        validate (bool): whether or not to validate the provided config file. (default: True)
 
     Returns:
         Config: The parsed config file.
@@ -41,51 +39,47 @@ def configParse(config: str, validate: bool = True) -> Config:
 
     with open(config, 'r', encoding='utf-8') as f:
         try:
-            _config = Config.from_dict(
-                yaml.safe_load(
-                    f.read().rstrip()
-                )
+            _loaded_config = yaml.safe_load(
+                f.read().rstrip()
             )
 
-            # if validate:
-            #     msg, valid = validate(unstructure(_config))
-            #     if not valid:
-            #         log.error(f'Config file failed validation: {msg}')
-            #         sys.exit(1)
+            _config = Config.from_dict(_loaded_config)
 
-        except (yaml.YAMLError, ValueError, KeyError) as e:
+            validate(_loaded_config, version=_config.version)
+        except (yaml.YAMLError, KeyError) as e:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)
 
-    log.debug(f'Successfully parsed config version {_config.version}: {unstructure(_config)}')
+    log.debug(f'Successfully parsed config version {_config.version}: {_loaded_config}')
 
     return _config
 
 
-def validate(data: dict, schema: str = 'schema.yaml', strict: bool = True) -> Tuple[str, bool]:
+def validate(data: dict, version: str = 'v1alpha1', strict: bool = True) -> None:
     """
     Validate users' config files against our schema.
 
     Args:
         data (dict): config file path/name to validate against the schema.
-        schema (str): schema file to use with config validation. (default: 'schema.yaml')
+        version (str): the version of the config file to validate. (default: 'v1alpha1')
         strict (bool): whether or not to use strict mode on yamale. (default: True)
-
-    Returns:
-        Tuple[str, bool]: a tuple containing the error message and a boolean indicating if the config is valid.
     """
     try:
-        with resources.open_text('premiscale.config.schemas', schema) as schema_f:
+        with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
             schema = yamale.make_schema(schema_f.name)
     except FileNotFoundError:
-        log.error(f'Could not find schema "{schema}" for config: are you using a supported config version?')
+        log.error(f'Could not find schema "{schema}" for config version {version}: are you using a supported config version?')
         sys.exit(1)
 
     try:
-        yamale.validate(schema, data, strict=strict)
-        return '', True
-    except ValueError as msg:
-        return str(msg), False
+        yamale.validate(
+            schema,
+            data,
+            strict=strict
+        )
+    except ValueError as e:
+        log.error(f'Error validating config file: {e}')
+        sys.exit(1)
 
 
 def makeDefaultConfig(path: str | Path, default_config: str | Path = 'default.yaml') -> None:
