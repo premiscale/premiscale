@@ -47,6 +47,14 @@ repos:
           - markdown
         # additional_dependencies:
         #   - cog
+      - id: pdoc
+        language: script
+        name: pdoc
+        entry: /usr/bin/env poetry run pdoc -o ./docs src/premiscale/
+        args: []
+        files: src/premiscale/
+        types:
+          - python
 
   # Abuse the helm-readme-generator to generate READMEs for the CRDs and operator.
   - repo: https://github.com/bitnami/readme-generator-for-helm
