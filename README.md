@@ -1,6 +1,9 @@
 # PremiScale
 
-PremiScale is a controller that brings autoscaling of virtual infrastructure to local, self-hosted and private datacenters, with a particular focus on integrating with the Kubernetes cluster [autoscaler](https://github.com/kubernetes/autoscaler).
+![GitHub Release](https://img.shields.io/github/v/release/premiscale/premiscale?include_prereleases&sort=semver&display_name=release&link=https%3A%2F%2Fgithub.com%2Fpremiscale%2Fpremiscale%2Freleases)
+![Business License 1.1](https://img.shields.io/badge/License-Business_Source_1.1-red)
+
+PremiScale is a controller that brings autoscaling of virtual private infrastructure in local, self-hosted and datacenters, with a particular focus on integrating with the Kubernetes [autoscaler](https://github.com/kubernetes/autoscaler).
 
 ## Architecture
 
