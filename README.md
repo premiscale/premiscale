@@ -7,7 +7,7 @@ PremiScale is a controller that brings autoscaling of virtual and physical infra
 
 ## Architecture
 
-PremiScale leverages [libvirt](https://libvirt.org/) to connect to hosts and manage the lifecycle of virtual machines.
+PremiScale uses [libvirt](https://libvirt.org/) to connect to hosts and manage lifecycles of virtual machines.
 
 The controller can be configured to run in two different modes, including a `kubernetes` (the default) and a `standalone` mode.
 
