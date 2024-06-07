@@ -32,9 +32,12 @@ def configParse(configPath: str) -> Config:
     Returns:
         Config: The parsed config file.
     """
-    # Drop a default config for parsing.
+
+    # Drop a default config for parsing if one was not provided by the user.
     if not Path(configPath).exists():
         makeDefaultConfig(configPath)
+    else:
+        log.debug(f'Found config file at {configPath}.')
 
     with open(configPath, 'r', encoding='utf-8') as f:
         try:
@@ -73,17 +76,24 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
     Returns:
         bool: True if the config file is valid.
     """
+
+    if not Path(configPath).exists():
+        makeDefaultConfig(configPath)
+    else:
+        log.debug(f'Found config file at {configPath}.')
+
     try:
-        # with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
-        #     schema = yaml.load_all(schema_f.read().strip(), Loader=yaml.FullLoader)
+        with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
+            schema = make_schema(path=schema_f.name)
+            data = make_data(path=configPath)
 
         yamale_validate(
-            make_schema(configPath, parser='ruamel'),
-            make_data(f'premiscale/config/schemas/schema.{version}.yaml'),
+            schema,
+            data,
             strict=strict
         )
     except FileNotFoundError as e:
-        log.error(f'Could not find matching schema for config version {version}: are you using a supported config version?')
+        log.error(f'Could not find file: {e}')
         return False
     except ValueError as e:
         log.error(f'Error validating config file: {e}')
@@ -101,16 +111,16 @@ def makeDefaultConfig(path: str | Path, default_config: str | Path = 'default.ya
         default_config (str | Path): The default config file to use when creating a new config file. (default: 'default.yaml')
     """
     try:
-        if not Path.exists(Path(path).parent):
-            Path.mkdir(Path(path).parent, parents=True)
+        if not Path(path).parent.exists():
+            Path(path).parent.mkdir(parents=True)
 
         if not Path(path).exists():
             log.debug(f'Config file at {path} does not exist. Creating default config file.')
 
-            with resources.open_text('premiscale.config', str(default_config)) as default_f, open(str(path), 'x', encoding='utf-8') as f:
-                f.write(default_f.read().strip())
+            with resources.open_text('premiscale.config', str(default_config)) as default_config_f, open(str(path), 'x', encoding='utf-8') as f:
+                f.write(default_config_f.read().strip())
 
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
-        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}, must run as root.')
+        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}.')
         sys.exit(1)
