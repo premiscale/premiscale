@@ -3,14 +3,13 @@ Parse a configuration file, or create a default one.
 """
 
 
-import yamale
 import yaml
 import logging
 import sys
 
-from typing import Tuple
 from pathlib import Path
 from importlib import resources
+from yamale import make_schema, make_data, validate as yamale_validate
 from premiscale.config.v1alpha1 import Config
 
 
@@ -19,33 +18,40 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     'configParse',
-    'validate'
+    'validateConfig'
 ]
 
 
-def configParse(config: str) -> Config:
+def configParse(configPath: str) -> Config:
     """
-    Parse a config file and return it as a Config-object. Optionally validate types and structure against the Yamale schema.
+    Parse a config file and return it as a Config-object. If the file does not exist, create a default one.
 
     Args:
-        config (str): path to the config file.
+        configPath (str): path to the config file.
 
     Returns:
         Config: The parsed config file.
     """
     # Drop a default config for parsing.
-    if not Path(config).exists():
-        makeDefaultConfig(config)
+    if not Path(configPath).exists():
+        makeDefaultConfig(configPath)
 
-    with open(config, 'r', encoding='utf-8') as f:
+    with open(configPath, 'r', encoding='utf-8') as f:
         try:
             _loaded_config = yaml.safe_load(
                 f.read().rstrip()
             )
 
-            _config = Config.from_dict(_loaded_config)
+            # Validate the config file against the schema.
+            if 'version' not in _loaded_config:
+                log.error('Config file is missing a version field.')
+                sys.exit(1)
 
-            validate(_loaded_config, version=_config.version)
+            if not validateConfig(configPath, version=_loaded_config['version']):
+                sys.exit(1)
+
+            # Parse the config into a Config object, now.
+            _config = Config.from_dict(_loaded_config)
         except (yaml.YAMLError, KeyError) as e:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)
@@ -55,31 +61,35 @@ def configParse(config: str) -> Config:
     return _config
 
 
-def validate(data: dict, version: str = 'v1alpha1', strict: bool = True) -> None:
+def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = True) -> bool:
     """
     Validate users' config files against our schema.
 
     Args:
-        data (dict): config file path/name to validate against the schema.
+        configPath (str): path to a config file path/name to validate against the schema.
         version (str): the version of the config file to validate. (default: 'v1alpha1')
         strict (bool): whether or not to use strict mode on yamale. (default: True)
+
+    Returns:
+        bool: True if the config file is valid.
     """
     try:
-        with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
-            schema = yamale.make_schema(schema_f.name)
-    except FileNotFoundError:
-        log.error(f'Could not find schema "{schema}" for config version {version}: are you using a supported config version?')
-        sys.exit(1)
+        # with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
+        #     schema = yaml.load_all(schema_f.read().strip(), Loader=yaml.FullLoader)
 
-    try:
-        yamale.validate(
-            schema,
-            data,
+        yamale_validate(
+            make_schema(configPath, parser='ruamel'),
+            make_data(f'premiscale/config/schemas/schema.{version}.yaml'),
             strict=strict
         )
+    except FileNotFoundError as e:
+        log.error(f'Could not find matching schema for config version {version}: are you using a supported config version?')
+        return False
     except ValueError as e:
         log.error(f'Error validating config file: {e}')
-        sys.exit(1)
+        return False
+
+    return True
 
 
 def makeDefaultConfig(path: str | Path, default_config: str | Path = 'default.yaml') -> None:

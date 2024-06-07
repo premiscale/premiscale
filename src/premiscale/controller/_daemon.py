@@ -87,8 +87,6 @@ def start(
                     version=version,
                     token=token,
                     host=config.controller.platform.domain,
-                    websocket_path='agent/websocket',
-                    registration_path='agent/registration',
                     cacert=config.controller.platform.certificates.path
                 ),
                 platform_message_queue

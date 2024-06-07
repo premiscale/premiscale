@@ -1,7 +1,6 @@
 version: enum('v1alpha1')
 controller: include('controller')
 ---
-## controller has 5 top-level keys that roughly correspond to the 4 subprocesses and any threads that are spawned.
 controller:
   pidFile: str(min=1)
   mode: enum('kubernetes', 'standalone')
@@ -41,10 +40,10 @@ state:
 metrics:
   type: enum('memory', 'influxdb')
   collectionInterval: int(min=5)
-  connection: include('connection', required=False)
   trailing: int(min=5)
   hostConnectionTimeout: int(min=1)
   maxThreads: int(min=0)
+  connection: include('connection', required=False)
 ---
 connection:
   url: str(min=1)

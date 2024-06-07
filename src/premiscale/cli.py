@@ -10,7 +10,7 @@ import logging
 
 from pathlib import Path
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from premiscale.config.parse import validate, configParse
+from premiscale.config.parse import validateConfig, configParse
 from premiscale.controller._daemon import start
 from premiscale.utils import LogLevel
 from premiscale import env, version
@@ -96,7 +96,7 @@ def main() -> None:
             sys.exit(1)
 
     if args.validate:
-        sys.exit(0 if validate(args.config)[1] else 1)
+        sys.exit(0 if validateConfig(args.config) else 1)
 
     log.info(f'Starting PremiScale controller v{version}')
 
