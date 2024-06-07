@@ -22,20 +22,24 @@ class Libvirt:
 
     Args:
         host (IPv4Address): IP address of the host to connect to.
+        port (int): Port to connect to the host on.
         user (str): Username to authenticate with (if using SSH).
         hypervisor_type (str): Type of hypervisor to connect to. Defaults to 'qemu'. Can be either 'qemu' or 'lxc'.
         auth_type (str): Type of authentication to use. Defaults to 'ssh'. Can be either 'ssh' or 'tls'.
     """
-    def __init__(self, host: IPv4Address, user: str, hypervisor_type: str, auth_type: str) -> None:
+    def __init__(self, host: IPv4Address, port: int, user: str, hypervisor_type: str, auth_type: str) -> None:
         self.host = host
+        self.port = port
         self.user = user
         self.hypervisor_type = hypervisor_type
         self.auth_type = auth_type
 
-        if auth_type == 'ssh':
-            self.connection_string = f'{hypervisor_type}+ssh://{user}@{host}/system'
-        elif auth_type == 'tls':
-            self.connection_string = f'{hypervisor_type}+tls://{host}/system'
+        if auth_type.lower() == 'ssh':
+            # SSH
+            self.connection_string = f'{hypervisor_type}+ssh://{user}@{host}:{port}/system'
+        else:
+            # TLS
+            self.connection_string = f'{hypervisor_type}+tls://{host}:{port}/system'
 
     def __enter__(self) -> Libvirt | None:
         return self.open()
