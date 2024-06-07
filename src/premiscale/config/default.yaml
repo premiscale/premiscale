@@ -30,8 +30,14 @@ controller:
       ## @param controller.databases.state.type [string, default: memory] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
       type: memory
 
-      ## @param controller.databases.state.collectionInterval [default: 60] How often the agent collects metrics and stores them in the database.
+      ## @param controller.databases.state.collectionInterval [default: 60] How often the agent retrieves state from all of the connected hosts.
       collectionInterval: 60
+
+      ## @param controller.databases.state.maxThreads [default: 10] Establish connections to hosts in maxThreads-batches.
+      maxThreads: 10
+
+      ## @param controller.databases.state.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
+      hostConnectionTimeout: 60
 
     metrics:
       ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
@@ -51,7 +57,7 @@ controller:
 
   ## @param controller.platform [object] Configure the platform
   platform:
-    ## @param controller.platform.actionsQueueMax [default: 0] The maximum number of actions from the platform to queue up before dropping them. 0 means no limit.
+    ## @param controller.platform.actionsQueueMax [default: 0] The maximum number of inbound actions from the platform to queue up before dropping them. 0 means no limit.
     actionsQueueMaxSize: 0
 
     ## @param controller.platform.domain [string, default: $PREMISCALE_PLATFORM] The domain of the platform.

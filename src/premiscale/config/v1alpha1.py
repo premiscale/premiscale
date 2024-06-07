@@ -12,7 +12,7 @@ import sys
 from typing import List, Dict
 from attrs import define
 from attr import ib
-from cattrs import structure as from_dict
+from cattrs import structure
 
 
 log = logging.getLogger(__name__)
@@ -74,6 +74,8 @@ class State:
     """
     type: str
     collectionInterval: int
+    maxThreads: int
+    hostConnectionTimeout: int
     connection: Connection | None = ib(default=None)
 
 
@@ -309,7 +311,7 @@ class Config:
         Returns:
             Config: The Config object.
         """
-        return from_dict(
+        return structure(
             config,
             cls
         )

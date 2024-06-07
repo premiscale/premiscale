@@ -1,18 +1,23 @@
 version: enum('v1alpha1')
 controller: include('controller')
 ---
-## controller has 5 top-level keys that roughly correspond to the 4 subprocesses and any threads that are spawned.
 controller:
+  pidFile: str(min=1)
+  mode: enum('kubernetes', 'standalone')
+  kubernetes: include('kubernetes')
   healthcheck: include('healthcheck')
   databases: include('databases')
   platform: include('platform')
   reconciliation: include('reconciliation')
   autoscale: include('autoscale')
 ---
+kubernetes:
+  autoscalerPort: int(min=1, max=65535)
+  autoscalerHost: str(min=1)
+---
 healthcheck:
   host: str(min=1)
   port: int(min=1, max=65535)
-  path: str(min=1)
 ---
 reconciliation:
   interval: int(min=5)
@@ -26,23 +31,19 @@ databases:
   metrics: include('metrics')
 ---
 state:
-  type: enum('mysql')
-  connection: include('connection')
-  reconcileInterval: int(min=5)
+  type: enum('memory', 'mysql')
+  collectionInterval: int(min=5)
+  maxThreads: int(min=0)
+  hostConnectionTimeout: int(min=1)
+  connection: include('connection', required=False)
 ---
 metrics:
-  type: enum('influxdb')
-  connection: include('connection')
-  trailing: int(min=0)
+  type: enum('memory', 'influxdb')
   collectionInterval: int(min=5)
+  trailing: int(min=5)
   hostConnectionTimeout: int(min=1)
   maxThreads: int(min=0)
----
-platform:
-  host: str(min=1)
-  token: str(min=1)
-  cacert: str()
-  actionsQueueMaxSize: int(min=0)
+  connection: include('connection', required=False)
 ---
 connection:
   url: str(min=1)
@@ -51,18 +52,27 @@ connection:
     username: str(min=1)
     password: str(min=1)
 ---
-hosts: map(include('host'), min=1)
+platform:
+  domain: str(min=1)
+  token: str(min=1)
+  certificates: include('certificates')
+  actionsQueueMaxSize: int(min=0)
 ---
-host: list(include('hostMember'), min=1)
+certificates:
+  path: str(min=1)
 ---
-hostMember:
+# Part of autoscaling configuration
+hosts: list(include('host'), min=0)
+---
+host:
   name: str(min=1)
   address: str(min=1)
   port: int(min=1, max=65535)
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
   hypervisor: enum('kvm', 'xen', 'esx')
 ---
-groups: map(include('group'), min=1)
+# The other half of autoscaling configuration
+groups: map(include('group'), min=0)
 ---
 group:
   image: str(min=1)
