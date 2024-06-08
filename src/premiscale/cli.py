@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from premiscale.config.parse import validateConfig, configParse
-from premiscale.controller._daemon import start
+from premiscale.daemon import start
 from premiscale.utils import LogLevel
 from premiscale import env, version
 

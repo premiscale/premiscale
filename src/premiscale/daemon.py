@@ -125,6 +125,7 @@ def start(
                 )
             case 'standalone':
                 from premiscale.reconciliation.internal import Reconcile
+
                 # Time series <-> state databases reconciliation subprocess (creates actions on the ASGs queue)
                 processes.append(
                     executor.submit(
