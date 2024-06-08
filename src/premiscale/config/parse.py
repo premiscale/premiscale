@@ -92,6 +92,8 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
             data,
             strict=strict
         )
+
+        log.info(f'Config file at {configPath} is valid.')
     except FileNotFoundError as e:
         log.error(f'Could not find file: {e}')
         return False

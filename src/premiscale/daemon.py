@@ -6,9 +6,9 @@ controller is configured. It also starts the healthcheck API for Docker and Kube
 
 import multiprocessing as mp
 import logging
-# import signal
-# import sys
-# import os
+import signal
+import sys
+import os
 
 from functools import partial
 from multiprocessing.queues import Queue
@@ -16,11 +16,10 @@ from concurrent.futures import ProcessPoolExecutor
 from threading import Thread
 from typing import cast
 from setproctitle import setproctitle
-# from daemon import DaemonContext, pidfile
+from daemon import DaemonContext, pidfile
 from premiscale.config.v1alpha1 import Config
 from premiscale.api.healthcheck import app as healthcheck
-from premiscale.reconciliation.internal import Reconcile
-from premiscale.autoscaling import Autoscaling
+from premiscale.autoscaling.group import Autoscaler
 from premiscale.platform import Platform
 from premiscale.metrics import MetricsCollector
 
@@ -60,22 +59,24 @@ def start(
         ),
     ]
 
-    with ProcessPoolExecutor() as executor, mp.Manager() as manager:
-        # DaemonContext(
-        #     stdin=sys.stdin,
-        #     stdout=sys.stdout,
-        #     stderr=sys.stderr,
-        #     # files_preserve=[],
-        #     detach_process=False,
-        #     prevent_core=True,
-        #     pidfile=pidfile.TimeoutPIDLockFile(pid_file),
-        #     working_directory=os.getenv('HOME'),
-        #     signal_map={
-        #         signal.SIGTERM: executor.shutdown,
-        #         signal.SIGHUP: executor.shutdown,
-        #         signal.SIGINT: executor.shutdown,
-        #     }
-        # ):
+    for _dthread in _main_process_daemon_threads:
+        _dthread.start()
+
+    with ProcessPoolExecutor() as executor, mp.Manager() as manager, DaemonContext(
+            stdin=sys.stdin,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            # files_preserve=[],
+            detach_process=False,
+            prevent_core=True,
+            pidfile=pidfile.TimeoutPIDLockFile(config.controller.pidFile),
+            working_directory=os.getenv('HOME'),
+            signal_map={
+                signal.SIGTERM: executor.shutdown,
+                signal.SIGHUP: executor.shutdown,
+                signal.SIGINT: executor.shutdown,
+            }
+        ):
 
         autoscaling_action_queue: Queue = cast(Queue, manager.Queue())
         platform_message_queue: Queue = cast(Queue, manager.Queue())
@@ -95,7 +96,7 @@ def start(
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
-                Autoscaling(config),
+                Autoscaler(config),
                 autoscaling_action_queue
             )
         ]
@@ -144,10 +145,6 @@ def start(
                         )
                     )
                 )
-
-
-        for _dthread in _main_process_daemon_threads:
-            _dthread.start()
 
         for process in processes:
             if process is not None:

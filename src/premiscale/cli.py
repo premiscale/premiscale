@@ -26,7 +26,7 @@ def main() -> None:
     parser = ArgumentParser(
         formatter_class=RawDescriptionHelpFormatter,
         description=__doc__,
-        epilog='For more information, visit https://www.premiscale.com.\n\n© PremiScale, Inc. 2024.'
+        epilog='For more information, visit https://premiscale.com.\n\n© PremiScale, Inc. 2024.'
     )
 
     parser.add_argument(
