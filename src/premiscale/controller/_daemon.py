@@ -19,7 +19,7 @@ from setproctitle import setproctitle
 # from daemon import DaemonContext, pidfile
 from premiscale.config.v1alpha1 import Config
 from premiscale.api.healthcheck import app as healthcheck
-from premiscale.controller.reconciliation import Reconcile
+from premiscale.reconciliation.internal import Reconcile
 from premiscale.autoscaling import Autoscaling
 from premiscale.platform import Platform
 from premiscale.metrics import MetricsCollector
@@ -103,7 +103,7 @@ def start(
         # Based on the mode the controller was started in (Kubernetes or standalone), we start the relevant subprocesses.
         match config.controller.mode:
             case 'kubernetes':
-                from premiscale.kubernetes import KubernetesAutoscaler
+                from premiscale.reconciliation.kubernetes import KubernetesAutoscaler
 
                 # Collect actions from the Kubernetes autoscaler and translate them into PremiScale Actions for
                 # the Autoscaling subprocess to process.
@@ -124,6 +124,7 @@ def start(
                     )
                 )
             case 'standalone':
+                from premiscale.reconciliation.internal import Reconcile
                 # Time series <-> state databases reconciliation subprocess (creates actions on the ASGs queue)
                 processes.append(
                     executor.submit(
