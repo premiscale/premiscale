@@ -18,10 +18,11 @@ from typing import cast
 from setproctitle import setproctitle
 # from daemon import DaemonContext, pidfile
 from premiscale.config.v1alpha1 import Config
-from premiscale.controller.reconciliation import Reconcile
 from premiscale.api.healthcheck import app as healthcheck
-from premiscale.autoscaling import ASG
+from premiscale.controller.reconciliation import Reconcile
+from premiscale.autoscaling import Autoscaling
 from premiscale.platform import Platform
+from premiscale.metrics import MetricsCollector
 
 
 log = logging.getLogger(__name__)
@@ -94,14 +95,8 @@ def start(
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
-                ASG(config),
+                Autoscaling(config),
                 autoscaling_action_queue
-            ),
-            # Metrics <-> state database reconciliation subprocess (creates actions on the ASGs queue)
-            executor.submit(
-                Reconcile(config),
-                autoscaling_action_queue,
-                platform_message_queue
             )
         ]
 
@@ -110,21 +105,41 @@ def start(
             case 'kubernetes':
                 from premiscale.kubernetes import KubernetesAutoscaler
 
-                # Collect metrics from the Kubernetes autoscaler and translate them into PremiScale Actions for
+                # Collect actions from the Kubernetes autoscaler and translate them into PremiScale Actions for
                 # the Autoscaling subprocess to process.
                 processes.append(
                     executor.submit(
                         KubernetesAutoscaler(config),
-                        autoscaling_action_queue
+                        autoscaling_action_queue,
+                        platform_message_queue
                     )
                 )
-            case 'standalone':
-                # Host metrics collection subprocess (populates metrics database)
-                from premiscale.metrics import build_metrics
 
                 processes.append(
                     executor.submit(
-                        build_metrics(config)
+                        MetricsCollector(
+                            config,
+                            timeseries_enabled=False
+                        )
+                    )
+                )
+            case 'standalone':
+                # Time series <-> state databases reconciliation subprocess (creates actions on the ASGs queue)
+                processes.append(
+                    executor.submit(
+                        Reconcile(config),
+                        autoscaling_action_queue,
+                        platform_message_queue
+                    )
+                )
+
+                # Host metrics collection subprocess (populates metrics database)
+                processes.append(
+                    executor.submit(
+                        MetricsCollector(
+                            config,
+                            timeseries_enabled=True
+                        )
                     )
                 )
 

@@ -80,9 +80,9 @@ class State:
 
 
 @define
-class Metrics:
+class TimeSeries:
     """
-    Metrics database configuration options.
+    Time series database configuration options.
     """
     type: str
     collectionInterval: int
@@ -98,7 +98,7 @@ class Databases:
     Databases configuration options.
     """
     state: State
-    metrics: Metrics
+    timeseries: TimeSeries
 
 
 @define
@@ -172,7 +172,7 @@ class Host:
     protocol: str
     port: int
     hypervisor: str
-    resources: Resources
+    resources: Resources | None = ib(default=None)
 
 
 @define

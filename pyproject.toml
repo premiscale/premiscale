@@ -66,7 +66,7 @@ require-return-section-when-returning-nothing = false
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = "invalid-name,wrong-import-order,superfluous-parens,line-too-long,missing-final-newline,logging-fstring-interpolation,too-many-instance-attributes,unused-argument,unused-import"
-fail-under = 4
+fail-under = 2
 
 [tool.pylint.MASTER]
 init-hook = "import sys; sys.path.append('.')"

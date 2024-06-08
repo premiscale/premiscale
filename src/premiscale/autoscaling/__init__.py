@@ -9,7 +9,7 @@ from premiscale.autoscaling.actions import Action
 log = logging.getLogger(__name__)
 
 
-class ASG:
+class Autoscaling:
     """
     Handle actions. E.g., if a new VM needs to be created or deleted on some host,
     handle that action, and all relevant side-effects (e.g. updating MySQL state).

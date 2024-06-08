@@ -8,6 +8,8 @@ controller:
   ## @param controller.pidFile [string, default: /opt/premiscale/premiscale.pid] Path to the file where the controller daemon process writes its PID.
   pidFile: /opt/premiscale/premiscale.pid
 
+  ## @section Healthcheck Configuration
+
   ## @param controller.healthcheck [object] Configure the healthcheck endpoint for the controller.
   healthcheck:
     ## @param controller.healthcheck.host [string, default: 127.0.0.1] The host to bind the healthcheck endpoint to.
@@ -19,14 +21,15 @@ controller:
     ## @param controller.healthcheck.path [string, default: /healthz] The path to bind the healthcheck endpoint to.
     path: /healthz
 
-  ## @param contoller.databases [object] Configure the databases the controller uses to store state and metrics.
+  ## @section Database Configuration
+
   databases:
     ## @param controller.databases.state [object] State is where the ASGs' current state as of the (latest reconciliation loop execution) is stored so it can be queried without making additional calls through libvirt.
     state:
       ## @param controller.databases.state.type [string, default: mysql] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
       type: mysql
 
-      ## @param controller.databases.state.collectionInterval [default: 60] How often the agent collects metrics and stores them in the database.
+      ## @param controller.databases.state.collectionInterval [default: 60] How often the agent collects state data and stores it in the database.
       collectionInterval: 60
 
       ## @param controller.databases.state.connection [object] Connection details for the state database.
@@ -45,39 +48,40 @@ controller:
           ## @param controller.databases.state.connection.credentials.password [string, default: $MYSQL_PASSWORD] The password to use to connect to the database.
           password: $MYSQL_PASSWORD
 
-    ## @param controller.databases.metrics [object] How often metrics collection is performed from every host.
-    metrics:
-      ## @param controller.databases.metrics.type [string, default: influxdb] The type of database to use for storing metrics. Can be 'influxdb' or 'memory'.
+    timeseries:
+      ## @param controller.databases.timeseries.type [string, default: influxdb] The type of database to use for storing time series data. Can be 'influxdb' or 'memory'.
       type: influxdb
 
-      ## @param controller.databases.metrics.collectionInterval [default: 60] How often the agent retrieves metrics from all of the connected hosts.
+      ## @param controller.databases.timeseries.collectionInterval [default: 60] How often the agent retrieves time series data from all of the connected hosts.
       collectionInterval: 60
 
-      ## @param controller.databases.metrics.maxThreads [default: 10] Establish connections to hosts in maxThreads-batches.
+      ## @param controller.databases.timeseries.maxThreads [default: 10] Establish connections to hosts in maxThreads-batches.
       maxThreads: 10
 
-      ## @param controller.databases.metrics.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
+      ## @param controller.databases.timeseries.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
       hostConnectionTimeout: 60
 
-      ## @param controller.databases.metrics.trailing [default: 1200] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes
+      ## @param controller.databases.timeseries.trailing [default: 1200] Seconds of collected time series data to keep and evaluate upon (must be >=interval). Default is 20 minutes
       trailing: 1200
 
-      ## @param controller.databases.metrics.connection [object] Connection details for the metrics database.
+      ## @param controller.databases.timeseries.connection [object] Connection details for the time series database.
       connection:
-        ## @param controller.databases.metrics.connection.url [string, default: $INFLUXDB_HOST] The URL of the database.
+        ## @param controller.databases.timeseries.connection.url [string, default: $INFLUXDB_HOST] The URL of the database.
         url: $INFLUXDB_HOST
 
-        ## @param controller.databases.metrics.connection.database [string, default: $METRICS_DATABASE] The name of the database to create or use.
-        database: $METRICS_DATABASE
+        ## @param controller.databases.timeseries.connection.database [string, default: $TIMESERIES_DATABASE] The name of the database to create or use.
+        database: $TIMESERIES_DATABASE
 
-        ## @param controller.databases.metrics.connection.credentials [object] The credentials to use to connect to the database.
+        ## @param controller.databases.timeseries.connection.credentials [object] The credentials to use to connect to the database.
         credentials:
 
-          ## @param controller.databases.metrics.connection.credentials.username [string, default: $INFLUXDB_USERNAME] The username to use to connect to the database.
+          ## @param controller.databases.timeseries.connection.credentials.username [string, default: $INFLUXDB_USERNAME] The username to use to connect to the database.
           username: $INFLUXDB_USERNAME
 
-          ## @param controller.databases.metrics.connection.credentials.password [string, default: $INFLUXDB_PASSWORD] The password to use to connect to the database.
+          ## @param controller.databases.timeseries.connection.credentials.password [string, default: $INFLUXDB_PASSWORD] The password to use to connect to the database.
           password: $INFLUXDB_PASSWORD
+
+  ## @section Platform Configuration
 
   ## @param controller.platform [object] Configure the platform
   platform:
@@ -95,7 +99,7 @@ controller:
   ## @section Reconciliation Configuration
 
   reconciliation:
-    ## @param controller.reconciliation.interval [default: 60] How often the controller reconciles the state of the ASGs. The controller collects metrics and state in separate databases and queues up actions for autoscaling groups in separate processes.
+    ## @param controller.reconciliation.interval [default: 60] How often the controller reconciles the state of the ASGs. The controller collects time series data and state in separate databases and queues up actions for autoscaling groups.
     interval: 60
 
   ## @section Autoscaling Configuration

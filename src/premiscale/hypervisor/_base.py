@@ -26,13 +26,15 @@ class Libvirt:
         user (str): Username to authenticate with (if using SSH).
         hypervisor_type (str): Type of hypervisor to connect to. Defaults to 'qemu'. Can be either 'qemu' or 'lxc'.
         auth_type (str): Type of authentication to use. Defaults to 'ssh'. Can be either 'ssh' or 'tls'.
+        readonly (bool): Whether to open the connection in read-only mode. Defaults to False.
     """
-    def __init__(self, host: IPv4Address, port: int, user: str, hypervisor_type: str, auth_type: str) -> None:
+    def __init__(self, host: IPv4Address, port: int, user: str, hypervisor_type: str, auth_type: str, readonly: bool = False) -> None:
         self.host = host
         self.port = port
         self.user = user
         self.hypervisor_type = hypervisor_type
         self.auth_type = auth_type
+        self.readonly = readonly
 
         if auth_type.lower() == 'ssh':
             # SSH
@@ -52,8 +54,11 @@ class Libvirt:
         Open a connection to the Libvirt hypervisor.
         """
         try:
-            self.connection = lv.open(self.connection_string)
-            log.info(f'Connected to host at {self.connection_string}')
+            if self.readonly:
+                self.connection = lv.openReadOnly(self.connection_string)
+            else:
+                self.connection = lv.open(self.connection_string)
+                log.info(f'Connected to host at {self.connection_string}')
         except libvirtError as e:
             log.error(f'Failed to connect to host at {self.connection_string}: {e}')
             return None
