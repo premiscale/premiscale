@@ -3,6 +3,8 @@ Reconcile metrics and state databases and place Actions on the autoscaling queue
 """
 
 
+from __future__ import annotations
+
 import logging
 import time
 

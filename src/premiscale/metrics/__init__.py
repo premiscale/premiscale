@@ -6,6 +6,8 @@ the VMs on the hosts.
 """
 
 
+from __future__ import annotations
+
 import logging
 
 from typing import Iterator, TYPE_CHECKING
@@ -15,7 +17,6 @@ from premiscale.config.v1alpha1 import Host
 
 
 if TYPE_CHECKING:
-    from multiprocessing.queues import Queue
     from premiscale.config.v1alpha1 import Config
     from premiscale.metrics.state._base import State
     from premiscale.metrics.timeseries._base import TimeSeries
