@@ -96,12 +96,12 @@ class State(ABC):
         """
         raise NotImplementedError
 
-    def host_report(self) -> bool:
+    def host_report(self) -> List:
         """
         Get a report of currently-managed hosts.
 
         Returns:
-            bool: True if action completed successfully.
+            List: List of hosts and the VMs on them.
 
         Raises:
             NotImplementedError: If the method is not implemented.
@@ -145,7 +145,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
-    def vm_report(self, host: str | None = None) -> bool:
+    def vm_report(self, host: str | None = None) -> List:
         """
         Get a report of VMs presently-managed on a host.
 
@@ -153,7 +153,7 @@ class State(ABC):
             host (str | None): Name of host on which to retrieve VM entries. If None, return all VMs on all hosts. Defaults to None.
 
         Returns:
-            bool: True if action completed successfully.
+            List: List of VMs on the host, or all VMs on all hosts if host is None.
 
         Raises:
             NotImplementedError: If the method is not implemented.
@@ -240,7 +240,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
-    def asg_report(self, vm_enabled: bool = False) -> bool:
+    def asg_report(self, vm_enabled: bool = False) -> List:
         """
         Get a report of current autoscaling groups' standings. Optionally enable VMs be returned on hosts as well.
 
@@ -248,7 +248,7 @@ class State(ABC):
             vm_enabled (bool, optional): Return VMs on hosts as well. Defaults to False as it's a more expensive operation.
 
         Returns:
-            bool: True if action completed successfully.
+            List: List of ASGs.
 
         Raises:
             NotImplementedError: If the method is not implemented.

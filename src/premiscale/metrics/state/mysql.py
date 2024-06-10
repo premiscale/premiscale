@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import logging
 
+from typing import List
 from sqlmodel import Field, Session, SQLModel, create_engine
-from premiscale.state._base import State
+from premiscale.metrics.state._base import State
 
 
 log = logging.getLogger(__name__)
@@ -55,55 +56,78 @@ class MySQL(State):
         """
         # self._connection.close()
 
-    ## Hosts
+     ## Hosts
 
-    def host_create(self, hostname: str) -> bool:
+    def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
 
         Args:
-            hostname (str): name to give host.
+            name (str): name to give host.
+            address (str): IP address of the host.
+            protocol (str): protocol to use for communication.
+            port (int): port to communicate over.
+            hypervisor (str): hypervisor to use for VM management.
+            cpu (int): number of CPUs available.
+            memory (int): amount of memory available.
+            storage (int): amount of storage available.
 
         Returns:
             bool: True if action completed successfully.
-        """
-        return True
 
-    def host_delete(self, hostname: str) -> bool:
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def host_delete(self, name: str, address: str) -> bool:
         """
         Delete a host record.
 
         Args:
-            hostname (str): name of host to delete the record for.
+            name (str): name of host to delete the record for.
+            address (str): IP address of the host.
 
         Returns:
             bool: True if action completed successfully.
-        """
-        return True
 
-    def host_report(self) -> bool:
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def host_report(self) -> List:
         """
         Get a report of currently-managed hosts.
 
         Returns:
-            bool: True if action completed successfully.
+            List: List of hosts and the VMs on them.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError
 
     ## VMs
 
-    def vm_create(self, host: str, vm_name: str) -> bool:
+    def vm_create(self, host: str, vm_name: str, cores: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
 
         Args:
             host (str): host on which to provision the VM.
             vm_name (str): name to give the new VM.
+            cores (int): number of cores to allocate.
+            memory (int): amount of memory to allocate.
+            storage (int): amount of storage to allocate.
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError
 
     def vm_delete(self, host: str, vm_name: str) -> bool:
         """
@@ -115,20 +139,26 @@ class MySQL(State):
 
         Returns:
             bool: True if action completed successfully.
-        """
-        return True
 
-    def vm_report(self, host: str) -> bool:
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def vm_report(self, host: str | None = None) -> List:
         """
         Get a report of VMs presently-managed on a host.
 
         Args:
-            host (str): Name of host on which to retrieve VM entries.
+            host (str | None): Name of host on which to retrieve VM entries. If None, return all VMs on all hosts. Defaults to None.
 
         Returns:
-            bool: True if action completed successfully.
+            List: List of VMs on the host, or all VMs on all hosts if host is None.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError
 
     ## ASGs
 
@@ -141,8 +171,11 @@ class MySQL(State):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError
 
     def asg_delete(self, name: str) -> bool:
         """
@@ -153,8 +186,11 @@ class MySQL(State):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError
 
     def asg_add_vm(self, host: str, vm_name: str) -> bool:
         """
@@ -166,8 +202,11 @@ class MySQL(State):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError
 
     def asg_remove_vm(self, host: str, vm_name: str) -> bool:
         """
@@ -179,10 +218,29 @@ class MySQL(State):
 
         Returns:
             bool: True if action completed successfully.
-        """
-        return True
 
-    def asg_report(self, vm_enabled: bool = False) -> bool:
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def get_asg_vms(self, name: str, host: str | None) -> List:
+        """
+        Get all VMs in an autoscaling group, optionally filtering by host.
+
+        Args:
+            name (str): Name of ASG to retrieve VMs from.
+            host (str | None): Optionally specify the name of host by which to filter the autoscaling group VMs by.
+
+        Returns:
+            List: List of VMs in the ASG.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def asg_report(self, vm_enabled: bool = False) -> List:
         """
         Get a report of current autoscaling groups' standings. Optionally enable VMs be returned on hosts as well.
 
@@ -190,6 +248,9 @@ class MySQL(State):
             vm_enabled (bool, optional): Return VMs on hosts as well. Defaults to False as it's a more expensive operation.
 
         Returns:
-            bool: True if action completed successfully.
+            List: List of ASGs.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
         """
-        return True
+        raise NotImplementedError

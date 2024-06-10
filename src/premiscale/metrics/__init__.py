@@ -42,10 +42,12 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
     """
     match config.controller.databases.timeseries.type:
         case 'memory':
+            log.debug(f'Using local memory for time series database.')
             from premiscale.metrics.timeseries.local import Local
 
             return Local(config)
         case 'influxdb':
+            log.debug(f'Using InfluxDB for time series database.')
             from premiscale.metrics.timeseries.influxdb import InfluxDB
 
             connection = unstructure(config.controller.databases.timeseries.connection)
@@ -72,10 +74,12 @@ def build_state_connection(config: Config) -> State:
     match config.controller.databases.state.type:
         case 'memory':
             # SQLite
+            log.debug(f'Using local memory for state database.')
             from premiscale.metrics.state.local import Local
 
             return Local()
         case 'mysql':
+            log.debug(f'Using MySQL for state database.')
             from premiscale.metrics.state.mysql import MySQL
 
             connection = unstructure(config.controller.databases.state.connection)

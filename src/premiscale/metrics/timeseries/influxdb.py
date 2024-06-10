@@ -4,10 +4,10 @@ Methods for interacting with influxdb.
 
 import influxdb
 
-from premiscale.metrics._base import Metrics
+from premiscale.metrics.timeseries._base import TimeSeries
 
 
-class InfluxDB(Metrics):
+class InfluxDB(TimeSeries):
     """
     Implement required interface methods that connect with InfluxDB.
     """
