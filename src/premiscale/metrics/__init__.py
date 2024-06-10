@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import logging
 
+from concurrent.futures import ThreadPoolExecutor
 from typing import Iterator, TYPE_CHECKING
 from setproctitle import setproctitle
-from cattrs import unstructure, structure
+from cattrs import unstructure
 from premiscale.config.v1alpha1 import Host
+from premiscale.hypervisor.qemu import Qemu
 
 
 if TYPE_CHECKING:
@@ -119,12 +121,13 @@ class MetricsCollector:
         """
         return iter(self.config.controller.autoscale.hosts)
 
-    def hostCollect(self, host: Host) -> None:
+    def _collectHostMetrics(self) -> None:
         """
-        Collect metrics from a host and store them in the appropriate backend database.
+        Collect metrics from a single host with Libvirt and store them in the appropriate backend database.
         """
+        pass
 
-    def vmCollect(self, host: Host) -> None:
+    def _collectVirtualMachineMetrics(self, host: Host) -> None:
         """
         Collect metrics from a VM and store them in the appropriate backend database.
         """
