@@ -129,7 +129,7 @@ class Platform:
 
                 registration_response = response.json()
 
-                log.debug(f'Registration response: {registration_response}')
+                log.debug(f'Registration response: {json.dumps(registration_response)}')
 
                 # Append the host used to make the registration request to the registration response.
                 registration_response['host'] = host

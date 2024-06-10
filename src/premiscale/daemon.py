@@ -6,9 +6,6 @@ controller is configured. It also starts the healthcheck API for Docker and Kube
 
 import multiprocessing as mp
 import logging
-import signal
-import sys
-import os
 
 from functools import partial
 from multiprocessing.queues import Queue
@@ -16,7 +13,6 @@ from concurrent.futures import ProcessPoolExecutor
 from threading import Thread
 from typing import cast
 from setproctitle import setproctitle
-from daemon import DaemonContext, pidfile
 from premiscale.config.v1alpha1 import Config
 from premiscale.api.healthcheck import app as healthcheck
 from premiscale.autoscaling.group import Autoscaler
@@ -58,22 +54,7 @@ def start(config: Config, version: str, token: str) -> int:
     for _dthread in _main_process_daemon_threads:
         _dthread.start()
 
-    with ProcessPoolExecutor() as executor, mp.Manager() as manager, DaemonContext(
-            stdin=sys.stdin,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            # files_preserve=[],
-            detach_process=False,
-            prevent_core=True,
-            pidfile=pidfile.TimeoutPIDLockFile(config.controller.pidFile),
-            working_directory=os.getenv('HOME'),
-            signal_map={
-                signal.SIGTERM: executor.shutdown,
-                signal.SIGHUP: executor.shutdown,
-                signal.SIGINT: executor.shutdown,
-                signal.SIGPIPE: None,  # TODO: investigate signal maps here.
-            }
-        ):
+    with ProcessPoolExecutor() as executor, mp.Manager() as manager:
 
         autoscaling_action_queue: Queue = cast(Queue, manager.Queue())
         platform_message_queue: Queue = cast(Queue, manager.Queue())
