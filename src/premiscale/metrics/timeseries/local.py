@@ -18,3 +18,23 @@ class Local(TimeSeries):
     """
     def __init__(self, config: Config) -> None:
         self.config = config
+
+    def open(self) -> None:
+        """
+        Open a connection to the metrics backend these methods interact with.
+        """
+        pass
+
+    def close(self) -> None:
+        """
+        Close the connection to the metrics backend.
+
+        This method should also dereference any secrets that may be stored in memory.
+        """
+        pass
+
+    def commit(self) -> None:
+        """
+        Commit any changes to the database.
+        """
+        pass
