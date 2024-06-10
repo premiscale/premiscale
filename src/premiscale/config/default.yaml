@@ -7,8 +7,8 @@ controller:
   ## @param controller.pidFile [string, default: /opt/premiscale/premiscale.pid] Path to the file where the controller daemon process writes its PID.
   pidFile: /opt/premiscale/premiscale.pid
 
-  ## @param controller.mode [string, default: kubernetes] The mode of the controller. Can be 'kubernetes' or 'standalone'. If 'standalone', the controller will not attempt to connect to a Kubernetes cluster autoscaler. If 'kubernetes', the controller will attempt to connect to the Kubernetes cluster autoscaler.
-  mode: kubernetes
+  ## @param controller.mode [string, default: standalone] The mode of the controller. Can be 'kubernetes' or 'standalone'. If 'standalone', the controller will not attempt to connect to a Kubernetes cluster autoscaler. If 'kubernetes', the controller will attempt to connect to the Kubernetes cluster autoscaler.
+  mode: standalone
 
   kubernetes:
     ## @param controller.kubernetes.autoscalerPort [default: 8080] The port on which the Kubernetes autoscaler is listening.

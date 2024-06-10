@@ -37,7 +37,7 @@ def start(config: Config, version: str, token: str) -> int:
     """
     setproctitle('premiscale')
 
-    # Start the healthcheck API in a separate thread off our main process as a daemon.
+    # Start the healthcheck and other APIs in a separate thread off our main process as a daemon thread.
     _main_process_daemon_threads = [
         Thread(
             target=partial(
@@ -98,6 +98,7 @@ def start(config: Config, version: str, token: str) -> int:
                     executor.submit(
                         MetricsCollector(
                             config,
+                            # No need for time-series metrics collection in Kubernetes mode.
                             timeseries_enabled=False
                         )
                     )
@@ -114,11 +115,11 @@ def start(config: Config, version: str, token: str) -> int:
                     )
                 )
 
-                # Host metrics collection subprocess (populates metrics database)
                 processes.append(
                     executor.submit(
                         MetricsCollector(
                             config,
+                            # Enable time-series metrics collection in standalone mode since Reconciliation needs it.
                             timeseries_enabled=True
                         )
                     )
