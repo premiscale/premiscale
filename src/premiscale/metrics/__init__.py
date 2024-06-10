@@ -30,6 +30,15 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
     Build a metrics collection class instance for storing metrics  hosts. Only one of
     these loops is created; metrics are published to influxdb for retrieval and query
     by the ASG loop, which evaluates on a per-ASG basis whether Actions need to be taken.
+
+    Args:
+        config (Config): The configuration object.
+
+    Returns:
+        TimeSeries: A time-series database interface.
+
+    Raises:
+        ValueError: If the time-series database type is unknown.
     """
     match config.controller.databases.timeseries.type:
         case 'memory':
@@ -50,6 +59,15 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
 def build_state_connection(config: Config) -> State:
     """
     Build a state collection class.
+
+    Args:
+        config (Config): The configuration object.
+
+    Returns:
+        State: A state database interface.
+
+    Raises:
+        ValueError: If the state database type is unknown.
     """
     match config.controller.databases.state.type:
         case 'memory':
@@ -81,6 +99,7 @@ class MetricsCollector:
         setproctitle('metrics-collector')
         log.debug('Starting metrics collection subprocess')
 
+        # Set up database interfaces.
         if self.timeseries_enabled:
             log.debug(f'Opening time series database connection.')
             self.timeseriesConnection = build_timeseries_connection(self.config)
@@ -90,7 +109,17 @@ class MetricsCollector:
 
     def hostIterator(self) -> Iterator:
         """
-        Create an iterator that visits every host.
+        Create an iterator that visits every host specified in the configuration file.
         """
-        for host in self.config.controller.autoscale.hosts:
-            yield structure(host, Host)
+        return iter(self.config.controller.autoscale.hosts)
+
+    def hostCollect(self, host: Host) -> None:
+        """
+        Collect metrics from a host and store them in the appropriate backend database.
+        """
+
+    def vmCollect(self, host: Host) -> None:
+        """
+        Collect metrics from a VM and store them in the appropriate backend database.
+        """
+        pass

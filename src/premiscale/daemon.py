@@ -27,11 +27,7 @@ from premiscale.metrics import MetricsCollector
 log = logging.getLogger(__name__)
 
 
-def start(
-        config: Config,
-        version: str,
-        token: str
-    ) -> int:
+def start(config: Config, version: str, token: str) -> int:
     """
     Start our subprocesses and the healthcheck API for Docker and Kubernetes.
 
@@ -75,6 +71,7 @@ def start(
                 signal.SIGTERM: executor.shutdown,
                 signal.SIGHUP: executor.shutdown,
                 signal.SIGINT: executor.shutdown,
+                signal.SIGPIPE: None,  # TODO: investigate signal maps here.
             }
         ):
 

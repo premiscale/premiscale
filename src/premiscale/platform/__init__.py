@@ -137,7 +137,7 @@ class Platform:
                 # Write the registration response to disk for future reference; if the controller is restarted, it will
                 # Attempt to read this file to determine if it has already registered. If the host changes, the controller
                 # will re-register and be assigned a new agent ID by the platform.
-                write_json(registration_response, 'registration.json')
+                write_json(registration_response, '$HOME/registration.json')
 
             except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
                 log.error(f'Could not verify SSL certificate: {msg}. Skipping registration.')
