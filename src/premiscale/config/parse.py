@@ -6,6 +6,7 @@ Parse a configuration file, or create a default one.
 import yaml
 import logging
 import sys
+import json
 
 from pathlib import Path
 from importlib import resources
@@ -59,7 +60,7 @@ def configParse(configPath: str) -> Config:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)
 
-    log.debug(f'Successfully parsed config version {_config.version}: {_loaded_config}')
+    log.debug(f'Successfully parsed config version {_config.version}: {json.dumps(_loaded_config)}')
 
     return _config
 
@@ -92,6 +93,8 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
             data,
             strict=strict
         )
+
+        log.info(f'Config file at {configPath} is valid.')
     except FileNotFoundError as e:
         log.error(f'Could not find file: {e}')
         return False

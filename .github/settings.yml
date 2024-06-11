@@ -3,5 +3,5 @@ _extends: .github
 repository:
   name: premiscale
   description: The PremiScale autoscaler controller for Kubernetes
-  homepage: https://www.premiscale.com
+  homepage: https://premiscale.com
   topics: KVM, libvirt, autoscaling, virtualization, Kubernetes

@@ -27,22 +27,19 @@ autoscale:
   groups: include('groups')
 ---
 databases:
+  collectionInterval: int(min=5)
+  hostConnectionTimeout: int(min=1)
+  maxHostConnectionThreads: int(min=0)
   state: include('state')
-  metrics: include('metrics')
+  timeseries: include('timeseries')
 ---
 state:
   type: enum('memory', 'mysql')
-  collectionInterval: int(min=5)
-  maxThreads: int(min=0)
-  hostConnectionTimeout: int(min=1)
   connection: include('connection', required=False)
 ---
-metrics:
+timeseries:
   type: enum('memory', 'influxdb')
-  collectionInterval: int(min=5)
   trailing: int(min=5)
-  hostConnectionTimeout: int(min=1)
-  maxThreads: int(min=0)
   connection: include('connection', required=False)
 ---
 connection:

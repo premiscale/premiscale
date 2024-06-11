@@ -1,11 +1,21 @@
+"""
+Reconcile metrics and state databases and place Actions on the autoscaling queue for the Autoscaling subprocess to process.
+"""
+
+
+from __future__ import annotations
+
 import logging
 import time
 
-from multiprocessing.queues import Queue
+from typing import TYPE_CHECKING
 from setproctitle import setproctitle
-from premiscale.config.v1alpha1 import Config
-from premiscale.metrics import build_metrics
-from premiscale.state import build_state
+from premiscale.metrics import build_state_connection, build_timeseries_connection
+
+
+if TYPE_CHECKING:
+    from premiscale.config.v1alpha1 import Config
+    from multiprocessing.queues import Queue
 
 
 log = logging.getLogger(__name__)
@@ -18,8 +28,8 @@ class Reconcile:
     actions to correct the state drift are added to the queue.
     """
     def __init__(self, config: Config) -> None:
-        self.state_database = build_state(config)
-        self.metrics_database = build_metrics(config)
+        self.state_database = build_state_connection(config)
+        self.metrics_database = build_timeseries_connection(config)
         self.platform_queue: Queue
         self.asg_queue: Queue
 

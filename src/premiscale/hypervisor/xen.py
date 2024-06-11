@@ -3,7 +3,7 @@ Implement a Libvirt connection to a Xen-based hypervisor/host.
 """
 
 
-from premiscale.hypervisor.libvirt import Libvirt
+from premiscale.hypervisor._base import Libvirt
 
 
 class Xen(Libvirt):

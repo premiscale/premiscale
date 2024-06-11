@@ -11,7 +11,7 @@ from typing import Any
 from abc import ABC, abstractmethod
 
 # TODO: context needs to be realized here as far as which hypervisor to use.
-from premiscale.hypervisor.libvirt import Libvirt
+from premiscale.hypervisor._base import Libvirt
 
 
 class Verb(enum.Enum):

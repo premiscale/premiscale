@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from premiscale.config.parse import validateConfig, configParse
-from premiscale.controller._daemon import start
+from premiscale.daemon import start
 from premiscale.utils import LogLevel
 from premiscale import env, version
 
@@ -26,7 +26,7 @@ def main() -> None:
     parser = ArgumentParser(
         formatter_class=RawDescriptionHelpFormatter,
         description=__doc__,
-        epilog='For more information, visit https://www.premiscale.com.\n\n© PremiScale, Inc. 2024.'
+        epilog='For more information, visit https://premiscale.com.\n\n© PremiScale, Inc. 2024.'
     )
 
     parser.add_argument(

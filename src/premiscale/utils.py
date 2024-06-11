@@ -8,6 +8,7 @@ from __future__ import annotations
 import sys
 import logging
 import json
+import os
 
 from enum import Enum
 from pathlib import Path
@@ -81,12 +82,16 @@ def write_json(data: dict, path: str) -> None:
         data (dict): the dictionary to write.
         path (str): the path to write the file to.
     """
+    path_e = os.path.expandvars(path)
+
     try:
-        with open(path, 'w', encoding='utf-8') as f:
-            log.debug(f'Writing JSON to file: {path}')
+        with open(path_e, 'w', encoding='utf-8') as f:
+            log.debug(f'Writing JSON to file: {path_e}')
             json.dump(data, f)
     except (FileNotFoundError, PermissionError) as msg:
         log.error(f'Failed to write JSON file, received: {msg}')
+    except OSError as msg:
+        log.error(f'Failed to write JSON file {path_e}, received: {msg}. Check your path and permissions.')
 
 
 def read_json(path: str) -> dict | None:

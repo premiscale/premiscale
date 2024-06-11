@@ -17,10 +17,6 @@ from cattrs import structure
 
 log = logging.getLogger(__name__)
 
-__all__ = [
-    'Config'
-]
-
 
 @define
 class DatabaseCredentials:
@@ -73,21 +69,15 @@ class State:
     State database configuration options.
     """
     type: str
-    collectionInterval: int
-    maxThreads: int
-    hostConnectionTimeout: int
     connection: Connection | None = ib(default=None)
 
 
 @define
-class Metrics:
+class TimeSeries:
     """
-    Metrics database configuration options.
+    Time series database configuration options.
     """
     type: str
-    collectionInterval: int
-    maxThreads: int
-    hostConnectionTimeout: int
     trailing: int
     connection: Connection | None = ib(default=None)
 
@@ -97,8 +87,11 @@ class Databases:
     """
     Databases configuration options.
     """
+    collectionInterval: int
+    hostConnectionTimeout: int
+    maxHostConnectionThreads: int
     state: State
-    metrics: Metrics
+    timeseries: TimeSeries
 
 
 @define
@@ -172,7 +165,7 @@ class Host:
     protocol: str
     port: int
     hypervisor: str
-    resources: Resources
+    resources: Resources | None = ib(default=None)
 
 
 @define
