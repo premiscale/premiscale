@@ -114,11 +114,9 @@ class MetricsCollector:
 
         # Set up database interfaces.
         if self.timeseries_enabled:
-            log.debug(f'Opening time series database connection.')
             self.timeseriesConnection = build_timeseries_connection(self.config)
             self.timeseriesConnection.open()
 
-        log.debug('Opening state database connection.')
         self.stateConnection = build_state_connection(self.config)
         self.stateConnection.open()
 

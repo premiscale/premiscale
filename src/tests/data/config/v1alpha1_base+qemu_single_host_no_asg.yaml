@@ -29,28 +29,19 @@ controller:
     ## @param controller.databases.maxHostConnectionThreads [default: 10] Establish connections to hosts in maxHostConnectionThreads-batches for all metrics collection.
     maxHostConnectionThreads: 10
 
+    ## @param controller.databases.state.collectionInterval [default: 60] How often the agent retrieves state from all of the connected hosts.
+    collectionInterval: 60
+
+    ## @param controller.databases.state.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
+    hostConnectionTimeout: 60
+
     state:
       ## @param controller.databases.state.type [string, default: memory] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
       type: memory
 
-      ## @param controller.databases.state.collectionInterval [default: 60] How often the agent retrieves state from all of the connected hosts.
-      collectionInterval: 60
-
-      ## @param controller.databases.state.maxThreads [default: 10] Establish connections to hosts in maxThreads-batches.
-      maxThreads: 10
-
-      ## @param controller.databases.state.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
-      hostConnectionTimeout: 60
-
-    metrics:
+    timeseries:
       ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
       type: memory
-
-      ## @param controller.databases.metrics.collectionInterval [default: 60] How often the agent retrieves metrics from all of the connected hosts.
-      collectionInterval: 60
-
-      ## @param controller.databases.metrics.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
-      hostConnectionTimeout: 60
 
       ## @param controller.databases.metrics.trailing [default: 1200] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes
       trailing: 1200
