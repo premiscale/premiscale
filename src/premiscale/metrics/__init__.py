@@ -198,7 +198,7 @@ class MetricsCollector:
             log.debug(f'Collection run took {collection_run_duration.total_seconds()} seconds.')
 
             if collection_run_duration < timedelta(seconds=self.config.controller.databases.collectionInterval):
-                actual_sleep = self.config.controller.databases.collectionInterval - (collection_run_end - collection_run_start).total_seconds()
+                actual_sleep = round(self.config.controller.databases.collectionInterval - (collection_run_end - collection_run_start).total_seconds(), 2)
                 log.debug(f'Waiting for {actual_sleep} seconds before revisiting every host.')
                 sleep(actual_sleep)
             else:
