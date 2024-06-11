@@ -1,7 +1,14 @@
 #! /usr/bin/env bash
 # Bring up a fresh instance of the docker compose stack.
 
-docker compose -f compose.yaml down
+# Set our profile.
+if [ $# -ne 0 ]; then
+    PROFILE="$1"
+else
+    PROFILE="zero"
+fi
+
+docker compose --profile="$PROFILE" -f compose.yaml down
 
 
 # clear_containers()

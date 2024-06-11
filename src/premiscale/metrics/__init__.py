@@ -144,7 +144,7 @@ class MetricsCollector:
 
     def __getitem__(self, subscript: int | slice) -> List[Host]:
         """
-        Get a host by index.
+        Get a host by index or slice.
 
         Args:
             subscript (int | slice): The index or slice of the hosts to retrieve.
@@ -172,7 +172,11 @@ class MetricsCollector:
                 _potential_upper_bound = (1 + page) * self.config.controller.databases.maxHostConnectionThreads
                 upper_bound = _potential_upper_bound if _potential_upper_bound < len(self) else len(self)
 
-                log.debug(f'Collecting metrics for hosts {page} to {page + self.config.controller.databases.maxHostConnectionThreads}.')
+                if lower_bound == upper_bound:
+                    log.debug(f'No hosts to visit. Ensure you list managed hosts in the config file.')
+                    break
+
+                log.debug(f'Collecting metrics for hosts {lower_bound} to {upper_bound}.')
 
                 # Reset our collection of threads every paginated iteration over hosts.
                 threads = []
@@ -193,11 +197,11 @@ class MetricsCollector:
             # Wait for the next collection interval, or start right away if collection took longer than that interval.
 
             collection_run_end = datetime.now()
-            collection_run_duration = collection_run_end - collection_run_start
+            collection_run_duration = round((collection_run_end - collection_run_start).total_seconds(), 2)
 
-            log.debug(f'Collection run took {collection_run_duration.total_seconds()} seconds.')
+            log.debug(f'Collection run took {collection_run_duration} seconds.')
 
-            if collection_run_duration < timedelta(seconds=self.config.controller.databases.collectionInterval):
+            if collection_run_duration < round(timedelta(seconds=self.config.controller.databases.collectionInterval).total_seconds(), 2):
                 actual_sleep = round(self.config.controller.databases.collectionInterval - (collection_run_end - collection_run_start).total_seconds(), 2)
                 log.debug(f'Waiting for {actual_sleep} seconds before revisiting every host.')
                 sleep(actual_sleep)

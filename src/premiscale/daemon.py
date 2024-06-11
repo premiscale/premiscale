@@ -129,7 +129,6 @@ def start(config: Config, version: str, token: str) -> int:
             if process is not None:
                 process.result()
 
-    # TODO: send Event to indicate that the thread should exit.
     for thread in _main_process_daemon_threads:
         thread.join()
 
