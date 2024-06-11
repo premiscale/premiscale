@@ -11,15 +11,16 @@ from __future__ import annotations
 import logging
 
 from concurrent.futures import ThreadPoolExecutor
-from typing import Iterator, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from setproctitle import setproctitle
 from cattrs import unstructure
-from premiscale.config.v1alpha1 import Host
-# from premiscale.hypervisor.qemu import Qemu
+from time import sleep
+from premiscale.hypervisor import build_hypervisor_connection
 
 
 if TYPE_CHECKING:
-    from premiscale.config.v1alpha1 import Config
+    from typing import Iterator
+    from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
     from premiscale.metrics.timeseries._base import TimeSeries
 
@@ -113,20 +114,61 @@ class MetricsCollector:
         self.stateConnection = build_state_connection(self.config)
         self.stateConnection.open()
 
-    def hostIterator(self) -> Iterator:
+        self._collectMetrics()
+
+    def __iter__(self) -> Iterator:
         """
         Create an iterator that visits every host specified in the configuration file.
         """
         return iter(self.config.controller.autoscale.hosts)
 
-    def _collectHostMetrics(self) -> None:
+    def __len__(self) -> int:
         """
-        Collect metrics from a single host with Libvirt and store them in the appropriate backend database.
+        Return the number of hosts specified in the configuration file.
         """
-        pass
+        return len(self.config.controller.autoscale.hosts)
 
-    def _collectVirtualMachineMetrics(self, host: Host) -> None:
+    def _collectMetrics(self) -> None:
         """
-        Collect metrics from a VM and store them in the appropriate backend database.
+        Collect metrics from all hosts and store them in the appropriate backend database.
         """
-        pass
+        while True:
+            # Paginate through hosts to avoid OOM errors for large numbers of hosts.
+            for page in range(0, len(self), self.config.controller.databases.maxHostConnectionThreads):
+                log.debug(f'Collecting metrics for hosts {page} to {page + self.config.controller.databases.maxHostConnectionThreads}.')
+
+                threads = []
+                lower_bound = page * self.config.controller.databases.maxHostConnectionThreads
+                upper_bound = (page + self.config.controller.databases.maxHostConnectionThreads) if (page + self.config.controller.databases.maxHostConnectionThreads) < len(self) else len(self)
+
+                with ThreadPoolExecutor(max_workers=self.config.controller.databases.maxHostConnectionThreads) as executor:
+                    for i, host in enumerate(self):
+                        if i < lower_bound or i >= upper_bound:
+                            # Skip adding these ones until we're in the correct range.
+                            continue
+
+                        threads.append(
+                            executor.submit(
+                                self._collectHostMetrics,
+                                host
+                            )
+                        )
+
+                    for thread in threads:
+                        if thread is not None:
+                            thread.result()
+
+                sleep(self.config.controller.databases.collectionInterval)
+
+    def _collectHostMetrics(self, host: Host) -> None:
+        """
+        Collect metrics for a single host over a Libvirt connection and store them in the appropriate backend database.
+        """
+        with build_hypervisor_connection(host) as host_connection:
+            # state_data = self._collectStateMetrics(host_connection)
+
+            # Diff current state and recorded state and update the state database.
+
+            if self.timeseries_enabled:
+                # timeseries_data = self._collectVirtualMachineMetrics(host)
+                pass

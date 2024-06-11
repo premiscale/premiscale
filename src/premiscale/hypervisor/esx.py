@@ -8,5 +8,5 @@ from premiscale.hypervisor._base import Libvirt
 
 class ESX(Libvirt):
     """
-    Connect to an ESXi hypervisor.
+    Connect to an ESX hypervisor.
     """
