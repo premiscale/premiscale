@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import logging
 
-from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING
+from concurrent.futures import ThreadPoolExecutor
 from setproctitle import setproctitle
 from cattrs import unstructure
 from time import sleep

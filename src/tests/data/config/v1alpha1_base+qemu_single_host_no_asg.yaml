@@ -8,7 +8,7 @@ controller:
   pidFile: /opt/premiscale/premiscale.pid
 
   ## @param controller.mode [string, default: kubernetes] The mode of the controller. Can be 'kubernetes' or 'standalone'. If 'standalone', the controller will not attempt to connect to a Kubernetes cluster autoscaler. If 'kubernetes', the controller will attempt to connect to the Kubernetes cluster autoscaler.
-  mode: kubernetes
+  mode: standalone
 
   kubernetes:
     ## @param controller.kubernetes.autoscalerPort [default: 8080] The port on which the Kubernetes autoscaler is listening.
