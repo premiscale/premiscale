@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 
 from typing import Any
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 log = logging.getLogger(__name__)
@@ -19,6 +19,7 @@ class TimeSeries(ABC):
     An abstract base class with a skeleton interface for metrics class-types.
     """
 
+    @abstractmethod
     def open(self) -> None:
         """
         Open a connection to the metrics backend these methods interact with.
@@ -28,6 +29,7 @@ class TimeSeries(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def close(self) -> None:
         """
         Close the connection to the metrics backend.
@@ -39,6 +41,7 @@ class TimeSeries(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def commit(self) -> None:
         """
         Commit any changes to the database.

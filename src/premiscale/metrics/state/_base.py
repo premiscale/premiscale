@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 
 from typing import Any, List
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 log = logging.getLogger(__name__)
@@ -19,6 +19,20 @@ class State(ABC):
     An abstract base class with a skeleton interface for state class types.
     """
 
+    @abstractmethod
+    def is_connected(self) -> bool:
+        """
+        Check if the connection to the MySQL database is open.
+
+        Returns:
+            bool: True if the connection is open.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def open(self) -> None:
         """
         Open a connection to the state backend these methods interact with.
@@ -28,6 +42,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def close(self) -> None:
         """
         Close the connection to the state backend.
@@ -39,6 +54,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def commit(self) -> None:
         """
         Commit any changes to the database.
@@ -58,6 +74,7 @@ class State(ABC):
 
     ## Hosts
 
+    @abstractmethod
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
@@ -80,6 +97,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def host_delete(self, name: str, address: str) -> bool:
         """
         Delete a host record.
@@ -96,6 +114,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def host_report(self) -> List:
         """
         Get a report of currently-managed hosts.
@@ -110,6 +129,7 @@ class State(ABC):
 
     ## VMs
 
+    @abstractmethod
     def vm_create(self, host: str, vm_name: str, cores: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
@@ -129,6 +149,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def vm_delete(self, host: str, vm_name: str) -> bool:
         """
         Delete a VM on a specified host.
@@ -145,6 +166,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def vm_report(self, host: str | None = None) -> List:
         """
         Get a report of VMs presently-managed on a host.
@@ -162,6 +184,7 @@ class State(ABC):
 
     ## ASGs
 
+    @abstractmethod
     def asg_create(self, name: str) -> bool:
         """
         Create an autoscaling group.
@@ -177,6 +200,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def asg_delete(self, name: str) -> bool:
         """
         Delete an autoscaling group.
@@ -192,6 +216,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def asg_add_vm(self, host: str, vm_name: str) -> bool:
         """
         Add a VM on a host to an autoscaling group.
@@ -208,6 +233,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def asg_remove_vm(self, host: str, vm_name: str) -> bool:
         """
         Remove a VM on a host from an ASG.
@@ -224,6 +250,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def get_asg_vms(self, name: str, host: str | None) -> List:
         """
         Get all VMs in an autoscaling group, optionally filtering by host.
@@ -240,6 +267,7 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def asg_report(self, vm_enabled: bool = False) -> List:
         """
         Get a report of current autoscaling groups' standings. Optionally enable VMs be returned on hosts as well.

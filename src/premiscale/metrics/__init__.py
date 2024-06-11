@@ -15,7 +15,7 @@ from typing import Iterator, TYPE_CHECKING
 from setproctitle import setproctitle
 from cattrs import unstructure
 from premiscale.config.v1alpha1 import Host
-from premiscale.hypervisor.qemu import Qemu
+# from premiscale.hypervisor.qemu import Qemu
 
 
 if TYPE_CHECKING:
@@ -76,12 +76,10 @@ def build_state_connection(config: Config) -> State:
     match config.controller.databases.state.type:
         case 'memory':
             # SQLite
-            log.debug(f'Using local memory for state database.')
             from premiscale.metrics.state.local import Local
 
             return Local()
         case 'mysql':
-            log.debug(f'Using MySQL for state database.')
             from premiscale.metrics.state.mysql import MySQL
 
             connection = unstructure(config.controller.databases.state.connection)

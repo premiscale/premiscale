@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 import sqlite3
 
-from typing import List
+from typing import List, Tuple
 from premiscale.metrics.state._base import State
 
 
@@ -33,13 +33,29 @@ class Local(State):
         """
         return self._connection is not None
 
-    def open(self) -> None:
+    def run(self, query: str, parameters: Tuple | None = None) -> List:
         """
-        Open a connection to an in-memory SQLite database.
+        Run the in-memory database.
+        """
+        if parameters:
+            q = self._cursor.execute(query, parameters).fetchall()
+        else:
+            q = self._cursor.execute(query).fetchall()
+
+        self.commit()
+
+        return q
+
+    def open(self, database: str = 'file::memory:?cache=shared') -> None:
+        """
+        Open a connection to a SQLite database. Defaults to an in-memory database.
+
+        Args:
+            database (str): Path to the SQLite database. Defaults to ':memory:'.
         """
         log.debug('Opening connection to in-memory SQLite database.')
         self._connection = sqlite3.connect(
-            database='file::memory:?cache=shared'
+            database=database
         )
         self._cursor = self._connection.cursor()
         log.debug('Connection to in-memory SQLite database opened.')
@@ -70,16 +86,16 @@ class Local(State):
         Reset the SQLite database.
         """
         log.debug('Resetting in-memory SQLite database.')
-        self._connection.execute('DROP TABLE IF EXISTS hosts')
-        self._connection.execute('DROP TABLE IF EXISTS vms')
-        self._connection.execute('DROP TABLE IF EXISTS asgs')
-        self._connection.execute(
+        self._cursor.execute('DROP TABLE IF EXISTS hosts')
+        self._cursor.execute('DROP TABLE IF EXISTS vms')
+        self._cursor.execute('DROP TABLE IF EXISTS asgs')
+        self._cursor.execute(
             'CREATE TABLE hosts (name TEXT, address TEXT, protocol TEXT, port INTEGER, hypervisor TEXT, cpu INTEGER, memory INTEGER, storage INTEGER)'
         )
-        self._connection.execute(
+        self._cursor.execute(
             'CREATE TABLE vms (host TEXT, name TEXT, cores INTEGER, memory INTEGER, storage INTEGER)'
         )
-        self._connection.execute(
+        self._cursor.execute(
             'CREATE TABLE asgs (name TEXT)'
         )
         self.commit()
@@ -104,7 +120,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'INSERT INTO hosts (name, address, protocol, port, hypervisor, cpu, memory, storage) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             (name, address, protocol, port, hypervisor, cpu, memory, storage)
         )
@@ -122,7 +138,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'DELETE FROM hosts WHERE name = ? AND address = ?',
             (name, address)
         )
@@ -136,7 +152,7 @@ class Local(State):
         Returns:
             List: List of hosts and the VMs on them.
         """
-        return self._connection.execute(
+        return self._cursor.execute(
             'SELECT * FROM hosts'
         ).fetchall()
 
@@ -156,7 +172,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'INSERT INTO vms (host, name, cores, memory, storage) VALUES (?, ?, ?, ?, ?)',
             (host, vm_name, cores, memory, storage)
         )
@@ -174,7 +190,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'DELETE FROM vms WHERE host = ? AND name = ?',
             (host, vm_name)
         )
@@ -192,11 +208,11 @@ class Local(State):
             List: List of VMs on the host, if host was specified; otherwise, all VMs on all hosts.
         """
         if host is None:
-            return self._connection.execute(
+            return self._cursor.execute(
                 'SELECT * FROM vms'
             ).fetchall()
 
-        return self._connection.execute(
+        return self._cursor.execute(
             'SELECT * FROM vms WHERE host = ?',
             (host,)
         ).fetchall()
@@ -213,7 +229,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'INSERT INTO asgs (name) VALUES (?)',
             (name,)
         )
@@ -230,7 +246,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'DELETE FROM asgs WHERE name = ?',
             (name,)
         )
@@ -248,7 +264,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'INSERT INTO asgs (name) VALUES (?)',
             (vm_name,)
         )
@@ -266,7 +282,7 @@ class Local(State):
         Returns:
             bool: True if action completed successfully.
         """
-        self._connection.execute(
+        self._cursor.execute(
             'DELETE FROM asgs WHERE name = ?',
             (vm_name,)
         )
@@ -285,12 +301,12 @@ class Local(State):
             List: List of VMs in the ASG.
         """
         if host is None:
-            return self._connection.execute(
+            return self._cursor.execute(
                 'SELECT * FROM vms WHERE asg_name = ?',
                 (asg_name,)
             ).fetchall()
 
-        return self._connection.execute(
+        return self._cursor.execute(
             'SELECT * FROM vms WHERE name = ? AND host = ?',
             (asg_name, host)
         ).fetchall()
@@ -306,10 +322,10 @@ class Local(State):
             List: List of autoscaling groups and their VMs, if enabled
         """
         if vm_enabled:
-            return self._connection.execute(
+            return self._cursor.execute(
                 'SELECT * FROM asgs'
             ).fetchall()
 
-        return self._connection.execute(
+        return self._cursor.execute(
             'SELECT * FROM asgs'
         ).fetchall()

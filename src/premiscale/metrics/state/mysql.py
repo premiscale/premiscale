@@ -56,6 +56,12 @@ class MySQL(State):
         """
         # self._connection.close()
 
+    def commit(self) -> None:
+        """
+        Commit changes to the database.
+        """
+        # self._connection.commit()
+
      ## Hosts
 
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
