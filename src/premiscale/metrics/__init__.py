@@ -15,11 +15,12 @@ from typing import TYPE_CHECKING
 from setproctitle import setproctitle
 from cattrs import unstructure
 from time import sleep
+from datetime import datetime, timedelta
 from premiscale.hypervisor import build_hypervisor_connection
 
 
 if TYPE_CHECKING:
-    from typing import Iterator
+    from typing import Iterator, List
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
     from premiscale.metrics.timeseries._base import TimeSeries
@@ -94,6 +95,10 @@ def build_state_connection(config: Config) -> State:
 class MetricsCollector:
     """
     Oversee visiting every host and collecting metrics and storing them in the appropriate backend database.
+
+    Args:
+        config (Config): The configuration object.
+        timeseries_enabled (bool): Whether to enable time-series data collection. Defaults to False.
     """
     def __init__(self, config: Config, timeseries_enabled: bool = False) -> None:
         self.timeseriesConnection: TimeSeries | None = None
@@ -101,6 +106,9 @@ class MetricsCollector:
         self.config = config
 
     def __call__(self) -> None:
+        """
+        Start the metrics collection subprocess.
+        """
         setproctitle('metrics-collector')
         log.debug('Starting metrics collection subprocess')
 
@@ -119,34 +127,58 @@ class MetricsCollector:
     def __iter__(self) -> Iterator:
         """
         Create an iterator that visits every host specified in the configuration file.
+
+        Returns:
+            Iterator: An iterator that visits every host.
         """
         return iter(self.config.controller.autoscale.hosts)
 
     def __len__(self) -> int:
         """
         Return the number of hosts specified in the configuration file.
+
+        Returns:
+            int: The number of hosts.
         """
         return len(self.config.controller.autoscale.hosts)
+
+    def __getitem__(self, subscript: int | slice) -> List[Host]:
+        """
+        Get a host by index.
+
+        Args:
+            subscript (int | slice): The index or slice of the hosts to retrieve.
+
+        Returns:
+            List[Host]: List of hosts at the specified index or within the range of the slice.
+        """
+        if isinstance(subscript, slice):
+            return self.config.controller.autoscale.hosts[subscript.start:subscript.stop:subscript.step]
+        else:
+            return [self.config.controller.autoscale.hosts[subscript]]
 
     def _collectMetrics(self) -> None:
         """
         Collect metrics from all hosts and store them in the appropriate backend database.
         """
         while True:
-            # Paginate through hosts to avoid OOM errors for large numbers of hosts.
-            for page in range(0, len(self), self.config.controller.databases.maxHostConnectionThreads):
+            collection_run_start = datetime.now()
+
+            # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
+            for page in range(0, len(self) // self.config.controller.databases.maxHostConnectionThreads + 1):
+
+                # Set a lower and upper bound for a slice of hosts to visit from the whole config.
+                lower_bound = page * self.config.controller.databases.maxHostConnectionThreads
+                _potential_upper_bound = (1 + page) * self.config.controller.databases.maxHostConnectionThreads
+                upper_bound = _potential_upper_bound if _potential_upper_bound < len(self) else len(self)
+
                 log.debug(f'Collecting metrics for hosts {page} to {page + self.config.controller.databases.maxHostConnectionThreads}.')
 
+                # Reset our collection of threads every paginated iteration over hosts.
                 threads = []
-                lower_bound = page * self.config.controller.databases.maxHostConnectionThreads
-                upper_bound = (page + self.config.controller.databases.maxHostConnectionThreads) if (page + self.config.controller.databases.maxHostConnectionThreads) < len(self) else len(self)
 
                 with ThreadPoolExecutor(max_workers=self.config.controller.databases.maxHostConnectionThreads) as executor:
-                    for i, host in enumerate(self):
-                        if i < lower_bound or i >= upper_bound:
-                            # Skip adding these ones until we're in the correct range.
-                            continue
-
+                    for host in self[lower_bound:upper_bound]:
                         threads.append(
                             executor.submit(
                                 self._collectHostMetrics,
@@ -158,13 +190,26 @@ class MetricsCollector:
                         if thread is not None:
                             thread.result()
 
-                sleep(self.config.controller.databases.collectionInterval)
+            # Wait for the next collection interval, or start right away if collection took longer than that interval.
+
+            collection_run_end = datetime.now()
+            collection_run_duration = collection_run_end - collection_run_start
+
+            log.debug(f'Collection run took {collection_run_duration.total_seconds()} seconds.')
+
+            if collection_run_duration < timedelta(seconds=self.config.controller.databases.collectionInterval):
+                actual_sleep = self.config.controller.databases.collectionInterval - (collection_run_end - collection_run_start).total_seconds()
+                log.debug(f'Waiting for {actual_sleep} seconds before revisiting every host.')
+                sleep(actual_sleep)
+            else:
+                log.warning(f'Collection took longer than the collection interval of {self.config.controller.databases.collectionInterval} seconds. Starting collection immediately.')
 
     def _collectHostMetrics(self, host: Host) -> None:
         """
         Collect metrics for a single host over a Libvirt connection and store them in the appropriate backend database.
         """
         with build_hypervisor_connection(host) as host_connection:
+            log.info(f'Collecting metrics for host {host.name}.')
             # state_data = self._collectStateMetrics(host_connection)
 
             # Diff current state and recorded state and update the state database.
