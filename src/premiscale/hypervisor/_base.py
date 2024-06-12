@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import libvirt as lv
 import logging
+import os
 
 from typing import TYPE_CHECKING
 from libvirt import libvirtError
 from ipaddress import IPv4Address
+from paramiko import SSHConfig
 
 
 if TYPE_CHECKING:
@@ -30,23 +32,33 @@ class Libvirt:
         port (int): Port to connect to the host on.
         protocol (str): Type of authentication to use. Defaults to 'ssh'. Can be either 'ssh' or 'tls'.
         hypervisor (str): Type of hypervisor to connect to.
+        timeout (int): Timeout for the connection. Defaults to 30 seconds.
         user (str | None): Username to authenticate with (if using SSH).
         readonly (bool): Whether to open the connection in read-only mode. Defaults to False.
         resources (Dict | None): Resources available on the host. Defaults to None.
     """
-    def __init__(self, name: str, address: IPv4Address, port: int, protocol: str, hypervisor: str, user: str | None = None, readonly: bool = False, resources: Dict | None = None) -> None:
+    def __init__(self, name: str, address: IPv4Address, port: int, protocol: str, hypervisor: str, timeout: int = 30, user: str | None = None, readonly: bool = False, resources: Dict | None = None) -> None:
         self.name = name
         self.address = address
+        self._address_str = str(address)
         self.port = port
         self.protocol = protocol
+        self.timeout = timeout
         self.hypervisor = hypervisor
-        self.user = user
+
+        # Set the user to 'root' if not provided by the end user.
+        if user is None:
+            self.user = 'root'
+        else:
+            self.user = user
+
         self.readonly = readonly
         self.resources = resources
         self._connection: lv.virConnect | None = None
 
         if protocol.lower() == 'ssh':
             # SSH
+            self._configure_ssh()
             self.connection_string = f'{hypervisor}+ssh://{user}@{address}:{port}/system'
         else:
             # TLS
@@ -83,3 +95,19 @@ class Libvirt:
             log.info(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open.')
+
+    def _configure_ssh(self) -> None:
+        """
+        Configure the SSH connection to the host. This method makes connection timeouts configurable.
+        """
+        ssh_config_p = SSHConfig.from_path(os.path.expanduser('~/.ssh/config'))
+        ssh_config_entry = ssh_config_p.lookup(self._address_str)
+
+        if 'connecttimeout' not in ssh_config_entry:
+            with open(os.path.expanduser('~/.ssh/config'), 'a') as f:
+                if f'Host {self._address_str}' in f.read():
+                    raise ValueError(f'Host {self._address_str} already exists in ~/.ssh/config. Please remove it or add a ConnectTimeout value to it.')
+
+                f.write(f'\n\nHost {self._address_str}\n  ConnectTimeout {self.timeout}\n')
+
+        log.info(f'Configured SSH connection to {self._address_str} with a timeout of {self.timeout} seconds.')

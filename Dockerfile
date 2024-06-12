@@ -36,7 +36,9 @@ RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIR
 ENV PATH=/opt/premiscale/.local/bin:/opt/premiscale/bin:${PATH}
 WORKDIR /opt/premiscale
 
-RUN chown -R premiscale:premiscale .
+RUN mkdir -p "$HOME"/.ssh/ "$HOME"/.local/bin \
+    && touch "$HOME"/.ssh/config \
+    && chown -R premiscale:premiscale .
 USER premiscale
 
 ## Production image
@@ -49,8 +51,7 @@ ARG PYTHON_REPOSITORY
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
 
-RUN mkdir -p "$HOME"/.local/bin \
-    && pip install --upgrade pip \
+RUN pip install --upgrade pip \
     && pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}" \
     && premiscale --version
 
@@ -67,7 +68,6 @@ ENV POETRY_VIRTUALENVS_CREATE=true \
 COPY --chown=premiscale:premiscale src/ ./src/
 COPY --chown=premiscale:premiscale README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
 
-RUN mkdir -p "$HOME"/.local/bin
 ADD --chown=premiscale:premiscale https://install.python-poetry.org ./install-poetry.py
 RUN python install-poetry.py \
     && rm install-poetry.py

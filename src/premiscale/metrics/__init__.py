@@ -210,6 +210,9 @@ class MetricsCollector:
     def _collectHostMetrics(self, host: Host) -> None:
         """
         Collect metrics for a single host over a Libvirt connection and store them in the appropriate backend database.
+
+        Args:
+            host (Host): The host to collect metrics from.
         """
         with build_hypervisor_connection(host) as host_connection:
             log.info(f'Collecting metrics for host {host.name}.')
