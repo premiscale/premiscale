@@ -1,116 +1,6 @@
 services:
   # Controller network
-  premiscale-two-hosts:
-    container_name: premiscale-single-host
-    platform: linux/amd64
-    profiles:
-      - two_hosts
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      target: develop
-      pull: true
-    environment:
-      - PREMISCALE_TOKEN=123
-      - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
-      - PREMISCALE_LOG_LEVEL=debug
-      - PREMISCALE_PLATFORM=platform:443
-      - PREMISCALE_CACERT=/opt/premiscale/cert.pem
-      - INFLUXDB_HOST=influxdb:8086
-      - INFLUXDB_USERNAME=premiscale
-      - INFLUXDB_PASSWORD=premiscale
-      - MYSQL_HOST=mysql-agent-state:3306
-      - MYSQL_USERNAME=premiscale
-      - MYSQL_PASSWORD=premiscale
-    networks:
-      - controller
-    deploy:
-      resources:
-        limits:
-          cpus: '4.0'
-          memory: 1G
-        reservations:
-          cpus: '1.0'
-          memory: 1G
-    depends_on:
-      mysql-agent-state:
-        condition: service_healthy
-      influxdb:
-        condition: service_healthy
-      echoes:
-        condition: service_healthy
-      registration:
-        condition: service_healthy
-      platform:
-        condition: service_healthy
-    volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
-      # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
-    healthcheck:
-      test: curl http://localhost:8085/healthcheck
-      start_period: 3s
-      interval: 5s
-      timeout: 5s
-      retries: 3
-    ports:
-      - 8085:8085
-  premiscale-single-host:
-    container_name: premiscale-single-host
-    platform: linux/amd64
-    profiles:
-      - single_host
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      target: develop
-      pull: true
-    environment:
-      - PREMISCALE_TOKEN=123
-      - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml
-      - PREMISCALE_LOG_LEVEL=debug
-      - PREMISCALE_PLATFORM=platform:443
-      - PREMISCALE_CACERT=/opt/premiscale/cert.pem
-      - INFLUXDB_HOST=influxdb:8086
-      - INFLUXDB_USERNAME=premiscale
-      - INFLUXDB_PASSWORD=premiscale
-      - MYSQL_HOST=mysql-agent-state:3306
-      - MYSQL_USERNAME=premiscale
-      - MYSQL_PASSWORD=premiscale
-    networks:
-      - controller
-    deploy:
-      resources:
-        limits:
-          cpus: '4.0'
-          memory: 1G
-        reservations:
-          cpus: '1.0'
-          memory: 1G
-    depends_on:
-      mysql-agent-state:
-        condition: service_healthy
-      influxdb:
-        condition: service_healthy
-      echoes:
-        condition: service_healthy
-      registration:
-        condition: service_healthy
-      platform:
-        condition: service_healthy
-    volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
-      # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
-    healthcheck:
-      test: curl http://localhost:8085/healthcheck
-      start_period: 3s
-      interval: 5s
-      timeout: 5s
-      retries: 3
-    ports:
-      - 8085:8085
-  premiscale:
+  premiscale: &premiscale
     container_name: premiscale
     platform: linux/amd64
     profiles:
@@ -163,6 +53,24 @@ services:
       retries: 3
     ports:
       - 8085:8085
+  premiscale-two-hosts:
+    <<: *premiscale
+    container_name: premiscale-single-host
+    profiles:
+      - two_hosts
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      # Mount a different config from the default into the running container for testing.
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
+  premiscale-single-host:
+    <<: *premiscale
+    container_name: premiscale-single-host
+    profiles:
+      - single_host
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      # Mount a different config from the default into the running container for testing.
+      - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
   mysql-agent-state:
     container_name: mysql-agent
     image: mysql:8.4.0
