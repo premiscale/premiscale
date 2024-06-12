@@ -79,6 +79,12 @@ controller:
         user: emma
         protocol: SSH
         hypervisor: qemu
+      - name: rocinante-local
+        address: 10.0.0.200
+        port: 22
+        user: emma
+        protocol: SSH
+        hypervisor: qemu
 
     ## @param controller.autoscale.groups [object] Specify and configure autoscaling groups on the hosts above.
     groups: {}
