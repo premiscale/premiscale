@@ -66,6 +66,7 @@ host:
   address: str(min=1)
   port: int(min=1, max=65535)
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
+  user: str(min=1, required=False)
   hypervisor: enum('kvm', 'xen', 'esx', 'qemu', 'vmware')
 ---
 # The other half of autoscaling configuration

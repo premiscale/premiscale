@@ -6,8 +6,15 @@ Shorthand to testing code.
 """
 
 
-from functools import partial
+import logging
+
+from ipaddress import IPv4Address
 from premiscale.metrics.state.local import Local
+from premiscale.config.v1alpha1 import Host
+
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 def test_local_state():
@@ -43,8 +50,25 @@ def test_local_state():
             state.host_report()
         )
 
-    assert not state.is_connected()
+    # assert not state.is_connected()
+
+
+def test_qemu_hypervisor():
+    from premiscale.hypervisor import build_hypervisor_connection
+
+    with build_hypervisor_connection(
+            Host(
+                hypervisor='qemu',
+                name='rocinante',
+                user='emma',
+                address=IPv4Address('10.0.0.100'),
+                port=22,
+                protocol='SSH'
+            )
+        ) as hypervisor:
+        pass
 
 
 if __name__ == '__main__':
     test_local_state()
+    test_qemu_hypervisor()

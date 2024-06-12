@@ -168,6 +168,7 @@ class Host:
     protocol: str
     port: int
     hypervisor: str
+    user: str | None = ib(default=None)
     resources: Resources | None = ib(default=None)
 
 

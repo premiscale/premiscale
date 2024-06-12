@@ -1,5 +1,5 @@
 """
-Implement a Libvirt connection to a kvm-based hypervisor/host.
+Implement a Libvirt connection to a Qemu-based hypervisor/host.
 """
 
 
@@ -18,5 +18,13 @@ class Qemu(Libvirt):
     Connect to a host with a Qemu hypervisor.
     """
 
-    def __init__(self, host: IPv4Address, port: int, user: str, auth_type: str, readonly: bool = False) -> None:
-        super().__init__(host, port, user, 'qemu', auth_type, readonly)
+    def __init__(self, name: str, address: IPv4Address, port: int, user: str | None, protocol: str, readonly: bool = False) -> None:
+        super().__init__(
+            name=name,
+            address=address,
+            port=port,
+            user=user,
+            protocol=protocol,
+            readonly=readonly,
+            hypervisor='qemu'
+        )

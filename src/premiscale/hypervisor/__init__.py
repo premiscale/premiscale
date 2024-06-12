@@ -24,22 +24,23 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
     Build a Libvirt connection object based on the user-provided configuration of the host.
     """
     conf = unstructure(host)
+    del conf['resources']
 
     match host.hypervisor:
         case 'qemu':
             log.debug(f'Using QEMU hypervisor for host {host.name} at {host.address}.')
             from premiscale.hypervisor.qemu import Qemu
-
+            del conf['hypervisor']
             return Qemu(**conf)
         case 'vmware':
             log.debug(f'Using VMware hypervisor for host {host.name} at {host.address}.')
             from premiscale.hypervisor.vmware import VMware
-
+            del conf['hypervisor']
             return VMware(**conf)
         case 'xen':
             log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}.')
             from premiscale.hypervisor.xen import Xen
-
+            del conf['hypervisor']
             return Xen(**conf)
         case _:
             raise ValueError(f'Unknown hypervisor type: {host.hypervisor}')
