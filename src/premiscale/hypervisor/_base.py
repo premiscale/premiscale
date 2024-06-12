@@ -83,7 +83,6 @@ class Libvirt(ABC):
         """
         Open a connection to the Libvirt hypervisor.
         """
-        log.info('Here17')
         try:
             log.debug(f'Attempting to connect to host at {self.connection_string}')
 

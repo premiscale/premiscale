@@ -32,7 +32,6 @@ class Qemu(Libvirt):
                  user: str | None = None,
                  readonly: bool = False,
                  resources: Dict | None = None) -> None:
-        log.info('Here13')
         super().__init__(
             name=name,
             address=address,
