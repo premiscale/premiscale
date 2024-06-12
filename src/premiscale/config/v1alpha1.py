@@ -168,7 +168,7 @@ class Host:
     protocol: str
     port: int
     hypervisor: str
-    timeout: int = ib(default=60)
+    timeout: int = ib(default=45)
     user: str | None = ib(default=None)
     resources: Resources | None = ib(default=None)
 

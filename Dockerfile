@@ -36,10 +36,12 @@ RUN apt update && apt list -a libvirt-dev && apt install -y libvirt-dev=${LIBVIR
 ENV PATH=/opt/premiscale/.local/bin:/opt/premiscale/bin:${PATH}
 WORKDIR /opt/premiscale
 
-RUN mkdir -p "$HOME"/.ssh/ "$HOME"/.local/bin \
-    && touch "$HOME"/.ssh/config \
-    && chown -R premiscale:premiscale .
+RUN chown -R premiscale:premiscale .
+
 USER premiscale
+
+RUN mkdir -p "$HOME"/.ssh/ "$HOME"/.local/bin \
+    && touch "$HOME"/.ssh/config
 
 ## Production image
 
