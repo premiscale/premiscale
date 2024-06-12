@@ -36,7 +36,16 @@ class Libvirt:
         readonly (bool): Whether to open the connection in read-only mode. Defaults to False.
         resources (Dict | None): Resources available on the host. Defaults to None.
     """
-    def __init__(self, name: str, address: IPv4Address, port: int, protocol: str, hypervisor: str, timeout: int = 30, user: str | None = None, readonly: bool = False, resources: Dict | None = None) -> None:
+    def __init__(self,
+                 name: str,
+                 address: IPv4Address,
+                 port: int,
+                 protocol: str,
+                 hypervisor: str,
+                 timeout: int = 30,
+                 user: str | None = None,
+                 readonly: bool = False,
+                 resources: Dict | None = None) -> None:
         self.name = name
         self.address = address
         self._address_str = str(address)
@@ -74,6 +83,8 @@ class Libvirt:
         Open a connection to the Libvirt hypervisor.
         """
         try:
+            log.debug(f'Attempting to connect to host at {self.connection_string}')
+
             if self.readonly:
                 self._connection = lv.openReadOnly(self.connection_string)
             else:
@@ -97,7 +108,8 @@ class Libvirt:
 
     def _configure_ssh(self) -> None:
         """
-        Configure the SSH connection to the host. This method makes connection timeouts configurable.
+        Configure the SSH connection to the host. This method makes connection timeouts configurable
+        through the SSH config file.
         """
         with open(os.path.expanduser('~/.ssh/config'), mode='a+', encoding='utf-8') as ssh_config_f:
             ssh_config_f.seek(0)
