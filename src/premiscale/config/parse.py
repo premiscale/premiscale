@@ -37,8 +37,6 @@ def configParse(configPath: str) -> Config:
     # Drop a default config for parsing if one was not provided by the user.
     if not Path(configPath).exists():
         makeDefaultConfig(configPath)
-    else:
-        log.debug(f'Found config file at {configPath}.')
 
     with open(configPath, 'r', encoding='utf-8') as f:
         try:
