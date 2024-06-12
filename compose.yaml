@@ -45,9 +45,10 @@ services:
         condition: service_healthy
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
+      # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
     healthcheck:
-      test: premiscale status
+      test: curl http://localhost:8085/healthcheck
       start_period: 3s
       interval: 5s
       timeout: 5s
@@ -100,7 +101,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
     healthcheck:
-      test: premiscale status
+      test: curl http://localhost:8085/healthcheck
       start_period: 3s
       interval: 5s
       timeout: 5s

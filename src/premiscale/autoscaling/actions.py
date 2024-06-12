@@ -7,11 +7,15 @@ from __future__ import annotations
 
 import enum
 
-from typing import Any
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
 # TODO: context needs to be realized here as far as which hypervisor to use.
 from premiscale.hypervisor._base import Libvirt
+
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class Verb(enum.Enum):

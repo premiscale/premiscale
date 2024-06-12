@@ -9,10 +9,14 @@ import logging
 import os
 import sys
 
-from typing import List, Dict
+from typing import TYPE_CHECKING
 from attrs import define
 from attr import ib
 from cattrs import structure
+
+
+if TYPE_CHECKING:
+    from typing import List, Dict
 
 
 log = logging.getLogger(__name__)

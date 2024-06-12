@@ -11,13 +11,16 @@ from functools import partial
 from multiprocessing.queues import Queue
 from concurrent.futures import ProcessPoolExecutor
 from threading import Thread
-from typing import cast
+from typing import cast, TYPE_CHECKING
 from setproctitle import setproctitle
-from premiscale.config.v1alpha1 import Config
 from premiscale.api.healthcheck import app as healthcheck
 from premiscale.autoscaling.group import Autoscaler
 from premiscale.platform import Platform
 from premiscale.metrics import MetricsCollector
+
+
+if TYPE_CHECKING:
+    from premiscale.config.v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)
