@@ -79,7 +79,7 @@ class Libvirt:
         Close the connection with the Libvirt hypervisor.
         """
         if self._connection:
-            self._connection.close()
+            self._connection.virConnectClose()
             log.info(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open.')

@@ -10,6 +10,7 @@ from premiscale.hypervisor._base import Libvirt
 
 
 if TYPE_CHECKING:
+    from typing import Dict
     from ipaddress import IPv4Address
 
 
@@ -18,7 +19,7 @@ class Qemu(Libvirt):
     Connect to a host with a Qemu hypervisor.
     """
 
-    def __init__(self, name: str, address: IPv4Address, port: int, user: str | None, protocol: str, readonly: bool = False) -> None:
+    def __init__(self, name: str, address: IPv4Address, port: int, protocol: str, user: str | None = None, readonly: bool = False, resources: Dict | None = None) -> None:
         super().__init__(
             name=name,
             address=address,
@@ -26,5 +27,6 @@ class Qemu(Libvirt):
             user=user,
             protocol=protocol,
             readonly=readonly,
-            hypervisor='qemu'
+            hypervisor='qemu',
+            resources=resources
         )
