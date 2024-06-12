@@ -80,7 +80,7 @@ controller:
         protocol: SSH
         hypervisor: qemu
       - name: rocinante-local
-        address: 10.0.0.200
+        address: 10.0.0.102
         port: 22
         user: emma
         protocol: SSH
