@@ -9,13 +9,12 @@ import logging
 import os
 import sys
 
-# from typing import TYPE_CHECKING
 from attrs import define
 from attr import ib
 from cattrs import structure
 
-
-# In this particular module, cattrs requires these types during runtime, so we skip the TYPE_CHECKING check.
+# In this particular module, cattrs requires these types during runtime to unpack,
+# so we skip the TYPE_CHECKING check wrapping these imports.
 from typing import Dict, List
 
 

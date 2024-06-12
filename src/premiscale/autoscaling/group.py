@@ -1,9 +1,20 @@
+"""
+Process queues of Actions for all autoscaling groups. This is the main entry point for the autoscaling subprocess.
+"""
+
+
+from __future__ import annotations
+
 import logging
 
+from typing import TYPE_CHECKING
 from multiprocessing.queues import Queue
 from setproctitle import setproctitle
-from premiscale.config.v1alpha1 import Config
 from premiscale.autoscaling.actions import Action
+
+
+if TYPE_CHECKING:
+    from premiscale.config.v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)

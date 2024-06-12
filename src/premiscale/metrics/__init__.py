@@ -21,6 +21,7 @@ from premiscale.hypervisor import build_hypervisor_connection
 
 if TYPE_CHECKING:
     from typing import Iterator, List
+    # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
     from premiscale.metrics.timeseries._base import TimeSeries
