@@ -68,7 +68,7 @@ host:
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
   timeout: int(min=1, max=599940, required=False)
   user: str(min=1, required=False)
-  hypervisor: enum('kvm', 'xen', 'esx', 'qemu', 'vmware')
+  hypervisor: enum('kvm', 'xen', 'esx', 'qemu')
 ---
 # The other half of autoscaling configuration
 groups: map(include('group'), min=0)

@@ -42,14 +42,6 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
             del conf['hypervisor']
 
             return ESX(**conf)
-        case 'vmware':
-            log.debug(f'Using VMware hypervisor for host {host.name} at {host.address}.')
-
-            from premiscale.hypervisor.vmware import VMware
-
-            del conf['hypervisor']
-
-            return VMware(**conf)
         case 'xen':
             log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}.')
 
