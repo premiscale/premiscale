@@ -44,15 +44,15 @@ function reverse_lookup_profile()
     profile="$1"
     mapfile -t controller < <(yq ".services | to_entries[] | select(.value.profiles[0] == \"$profile\") | .key" compose.yaml)
 
-    if [ -z "${controller[*]}" ]; then
+    if [ "${#controller[@]}" -eq 0 ]; then
         printf "ERROR: Could not find a controller for the profile \"%s\".\\n" "$1" >&2
         exit 1
-    elif [ "${#controller[@]}" -ne 1 ]; then
-        printf "ERROR: Found multiple controllers for the profile \"%s\".\\n" "$1" >&2
+    elif [ "${#controller[@]}" -gt 1 ]; then
+        printf "ERROR: Found multiple controllers for the profile \"%s\": %s.\\n" "$1" "${controller[*]}" >&2
         exit 1
     fi
 
-    printf "%s" "$controller"
+    printf "%s" "${controller[0]}"
 
     return 0
 }
