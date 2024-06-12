@@ -12,7 +12,6 @@ import os
 from typing import TYPE_CHECKING
 from libvirt import libvirtError
 from ipaddress import IPv4Address
-from paramiko import SSHConfig
 
 
 if TYPE_CHECKING:
@@ -100,14 +99,25 @@ class Libvirt:
         """
         Configure the SSH connection to the host. This method makes connection timeouts configurable.
         """
-        ssh_config_p = SSHConfig.from_path(os.path.expanduser('~/.ssh/config'))
-        ssh_config_entry = ssh_config_p.lookup(self._address_str)
+        with open(os.path.expanduser('~/.ssh/config'), mode='a+', encoding='utf-8') as ssh_config_f:
+            ssh_config_f.seek(0)
 
-        if 'connecttimeout' not in ssh_config_entry:
-            with open(os.path.expanduser('~/.ssh/config'), 'a') as f:
-                if f'Host {self._address_str}' in f.read():
-                    raise ValueError(f'Host {self._address_str} already exists in ~/.ssh/config. Please remove it or add a ConnectTimeout value to it.')
+            _conf = ssh_config_f.read().strip()
 
-                f.write(f'\n\nHost {self._address_str}\n  ConnectTimeout {self.timeout}\n')
+            if f'Host {self._address_str}' in _conf:
+                log.debug(f'SSH connection to {self._address_str} already configured.')
+                return None
+
+            # Go to the end of the file.
+            ssh_config_f.seek(
+                0,
+                os.SEEK_END
+            )
+
+            # Now write the new entry.
+            if _conf == '':
+                ssh_config_f.write(f'Host {self._address_str}\n  ConnectTimeout {self.timeout}\n')
+            else:
+                ssh_config_f.write(f'\nHost {self._address_str}\n  ConnectTimeout {self.timeout}\n')
 
         log.info(f'Configured SSH connection to {self._address_str} with a timeout of {self.timeout} seconds.')
