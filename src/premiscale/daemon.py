@@ -4,6 +4,8 @@ controller is configured. It also starts the healthcheck API for Docker and Kube
 """
 
 
+from __future__ import annotations
+
 import multiprocessing as mp
 import logging
 

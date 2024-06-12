@@ -7,9 +7,13 @@ from __future__ import annotations
 
 import logging
 
-from typing import List
+from typing import TYPE_CHECKING
 from sqlmodel import Field, Session, SQLModel, create_engine
 from premiscale.metrics.state._base import State
+
+
+if TYPE_CHECKING:
+    from typing import List
 
 
 log = logging.getLogger(__name__)

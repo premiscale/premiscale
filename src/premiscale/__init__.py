@@ -3,6 +3,8 @@ Make the environment variables' values that we care about, portable.
 """
 
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 from importlib import metadata as meta
 
@@ -12,7 +14,6 @@ import logging
 
 if TYPE_CHECKING:
     from typing import Dict
-
 
 log = logging.getLogger(__name__)
 
