@@ -19,14 +19,23 @@ class Qemu(Libvirt):
     Connect to a host with a Qemu hypervisor.
     """
 
-    def __init__(self, name: str, address: IPv4Address, port: int, protocol: str, timeout: int = 30, user: str | None = None, readonly: bool = False, resources: Dict | None = None) -> None:
+    def __init__(self,
+                 name: str,
+                 address: IPv4Address,
+                 port: int,
+                 protocol: str,
+                 timeout: int = 30,
+                 user: str | None = None,
+                 readonly: bool = False,
+                 resources: Dict | None = None) -> None:
         super().__init__(
             name=name,
             address=address,
             port=port,
-            user=user,
             protocol=protocol,
-            readonly=readonly,
             hypervisor='qemu',
+            timeout=timeout,
+            user=user,
+            readonly=readonly,
             resources=resources
         )

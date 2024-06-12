@@ -9,6 +9,7 @@ import libvirt as lv
 import logging
 import os
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from libvirt import libvirtError
 from ipaddress import IPv4Address
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-class Libvirt:
+class Libvirt(ABC):
     """
     Connect to hosts and provide an interface for interacting with VMs on them.
 
