@@ -175,7 +175,7 @@ class MetricsCollector:
                     log.debug(f'No hosts to visit. Ensure you list managed hosts in the config file.')
                     break
 
-                log.debug(f'Collecting metrics for hosts {lower_bound} to {upper_bound}.')
+                log.debug(f'Collecting metrics for hosts {lower_bound} to {upper_bound} of total {len(self)}.')
 
                 # Reset our collection of threads every paginated iteration over hosts.
                 threads = []
