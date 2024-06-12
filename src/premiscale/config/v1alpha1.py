@@ -9,14 +9,14 @@ import logging
 import os
 import sys
 
-from typing import TYPE_CHECKING
+# from typing import TYPE_CHECKING
 from attrs import define
 from attr import ib
 from cattrs import structure
 
 
-if TYPE_CHECKING:
-    from typing import List, Dict
+# In this particular module, cattrs requires these types during runtime, so we skip the TYPE_CHECKING check.
+from typing import Dict, List
 
 
 log = logging.getLogger(__name__)

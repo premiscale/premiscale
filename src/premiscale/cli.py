@@ -3,7 +3,7 @@ The PremiScale autoscaling controller for Kubernetes.
 """
 
 
-from __future__ import annotations, absolute_import
+from __future__ import annotations
 
 import sys
 import logging

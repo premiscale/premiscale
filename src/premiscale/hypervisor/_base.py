@@ -8,9 +8,13 @@ from __future__ import annotations
 import libvirt as lv
 import logging
 
-from typing import Any
+from typing import TYPE_CHECKING
 from libvirt import libvirtError
 from ipaddress import IPv4Address
+
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 log = logging.getLogger(__name__)
