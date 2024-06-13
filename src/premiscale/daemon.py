@@ -68,14 +68,14 @@ def start(config: Config, version: str, token: str) -> int:
         processes = [
             # Platform websocket connection subprocess. Maintains registration, connection and data stream -> premiscale platform).
             executor.submit(
-                Platform.register(
-                    version=version,
-                    token=token,
-                    host=config.controller.platform.domain,
-                    cacert=config.controller.platform.certificates.path
-                ),
+                _platform,
                 platform_message_queue
-            ),
+            ) if (_platform := Platform.register(
+                version=version,
+                token=token,
+                host=config.controller.platform.domain,
+                cacert=config.controller.platform.certificates.path
+            )) is not None else None,
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
