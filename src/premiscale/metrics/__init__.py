@@ -215,6 +215,10 @@ class MetricsCollector:
             host (Host): The host to collect metrics from.
         """
         with build_hypervisor_connection(host) as host_connection:
+            # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
+            if host_connection is None:
+                return None
+
             log.info(f'Collecting metrics for host {host.name}.')
             # state_data = self._collectStateMetrics(host_connection)
 

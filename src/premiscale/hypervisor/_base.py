@@ -67,7 +67,6 @@ class Libvirt(ABC):
 
         if protocol.lower() == 'ssh':
             # SSH
-            self._configure_ssh()
             self.connection_string = f'{hypervisor}+ssh://{user}@{address}:{port}/system'
         else:
             # TLS
@@ -106,31 +105,3 @@ class Libvirt(ABC):
             log.info(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open.')
-
-    def _configure_ssh(self) -> None:
-        """
-        Configure the SSH connection to the host. This method makes connection timeouts configurable
-        through the SSH config file.
-        """
-        with open(os.path.expanduser('~/.ssh/config'), mode='a+', encoding='utf-8') as ssh_config_f:
-            ssh_config_f.seek(0)
-
-            _conf = ssh_config_f.read().strip()
-
-            if f'Host {self._address_str}' in _conf:
-                log.debug(f'SSH connection to {self._address_str} already configured.')
-                return None
-
-            # Go to the end of the file.
-            ssh_config_f.seek(
-                0,
-                os.SEEK_END
-            )
-
-            # Now write the new entry.
-            if _conf == '':
-                ssh_config_f.write(f'Host {self._address_str}\n  ConnectTimeout {self.timeout}\n')
-            else:
-                ssh_config_f.write(f'\nHost {self._address_str}\n  ConnectTimeout {self.timeout}\n')
-
-        log.info(f'Configured SSH connection to {self._address_str} with a timeout of {self.timeout} seconds.')

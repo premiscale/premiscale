@@ -168,9 +168,69 @@ class Host:
     protocol: str
     port: int
     hypervisor: str
+    sshKey: str | None = ib(default=None)  # Expected to contain the actual key or environment variable with the contents of the private key.
     timeout: int = ib(default=45)
     user: str | None = ib(default=None)
     resources: Resources | None = ib(default=None)
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        self.expand()
+
+    def expand(self):
+        """
+        Expand environment variables in the host configuration.
+        """
+        self.name = os.path.expandvars(self.name)
+        self.address = os.path.expandvars(self.address)
+        self.protocol = os.path.expandvars(self.protocol)
+        self.hypervisor = os.path.expandvars(self.hypervisor)
+
+        if self.user:
+            self.user = os.path.expandvars(self.user)
+
+        if self.sshKey:
+            self.sshKey = os.path.expandvars(self.sshKey)
+            # Make sure that this call doesn't rely on any values that are updated past this point.
+            self._configure_ssh()
+
+    def _configure_ssh(self) -> None:
+        """
+        Configure the SSH connection to the host. This method makes connection timeouts configurable
+        through the SSH config file.
+        """
+        _str_address = str(self.address)
+
+        with open(os.path.expanduser('~/.ssh/config'), mode='a+', encoding='utf-8') as ssh_config_f:
+            ssh_config_f.seek(0)
+
+            _conf = ssh_config_f.read().strip()
+
+            if f'Host {_str_address}' in _conf:
+                log.debug(f'SSH connection to {_str_address} already configured.')
+                return None
+
+            # Go to the end of the file.
+            ssh_config_f.seek(
+                0,
+                os.SEEK_END
+            )
+
+            # Now write the new entry to the ~/.ssh/config for this particular host.
+            if _conf == '':
+                ssh_config_f.write(f'Host {_str_address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
+            else:
+                ssh_config_f.write(f'\nHost {_str_address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
+
+        # Write the SSH key to the ~/.ssh directory.
+        if self.sshKey is not None:
+            with open(os.path.expanduser(f'~/.ssh/{self.name}'), mode='w', encoding='utf-8') as ssh_key_f:
+                log.debug(f'Writing SSH key to ~/.ssh/{self.name} for host at address {self.address}')
+                ssh_key_f.write(self.sshKey)
+
+        log.info(f'Configured SSH connections to host {_str_address} with a timeout of {self.timeout} seconds.')
 
 
 @define
