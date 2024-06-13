@@ -12,10 +12,7 @@ ENV PREMISCALE_TOKEN="" \
     PREMISCALE_PLATFORM=app.premiscale.com \
     PREMISCALE_CACERT="" \
     PYTHONHASHSEED=random \
-    PYTHONUNBUFFERED=1 \
-    # Poetry isn't used in production.
-    POETRY_VIRTUALENVS_CREATE=true \
-    POETRY_VERSION=1.8.3
+    PYTHONUNBUFFERED=1
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2024"
@@ -40,7 +37,11 @@ ENV PATH=/opt/premiscale/.local/bin:/opt/premiscale/bin:${PATH}
 WORKDIR /opt/premiscale
 
 RUN chown -R premiscale:premiscale .
+
 USER premiscale
+
+RUN mkdir -p "$HOME"/.ssh/ "$HOME"/.local/bin \
+    && touch "$HOME"/.ssh/config
 
 ## Production image
 
@@ -52,9 +53,7 @@ ARG PYTHON_REPOSITORY
 ARG PYTHON_INDEX=https://${PYTHON_USERNAME}:${PYTHON_PASSWORD}@repo.ops.premiscale.com/repository/${PYTHON_REPOSITORY}/simple
 ARG PYTHON_PACKAGE_VERSION=0.0.1
 
-# Install and initialize PremiScale.
-RUN mkdir -p "$HOME"/.local/bin \
-    && pip install --upgrade pip \
+RUN pip install --upgrade pip \
     && pip install --no-cache-dir --no-input --extra-index-url="${PYTHON_INDEX}" premiscale=="${PYTHON_PACKAGE_VERSION}" \
     && premiscale --version
 
@@ -65,12 +64,15 @@ CMD [ "bash", "-c", "premiscale --log-stdout" ]
 
 FROM base AS develop
 
-COPY src/ ./src/
-COPY README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
+ENV POETRY_VIRTUALENVS_CREATE=true \
+    POETRY_VERSION=1.8.3
 
-# Install and initialize PremiScale.
-RUN mkdir -p "$HOME"/.local/bin
-RUN curl -sSL https://install.python-poetry.org | python3 -
+COPY --chown=premiscale:premiscale src/ ./src/
+COPY --chown=premiscale:premiscale README.md LICENSE poetry.lock pyproject.toml requirements.txt ./
+
+ADD --chown=premiscale:premiscale https://install.python-poetry.org ./install-poetry.py
+RUN python install-poetry.py \
+    && rm install-poetry.py
 RUN poetry install --without=dev \
     && poetry run premiscale --version
 

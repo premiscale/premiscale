@@ -57,7 +57,7 @@ def retry(retries: int =0, retry_delay: float = 1.0, ratelimit_buffer: float = 0
                     if (res := call()) is not None:
                         return res
                 else:
-                    log.error(f'Retry attempt limit exceeded.')
+                    log.error(f'Retry attempt limit exceeded')
                     return None
             else:
                 # Infinite retries.

@@ -9,10 +9,13 @@ import logging
 import os
 import sys
 
-from typing import List, Dict
 from attrs import define
 from attr import ib
 from cattrs import structure
+
+# In this particular module, cattrs requires these types during runtime to unpack,
+# so we skip the TYPE_CHECKING check wrapping these imports.
+from typing import Dict, List
 
 
 log = logging.getLogger(__name__)
@@ -165,7 +168,65 @@ class Host:
     protocol: str
     port: int
     hypervisor: str
+    sshKey: str | None = ib(default=None)  # Expected to contain the actual key or environment variable with the contents of the private key.
+    timeout: int = ib(default=45)
+    user: str | None = ib(default=None)
     resources: Resources | None = ib(default=None)
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        self.expand()
+
+        # Make sure that this call doesn't rely on any values that are updated past this point.
+        self._configure_ssh()
+
+    def expand(self):
+        """
+        Expand environment variables in the host configuration.
+        """
+        if self.user:
+            self.user = os.path.expandvars(self.user)
+
+        if self.sshKey:
+            self.sshKey = os.path.expandvars(self.sshKey)
+
+    def _configure_ssh(self) -> None:
+        """
+        Configure the SSH connection to the host. This method makes connection timeouts configurable
+        through the SSH config file.
+        """
+        with open(os.path.expanduser('~/.ssh/config'), mode='a+', encoding='utf-8') as ssh_config_f:
+            ssh_config_f.seek(0)
+
+            _conf = ssh_config_f.read().strip()
+
+            if f'Host {self.address}' in _conf:
+                log.debug(f'SSH connection to {self.address} already configured')
+                return None
+
+            # Go to the end of the file.
+            ssh_config_f.seek(
+                0,
+                os.SEEK_END
+            )
+
+            # Now write the new entry to the ~/.ssh/config for this particular host.
+            if _conf != '':
+                ssh_config_f.write('\n')
+
+            ssh_config_f.write(f'Host {self.address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
+
+        # Write the SSH key to the ~/.ssh directory.
+        if self.sshKey is not None:
+            with open(os.path.expanduser(f'~/.ssh/{self.name}'), mode='w', encoding='utf-8') as ssh_key_f:
+                log.debug(f'Writing SSH key to ~/.ssh/{self.name} for host at address {self.address}')
+                ssh_key_f.write(self.sshKey + '\n')
+
+            os.chmod(os.path.expanduser(f'~/.ssh/{self.name}'), 0o600)
+
+        log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds')
 
 
 @define
@@ -205,7 +266,7 @@ class Network:
         Post-initialization method to expand environment variables.
         """
         if self.dhcp and self.addressRange is None:
-            log.error(f'Address range must be provided if DHCP is enabled.')
+            log.error(f'Address range must be provided if DHCP is enabled')
             sys.exit(1)
 
 

@@ -25,20 +25,30 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
     """
     conf = unstructure(host)
 
+    del conf['sshKey']
+
     match host.hypervisor:
         case 'qemu':
-            log.debug(f'Using QEMU hypervisor for host {host.name} at {host.address}.')
+            log.debug(f'Using QEMU hypervisor for host {host.name} at {host.address}')
+
             from premiscale.hypervisor.qemu import Qemu
 
+            del conf['hypervisor']
             return Qemu(**conf)
-        case 'vmware':
-            log.debug(f'Using VMware hypervisor for host {host.name} at {host.address}.')
-            from premiscale.hypervisor.vmware import VMware
+        case 'esx':
+            log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}')
 
-            return VMware(**conf)
+            from premiscale.hypervisor.esx import ESX
+
+            del conf['hypervisor']
+
+            return ESX(**conf)
         case 'xen':
-            log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}.')
+            log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}')
+
             from premiscale.hypervisor.xen import Xen
+
+            del conf['hypervisor']
 
             return Xen(**conf)
         case _:

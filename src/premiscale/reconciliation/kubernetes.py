@@ -3,11 +3,17 @@ Interface with the Kubernetes autoscaler.
 """
 
 
+from __future__ import annotations
+
 import logging
 
-from typing import Any
+from typing import TYPE_CHECKING
 from setproctitle import setproctitle
-from premiscale.config.v1alpha1 import Config
+
+
+if TYPE_CHECKING:
+    from typing import Any
+    from premiscale.config.v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)

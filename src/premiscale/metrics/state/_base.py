@@ -7,8 +7,12 @@ from __future__ import annotations
 
 import logging
 
-from typing import Any, List
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
+
+
+if TYPE_CHECKING:
+    from typing import Any, List
 
 
 log = logging.getLogger(__name__)

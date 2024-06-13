@@ -8,8 +8,12 @@ from __future__ import annotations
 import logging
 import sqlite3
 
-from typing import List, Tuple
+from typing import TYPE_CHECKING
 from premiscale.metrics.state._base import State
+
+
+if TYPE_CHECKING:
+    from typing import List, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -53,39 +57,39 @@ class Local(State):
         Args:
             database (str): Path to the SQLite database. Defaults to ':memory:'.
         """
-        log.debug('Opening connection to in-memory SQLite database.')
+        log.debug('Opening connection to in-memory SQLite database')
         self._connection = sqlite3.connect(
             database=database
         )
         self._cursor = self._connection.cursor()
-        log.debug('Connection to in-memory SQLite database opened.')
+        log.debug('Connection to in-memory SQLite database opened')
 
     def close(self) -> None:
         """
         Close the connection to the SQLite database.
         """
-        log.debug('Closing connection to in-memory SQLite database.')
+        log.debug('Closing connection to in-memory SQLite database')
         self._connection.close()
 
     def commit(self) -> None:
         """
         Commit any changes to the SQLite database.
         """
-        log.debug('Committing changes to in-memory SQLite database.')
+        log.debug('Committing changes to in-memory SQLite database')
         self._connection.commit()
 
     def rollback(self) -> None:
         """
         Rollback any changes to the SQLite database.
         """
-        log.debug('Rolling back changes to in-memory SQLite database.')
+        log.debug('Rolling back changes to in-memory SQLite database')
         self._connection.rollback()
 
     def reset(self) -> None:
         """
         Reset the SQLite database.
         """
-        log.debug('Resetting in-memory SQLite database.')
+        log.debug('Resetting in-memory SQLite database')
         self._cursor.execute('DROP TABLE IF EXISTS hosts')
         self._cursor.execute('DROP TABLE IF EXISTS vms')
         self._cursor.execute('DROP TABLE IF EXISTS asgs')
@@ -99,7 +103,7 @@ class Local(State):
             'CREATE TABLE asgs (name TEXT)'
         )
         self.commit()
-        log.debug('In-memory SQLite database reset.')
+        log.debug('In-memory SQLite database reset')
 
     ## Hosts
 

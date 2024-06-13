@@ -40,7 +40,7 @@ class LogLevel(Enum):
         try:
             return cls[s.lower()]
         except KeyError:
-            log.error('Must specify an accepted log level.')
+            log.error('Must specify an accepted log level')
             sys.exit(1)
 
 
@@ -91,7 +91,7 @@ def write_json(data: dict, path: str) -> None:
     except (FileNotFoundError, PermissionError) as msg:
         log.error(f'Failed to write JSON file, received: {msg}')
     except OSError as msg:
-        log.error(f'Failed to write JSON file {path_e}, received: {msg}. Check your path and permissions.')
+        log.error(f'Failed to write JSON file {path_e}, received: {msg}. Check your path and permissions')
 
 
 def read_json(path: str) -> dict | None:

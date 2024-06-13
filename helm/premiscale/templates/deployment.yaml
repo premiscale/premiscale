@@ -30,6 +30,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels: {{ include "premiscale.selectorLabels" . | nindent 8 }}
+    # podAntiAffinity:
+    #   preferredDuringSchedulingIgnoredDuringExecution:
+    #   - weight: 100
+    #     podAffinityTerm:
+    #       labelSelector:
+    #         matchExpressions:
+    #         - key: security
+    #           operator: In
+    #           values:
+    #           - S2
+    #       topologyKey: topology.kubernetes.io/zone
     spec:
       ## PodSpec v1core
       {{- if gt (len (((((.Values).deployment).image).pullSecrets) | default "")) 0 }}

@@ -3,7 +3,7 @@ The PremiScale autoscaling controller for Kubernetes.
 """
 
 
-from __future__ import annotations, absolute_import
+from __future__ import annotations
 
 import sys
 import logging
@@ -101,7 +101,7 @@ def main() -> None:
     log.info(f'Starting PremiScale controller v{version}')
 
     if (token := args.token) != '':
-        log.info('Using provided platform token for registration.')
+        log.info('Using provided platform token for registration')
     else:
         token = ''
 

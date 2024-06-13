@@ -4,6 +4,8 @@ controller is configured. It also starts the healthcheck API for Docker and Kube
 """
 
 
+from __future__ import annotations
+
 import multiprocessing as mp
 import logging
 
@@ -11,13 +13,16 @@ from functools import partial
 from multiprocessing.queues import Queue
 from concurrent.futures import ProcessPoolExecutor
 from threading import Thread
-from typing import cast
+from typing import cast, TYPE_CHECKING
 from setproctitle import setproctitle
-from premiscale.config.v1alpha1 import Config
 from premiscale.api.healthcheck import app as healthcheck
 from premiscale.autoscaling.group import Autoscaler
 from premiscale.platform import Platform
 from premiscale.metrics import MetricsCollector
+
+
+if TYPE_CHECKING:
+    from premiscale.config.v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)
@@ -63,14 +68,14 @@ def start(config: Config, version: str, token: str) -> int:
         processes = [
             # Platform websocket connection subprocess. Maintains registration, connection and data stream -> premiscale platform).
             executor.submit(
-                Platform.register(
-                    version=version,
-                    token=token,
-                    host=config.controller.platform.domain,
-                    cacert=config.controller.platform.certificates.path
-                ),
+                _platform,
                 platform_message_queue
-            ),
+            ) if (_platform := Platform.register(
+                version=version,
+                token=token,
+                host=config.controller.platform.domain,
+                cacert=config.controller.platform.certificates.path
+            )) is not None else None,
 
             # Autoscaling controller subprocess (works on Actions in the ASG queue)
             executor.submit(
@@ -129,7 +134,6 @@ def start(config: Config, version: str, token: str) -> int:
             if process is not None:
                 process.result()
 
-    # TODO: send Event to indicate that the thread should exit.
     for thread in _main_process_daemon_threads:
         thread.join()
 

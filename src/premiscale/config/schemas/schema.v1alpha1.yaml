@@ -66,7 +66,10 @@ host:
   address: str(min=1)
   port: int(min=1, max=65535)
   protocol: enum('ssh', 'SSH', 'tls', 'TLS')
-  hypervisor: enum('kvm', 'xen', 'esx')
+  timeout: int(min=1, max=599940, required=False)
+  user: str(min=1, required=False)
+  sshKey: str(min=1, required=False)
+  hypervisor: enum('kvm', 'xen', 'esx', 'qemu')
 ---
 # The other half of autoscaling configuration
 groups: map(include('group'), min=0)

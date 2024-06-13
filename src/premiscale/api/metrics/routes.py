@@ -6,10 +6,8 @@ Serve a /metrics-endpoint for Prometheus metrics if enabled.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app
-
 
 
 if TYPE_CHECKING:

@@ -9,7 +9,7 @@ Install [asdf](https://asdf-vm.com/guide/getting-started.html#_1-install-depende
 > **Note:** Some tweaks may need to be made to the repository's [compose.yaml](./compose.yaml) file to get the stack to run on your system.
 
 ```shell
-yarn compose:up
+yarn compose:up <optional compose profile>
 ```
 
 This will bring up a number of local services for running the agent. To tear the stack down, simply run

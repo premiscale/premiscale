@@ -7,41 +7,69 @@ from __future__ import annotations
 
 import libvirt as lv
 import logging
+import os
 
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 from libvirt import libvirtError
 from ipaddress import IPv4Address
+
+
+if TYPE_CHECKING:
+    from typing import Any, Dict
 
 
 log = logging.getLogger(__name__)
 
 
-class Libvirt:
+class Libvirt(ABC):
     """
     Connect to hosts and provide an interface for interacting with VMs on them.
 
     Args:
-        host (IPv4Address): IP address of the host to connect to.
+        name (str): Name of the host.
+        address (IPv4Address): IP address of the host to connect to.
         port (int): Port to connect to the host on.
-        user (str): Username to authenticate with (if using SSH).
-        hypervisor_type (str): Type of hypervisor to connect to. Defaults to 'qemu'. Can be either 'qemu' or 'lxc'.
-        auth_type (str): Type of authentication to use. Defaults to 'ssh'. Can be either 'ssh' or 'tls'.
+        protocol (str): Type of authentication to use. Defaults to 'ssh'. Can be either 'ssh' or 'tls'.
+        hypervisor (str): Type of hypervisor to connect to.
+        timeout (int): Timeout for the connection. Defaults to 30 seconds.
+        user (str | None): Username to authenticate with (if using SSH).
         readonly (bool): Whether to open the connection in read-only mode. Defaults to False.
+        resources (Dict | None): Resources available on the host. Defaults to None.
     """
-    def __init__(self, host: IPv4Address, port: int, user: str, hypervisor_type: str, auth_type: str, readonly: bool = False) -> None:
-        self.host = host
+    def __init__(self,
+                 name: str,
+                 address: IPv4Address,
+                 port: int,
+                 protocol: str,
+                 hypervisor: str,
+                 timeout: int = 30,
+                 user: str | None = None,
+                 readonly: bool = False,
+                 resources: Dict | None = None) -> None:
+        self.name = name
+        self.address = address
+        self._address_str = str(address)
         self.port = port
-        self.user = user
-        self.hypervisor_type = hypervisor_type
-        self.auth_type = auth_type
-        self.readonly = readonly
+        self.protocol = protocol
+        self.timeout = timeout
+        self.hypervisor = hypervisor
 
-        if auth_type.lower() == 'ssh':
+        # Set the user to 'root' if not provided by the end user.
+        if user is None:
+            self.user = 'root'
+        else:
+            self.user = user
+
+        self.readonly = readonly
+        self.resources = resources
+        self._connection: lv.virConnect | None = None
+        if protocol.lower() == 'ssh':
             # SSH
-            self.connection_string = f'{hypervisor_type}+ssh://{user}@{host}:{port}/system'
+            self.connection_string = f'{hypervisor}+ssh://{user}@{address}:{port}/system'
         else:
             # TLS
-            self.connection_string = f'{hypervisor_type}+tls://{host}:{port}/system'
+            self.connection_string = f'{hypervisor}+tls://{address}:{port}/system'
 
     def __enter__(self) -> Libvirt | None:
         return self.open()
@@ -54,10 +82,12 @@ class Libvirt:
         Open a connection to the Libvirt hypervisor.
         """
         try:
+            log.debug(f'Attempting to connect to host at {self.connection_string}')
+
             if self.readonly:
-                self.connection = lv.openReadOnly(self.connection_string)
+                self._connection = lv.openReadOnly(self.connection_string)
             else:
-                self.connection = lv.open(self.connection_string)
+                self._connection = lv.open(self.connection_string)
                 log.info(f'Connected to host at {self.connection_string}')
         except libvirtError as e:
             log.error(f'Failed to connect to host at {self.connection_string}: {e}')
@@ -69,4 +99,8 @@ class Libvirt:
         """
         Close the connection with the Libvirt hypervisor.
         """
-        self.connection.close()
+        if self._connection:
+            self._connection.close()
+            log.info(f'Closed connection to host at {self.connection_string}')
+        else:
+            log.error(f'No host connection to close, probably due to an error on connection open')

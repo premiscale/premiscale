@@ -12,6 +12,7 @@ from pathlib import Path
 from importlib import resources
 from yamale import make_schema, make_data, validate as yamale_validate
 from premiscale.config.v1alpha1 import Config
+from premiscale.config import build_config_from_version
 
 
 log = logging.getLogger(__name__)
@@ -37,8 +38,6 @@ def configParse(configPath: str) -> Config:
     # Drop a default config for parsing if one was not provided by the user.
     if not Path(configPath).exists():
         makeDefaultConfig(configPath)
-    else:
-        log.debug(f'Found config file at {configPath}.')
 
     with open(configPath, 'r', encoding='utf-8') as f:
         try:
@@ -48,14 +47,14 @@ def configParse(configPath: str) -> Config:
 
             # Validate the config file against the schema.
             if 'version' not in _loaded_config:
-                log.error('Config file is missing a version field.')
+                log.error('Config file is missing a version field')
                 sys.exit(1)
 
             if not validateConfig(configPath, version=_loaded_config['version']):
                 sys.exit(1)
 
             # Parse the config into a Config object, now.
-            _config = Config.from_dict(_loaded_config)
+            _config = build_config_from_version(_loaded_config['version']).from_dict(_loaded_config)
         except (yaml.YAMLError, KeyError) as e:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)
@@ -81,7 +80,7 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
     if not Path(configPath).exists():
         makeDefaultConfig(configPath)
     else:
-        log.debug(f'Found config file at {configPath}.')
+        log.debug(f'Found config file at {configPath}')
 
     try:
         with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
@@ -94,7 +93,7 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
             strict=strict
         )
 
-        log.info(f'Config file at {configPath} is valid.')
+        log.info(f'Config file at {configPath} is valid')
     except FileNotFoundError as e:
         log.error(f'Could not find file: {e}')
         return False
@@ -118,12 +117,12 @@ def makeDefaultConfig(path: str | Path, default_config: str | Path = 'default.ya
             Path(path).parent.mkdir(parents=True)
 
         if not Path(path).exists():
-            log.debug(f'Config file at {path} does not exist. Creating default config file.')
+            log.debug(f'Config file at {path} does not exist. Creating default config file')
 
             with resources.open_text('premiscale.config', str(default_config)) as default_config_f, open(str(path), 'x', encoding='utf-8') as f:
                 f.write(default_config_f.read().strip())
 
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
-        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}.')
+        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}')
         sys.exit(1)
