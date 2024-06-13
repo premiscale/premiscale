@@ -222,7 +222,7 @@ class Host:
         if self.sshKey is not None:
             with open(os.path.expanduser(f'~/.ssh/{self.name}'), mode='w', encoding='utf-8') as ssh_key_f:
                 log.debug(f'Writing SSH key to ~/.ssh/{self.name} for host at address {self.address}')
-                ssh_key_f.write(self.sshKey)
+                ssh_key_f.write(self.sshKey + '\n')
 
             os.chmod(os.path.expanduser(f'~/.ssh/{self.name}'), 0o600)
 
