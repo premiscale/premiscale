@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 
+from ipaddress import IPv4Address
 from attrs import define
 from attr import ib
 from cattrs import structure
@@ -164,7 +165,7 @@ class Host:
     Host configuration options.
     """
     name: str
-    address: str
+    address: IPv4Address
     protocol: str
     port: int
     hypervisor: str
@@ -179,22 +180,18 @@ class Host:
         """
         self.expand()
 
+        # Make sure that this call doesn't rely on any values that are updated past this point.
+        self._configure_ssh()
+
     def expand(self):
         """
         Expand environment variables in the host configuration.
         """
-        self.name = os.path.expandvars(self.name)
-        self.address = os.path.expandvars(self.address)
-        self.protocol = os.path.expandvars(self.protocol)
-        self.hypervisor = os.path.expandvars(self.hypervisor)
-
         if self.user:
             self.user = os.path.expandvars(self.user)
 
         if self.sshKey:
             self.sshKey = os.path.expandvars(self.sshKey)
-            # Make sure that this call doesn't rely on any values that are updated past this point.
-            self._configure_ssh()
 
     def _configure_ssh(self) -> None:
         """

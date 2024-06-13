@@ -101,7 +101,7 @@ class Libvirt(ABC):
         Close the connection with the Libvirt hypervisor.
         """
         if self._connection:
-            self._connection.virConnectClose()
+            self._connection.close()
             log.info(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open.')
