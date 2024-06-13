@@ -1,5 +1,5 @@
 """
-Provide high-level methods for interfacing with hypervisors and hosts.
+Factory design pattern for building hypervisor connections based on the user-provided configuration.
 """
 
 
@@ -19,12 +19,14 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def build_hypervisor_connection(host: Host) -> Libvirt:
+def build_hypervisor_connection(host: Host, readonly: bool = False) -> Libvirt:
     """
     Build a Libvirt connection object based on the user-provided configuration of the host.
     """
     conf = unstructure(host)
 
+    # Remove the SSH key from the configuration as it's not needed for the connection.
+    # It's only actually needed for the SSH config, which is parsed and produced when the config is validated.
     del conf['sshKey']
 
     match host.hypervisor:
@@ -33,8 +35,13 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
 
             from premiscale.hypervisor.qemu import Qemu
 
+            # Subtypes don't need to know about the hypervisor type as it's already been set.
             del conf['hypervisor']
-            return Qemu(**conf)
+
+            return Qemu(
+                readonly=readonly,
+                **conf
+            )
         case 'esx':
             log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}')
 
@@ -42,7 +49,10 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
 
             del conf['hypervisor']
 
-            return ESX(**conf)
+            return ESX(
+                readonly=readonly,
+                **conf
+            )
         case 'xen':
             log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}')
 
@@ -50,6 +60,9 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
 
             del conf['hypervisor']
 
-            return Xen(**conf)
+            return Xen(
+                readonly=readonly,
+                **conf
+            )
         case _:
             raise ValueError(f'Unknown hypervisor type: {host.hypervisor}')

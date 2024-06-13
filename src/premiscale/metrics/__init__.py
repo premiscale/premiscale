@@ -1,8 +1,5 @@
 """
 A module for handling metrics collection from hosts. This includes time-series and state data.
-The distinguishing factor between state and time-series data is where it's sourced from; state
-data is sourced from the hosts on which the VMs reside, while time-series data is sourced from
-the VMs on the hosts.
 """
 
 
@@ -21,6 +18,7 @@ from premiscale.hypervisor import build_hypervisor_connection
 
 if TYPE_CHECKING:
     from typing import Iterator, List
+    from libvirt import virConnect
     # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
@@ -209,18 +207,19 @@ class MetricsCollector:
 
     def _collectHostMetrics(self, host: Host) -> None:
         """
-        Collect metrics for a single host over a Libvirt connection and store them in the appropriate backend database.
+        Collect metrics for a single host over a readonly Libvirt connection and store them in the appropriate backend database.
 
         Args:
             host (Host): The host to collect metrics from.
         """
-        with build_hypervisor_connection(host) as host_connection:
+        with build_hypervisor_connection(host, readonly=True) as host_connection:
             # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
             if host_connection is None:
                 return None
 
-            log.info(f'Collecting metrics for host {host.name}')
-            # state_data = self._collectStateMetrics(host_connection)
+            log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
+
+            state_data = host_connection.getHostVMState()
 
             # Diff current state and recorded state and update the state database.
 
