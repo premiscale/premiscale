@@ -94,7 +94,7 @@ class Platform:
 
         # If the controller has already registered, skip the registration request.
         if (cached_registration_response := read_json('registration.json')) is not None and cached_registration_response.get('host') == host:
-            log.info(f'Agent already registered with PremiScale platform at "{host}". Skipping controller registration request.')
+            log.info(f'Agent already registered with PremiScale platform at "{host}". Skipping controller registration request')
         else:
             # If no token is provided and a cached registration response is not found, simply start the controller
             # in standalone mode for development purposes.
@@ -140,7 +140,7 @@ class Platform:
                 write_json(registration_response, '$HOME/registration.json')
 
             except (ssl.SSLCertVerificationError, requests.exceptions.SSLError) as msg:
-                log.error(f'Could not verify SSL certificate: {msg}. Skipping registration.')
+                log.error(f'Could not verify SSL certificate: {msg}. Skipping registration')
 
                 return None
             except json.JSONDecodeError:

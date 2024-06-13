@@ -101,7 +101,7 @@ def main() -> None:
     log.info(f'Starting PremiScale controller v{version}')
 
     if (token := args.token) != '':
-        log.info('Using provided platform token for registration.')
+        log.info('Using provided platform token for registration')
     else:
         token = ''
 

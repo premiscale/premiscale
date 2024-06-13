@@ -47,12 +47,12 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
     """
     match config.controller.databases.timeseries.type:
         case 'memory':
-            log.debug(f'Using local memory for time series database.')
+            log.debug(f'Using local memory for time series database')
             from premiscale.metrics.timeseries.local import Local
 
             return Local(config)
         case 'influxdb':
-            log.debug(f'Using InfluxDB for time series database.')
+            log.debug(f'Using InfluxDB for time series database')
             from premiscale.metrics.timeseries.influxdb import InfluxDB
 
             connection = unstructure(config.controller.databases.timeseries.connection)
@@ -172,10 +172,10 @@ class MetricsCollector:
                 upper_bound = _potential_upper_bound if _potential_upper_bound < len(self) else len(self)
 
                 if lower_bound == upper_bound:
-                    log.debug(f'No hosts to visit. Ensure you list managed hosts in the config file.')
+                    log.debug(f'No hosts to visit. Ensure you list managed hosts in the config file')
                     break
 
-                log.debug(f'Collecting metrics for hosts {lower_bound} to {upper_bound} of total {len(self)}.')
+                log.debug(f'Collecting metrics for hosts {lower_bound} to {upper_bound} of total {len(self)}')
 
                 # Reset our collection of threads every paginated iteration over hosts.
                 threads = []
@@ -198,14 +198,14 @@ class MetricsCollector:
             collection_run_end = datetime.now()
             collection_run_duration = round((collection_run_end - collection_run_start).total_seconds(), 2)
 
-            log.debug(f'Collection run took {collection_run_duration} seconds.')
+            log.debug(f'Collection run took {collection_run_duration} seconds')
 
             if collection_run_duration < timedelta(seconds=self.config.controller.databases.collectionInterval).total_seconds():
                 actual_sleep = round(self.config.controller.databases.collectionInterval - (collection_run_end - collection_run_start).total_seconds(), 2)
-                log.debug(f'Waiting for {actual_sleep} seconds before revisiting every host.')
+                log.debug(f'Waiting for {actual_sleep} seconds before revisiting every host')
                 sleep(actual_sleep)
             else:
-                log.warning(f'Collection took longer than the collection interval of {self.config.controller.databases.collectionInterval} seconds. Starting collection immediately.')
+                log.warning(f'Collection took longer than the collection interval of {self.config.controller.databases.collectionInterval} seconds. Starting collection immediately')
 
     def _collectHostMetrics(self, host: Host) -> None:
         """
@@ -214,14 +214,12 @@ class MetricsCollector:
         Args:
             host (Host): The host to collect metrics from.
         """
-        log.info('Here 1')
         with build_hypervisor_connection(host) as host_connection:
-            log.info('Here 2')
             # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
             if host_connection is None:
                 return None
 
-            log.info(f'Collecting metrics for host {host.name}.')
+            log.info(f'Collecting metrics for host {host.name}')
             # state_data = self._collectStateMetrics(host_connection)
 
             # Diff current state and recorded state and update the state database.

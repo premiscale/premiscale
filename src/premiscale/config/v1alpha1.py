@@ -203,7 +203,7 @@ class Host:
             _conf = ssh_config_f.read().strip()
 
             if f'Host {self.address}' in _conf:
-                log.debug(f'SSH connection to {self.address} already configured.')
+                log.debug(f'SSH connection to {self.address} already configured')
                 return None
 
             # Go to the end of the file.
@@ -218,15 +218,15 @@ class Host:
 
             ssh_config_f.write(f'Host {self.address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
 
-        os.chmod(os.path.expanduser(f'~/.ssh/{self.name}'), 0o600)
-
         # Write the SSH key to the ~/.ssh directory.
         if self.sshKey is not None:
             with open(os.path.expanduser(f'~/.ssh/{self.name}'), mode='w', encoding='utf-8') as ssh_key_f:
                 log.debug(f'Writing SSH key to ~/.ssh/{self.name} for host at address {self.address}')
                 ssh_key_f.write(self.sshKey)
 
-        log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds.')
+            os.chmod(os.path.expanduser(f'~/.ssh/{self.name}'), 0o600)
+
+        log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds')
 
 
 @define
@@ -266,7 +266,7 @@ class Network:
         Post-initialization method to expand environment variables.
         """
         if self.dhcp and self.addressRange is None:
-            log.error(f'Address range must be provided if DHCP is enabled.')
+            log.error(f'Address range must be provided if DHCP is enabled')
             sys.exit(1)
 
 

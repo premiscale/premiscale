@@ -10,6 +10,8 @@ services:
       dockerfile: ./Dockerfile
       target: develop
       pull: true
+    env_file:
+      - .env
     environment:
       - PREMISCALE_TOKEN=123
       - PREMISCALE_CONFIG_PATH=/opt/premiscale/config.yaml

@@ -47,7 +47,7 @@ def configParse(configPath: str) -> Config:
 
             # Validate the config file against the schema.
             if 'version' not in _loaded_config:
-                log.error('Config file is missing a version field.')
+                log.error('Config file is missing a version field')
                 sys.exit(1)
 
             if not validateConfig(configPath, version=_loaded_config['version']):
@@ -80,7 +80,7 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
     if not Path(configPath).exists():
         makeDefaultConfig(configPath)
     else:
-        log.debug(f'Found config file at {configPath}.')
+        log.debug(f'Found config file at {configPath}')
 
     try:
         with resources.open_text('premiscale.config.schemas', f'schema.{version}.yaml') as schema_f:
@@ -93,7 +93,7 @@ def validateConfig(configPath: str, version: str = 'v1alpha1', strict: bool = Tr
             strict=strict
         )
 
-        log.info(f'Config file at {configPath} is valid.')
+        log.info(f'Config file at {configPath} is valid')
     except FileNotFoundError as e:
         log.error(f'Could not find file: {e}')
         return False
@@ -117,12 +117,12 @@ def makeDefaultConfig(path: str | Path, default_config: str | Path = 'default.ya
             Path(path).parent.mkdir(parents=True)
 
         if not Path(path).exists():
-            log.debug(f'Config file at {path} does not exist. Creating default config file.')
+            log.debug(f'Config file at {path} does not exist. Creating default config file')
 
             with resources.open_text('premiscale.config', str(default_config)) as default_config_f, open(str(path), 'x', encoding='utf-8') as f:
                 f.write(default_config_f.read().strip())
 
             log.debug(f'Successfully created default config file at \'{str(path)}\'')
     except PermissionError:
-        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}.')
+        log.error(f'premiscale does not have permission to install to {str(Path(path).parent)}')
         sys.exit(1)

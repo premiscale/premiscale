@@ -29,15 +29,14 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
 
     match host.hypervisor:
         case 'qemu':
-            log.debug(f'Using QEMU hypervisor for host {host.name} at {host.address}.')
+            log.debug(f'Using QEMU hypervisor for host {host.name} at {host.address}')
 
             from premiscale.hypervisor.qemu import Qemu
 
             del conf['hypervisor']
-            log.info('Here 3')
             return Qemu(**conf)
         case 'esx':
-            log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}.')
+            log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}')
 
             from premiscale.hypervisor.esx import ESX
 
@@ -45,7 +44,7 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
 
             return ESX(**conf)
         case 'xen':
-            log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}.')
+            log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}')
 
             from premiscale.hypervisor.xen import Xen
 
