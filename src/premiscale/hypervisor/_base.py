@@ -47,6 +47,7 @@ class Libvirt(ABC):
                  user: str | None = None,
                  readonly: bool = False,
                  resources: Dict | None = None) -> None:
+        log.info('Here 4')
         self.name = name
         self.address = address
         self._address_str = str(address)
@@ -64,7 +65,7 @@ class Libvirt(ABC):
         self.readonly = readonly
         self.resources = resources
         self._connection: lv.virConnect | None = None
-
+        log.info('Here 5')
         if protocol.lower() == 'ssh':
             # SSH
             self.connection_string = f'{hypervisor}+ssh://{user}@{address}:{port}/system'
@@ -82,6 +83,7 @@ class Libvirt(ABC):
         """
         Open a connection to the Libvirt hypervisor.
         """
+        log.info('Here 6')
         try:
             log.debug(f'Attempting to connect to host at {self.connection_string}')
 

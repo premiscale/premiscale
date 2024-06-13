@@ -34,7 +34,7 @@ def build_hypervisor_connection(host: Host) -> Libvirt:
             from premiscale.hypervisor.qemu import Qemu
 
             del conf['hypervisor']
-
+            log.info('Here 3')
             return Qemu(**conf)
         case 'esx':
             log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}.')

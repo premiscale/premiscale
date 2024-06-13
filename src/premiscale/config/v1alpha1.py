@@ -9,7 +9,6 @@ import logging
 import os
 import sys
 
-from ipaddress import IPv4Address
 from attrs import define
 from attr import ib
 from cattrs import structure
@@ -165,7 +164,7 @@ class Host:
     Host configuration options.
     """
     name: str
-    address: IPv4Address
+    address: str
     protocol: str
     port: int
     hypervisor: str
@@ -198,15 +197,13 @@ class Host:
         Configure the SSH connection to the host. This method makes connection timeouts configurable
         through the SSH config file.
         """
-        _str_address = str(self.address)
-
         with open(os.path.expanduser('~/.ssh/config'), mode='a+', encoding='utf-8') as ssh_config_f:
             ssh_config_f.seek(0)
 
             _conf = ssh_config_f.read().strip()
 
-            if f'Host {_str_address}' in _conf:
-                log.debug(f'SSH connection to {_str_address} already configured.')
+            if f'Host {self.address}' in _conf:
+                log.debug(f'SSH connection to {self.address} already configured.')
                 return None
 
             # Go to the end of the file.
@@ -216,10 +213,12 @@ class Host:
             )
 
             # Now write the new entry to the ~/.ssh/config for this particular host.
-            if _conf == '':
-                ssh_config_f.write(f'Host {_str_address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
-            else:
-                ssh_config_f.write(f'\nHost {_str_address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
+            if _conf != '':
+                ssh_config_f.write('\n')
+
+            ssh_config_f.write(f'Host {self.address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
+
+        os.chmod(os.path.expanduser(f'~/.ssh/{self.name}'), 0o600)
 
         # Write the SSH key to the ~/.ssh directory.
         if self.sshKey is not None:
@@ -227,7 +226,7 @@ class Host:
                 log.debug(f'Writing SSH key to ~/.ssh/{self.name} for host at address {self.address}')
                 ssh_key_f.write(self.sshKey)
 
-        log.info(f'Configured SSH connections to host {_str_address} with a timeout of {self.timeout} seconds.')
+        log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds.')
 
 
 @define

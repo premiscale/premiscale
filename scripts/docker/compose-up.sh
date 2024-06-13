@@ -1,8 +1,7 @@
 #! /usr/bin/env bash
-# Bring up a fresh instance of the docker compose stack.
+# Bring up a fresh instance of the docker-compose orchestrated stack.
 
-
-set -eo pipefail
+set -o pipefail
 shopt -s nullglob extglob
 
 
@@ -13,7 +12,29 @@ else
     PROFILE="zero"
 fi
 
+
+DOTENV=".env"
+
+
+function cleanup_dotenv()
+{
+    if [ -f "$DOTENV" ]; then
+        rm "${DOTENV:?}"
+    fi
+}
+
+
+# Write a temporary .env-file, since docker-compose likes to live in the past.
+cleanup_dotenv
+printf "INFO: Decrypting secrets for %s-file\\n" "$DOTENV"
+cat <<EOF > "$DOTENV"
+PREMISCALE_TEST_SSH_KEY="$(pass show premiscale/doppler/ssh/chelsea-hosts-test)"
+EOF
+
+
+# Cleanup previous stacks.
 ./scripts/docker/compose-down.sh "$PROFILE"
+
 
 # Generate self-signed certificates if they don't exist.
 if [ ! -d "certs/" ]; then
@@ -58,4 +79,9 @@ function reverse_lookup_profile()
 }
 
 
-docker compose --profile "$PROFILE" -f compose.yaml up -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration
+docker compose \
+    --profile "$PROFILE" \
+    -f compose.yaml up \
+    -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration
+
+cleanup_dotenv

@@ -76,12 +76,14 @@ controller:
       - name: tynan-local
         address: 10.0.0.100
         port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
         user: emma
         protocol: SSH
         hypervisor: qemu
       - name: rocinante-local
         address: 10.0.0.102
         port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
         user: emma
         protocol: SSH
         hypervisor: qemu

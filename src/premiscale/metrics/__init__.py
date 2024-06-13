@@ -214,7 +214,9 @@ class MetricsCollector:
         Args:
             host (Host): The host to collect metrics from.
         """
+        log.info('Here 1')
         with build_hypervisor_connection(host) as host_connection:
+            log.info('Here 2')
             # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
             if host_connection is None:
                 return None

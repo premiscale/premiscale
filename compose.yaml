@@ -22,6 +22,7 @@ services:
       - MYSQL_HOST=mysql-agent-state:3306
       - MYSQL_USERNAME=premiscale
       - MYSQL_PASSWORD=premiscale
+      - PREMISCALE_TEST_SSH_KEY=$PREMISCALE_TEST_SSH_KEY
     networks:
       - controller
     deploy:

@@ -8,7 +8,27 @@ else
     PROFILE="zero"
 fi
 
+
+DOTENV=".env"
+
+
+function cleanup_dotenv()
+{
+    if [ -f "$DOTENV" ]; then
+        rm "${DOTENV:?}"
+    fi
+}
+
+
+# Write a temporary .env-file, since docker-compose likes to live in the past.
+cleanup_dotenv
+printf "INFO: Decrypting secrets for %s-file\\n" "$DOTENV"
+cat <<EOF > "$DOTENV"
+PREMISCALE_TEST_SSH_KEY="$(pass show premiscale/doppler/ssh/chelsea-hosts-test)"
+EOF
+
 docker compose --profile="$PROFILE" -f compose.yaml down
+cleanup_dotenv
 
 
 # clear_containers()
