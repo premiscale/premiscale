@@ -262,6 +262,8 @@ class MetricsCollector:
 
             state_data = host_connection.getHostVMState()
 
+            log.info(state_data)
+
             # Diff current state and recorded state and update the state database.
 
             if self.timeseries_enabled:

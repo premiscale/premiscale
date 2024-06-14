@@ -56,8 +56,7 @@ class Qemu(Libvirt):
 
         return {
             'virtualMachines': {
-                vm.name(): vm.state()
-                for vm in self._connection.listAllDomains()
+                vm.name(): vm.state() for vm in self._connection.listAllDomains()
             }
         }
 
