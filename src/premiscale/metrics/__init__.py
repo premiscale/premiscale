@@ -139,14 +139,21 @@ class MetricsCollector:
         # Minor helper functions to reduce code duplication.
         def _host_as_dict(_host: Host) -> dict:
             _h_as_dict = unstructure(_host)
-            del(_h_as_dict['sshKey'])
-            del(_h_as_dict['timeout'])
-            del(_h_as_dict['user'])
+
+            # Filter out fields that are not part of the database record.
+            for key in 'sshKey', 'timeout', 'user', 'resources':
+                del(_h_as_dict[key])
 
             # These fields need to be unpacked from the resources object since the database record is flat.
             if _host.resources is not None:
-                _h_as_dict['cpu'] = _host.resources.cpu
-                _h_as_dict['memory'] = _host.resources.memory
+                if _host.resources.cpu is not None:
+                    _h_as_dict['cpu'] = _host.resources.cpu
+                else:
+                    _h_as_dict['cpu'] = 0
+                if _host.resources.memory is not None:
+                    _h_as_dict['memory'] = _host.resources.memory
+                else:
+                    _h_as_dict['memory'] = 0
 
             return _h_as_dict
 
