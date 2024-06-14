@@ -106,34 +106,40 @@ class Libvirt(ABC):
             log.error(f'No host connection to close, probably due to an error on connection open')
 
     @abstractmethod
-    def getHostVMState(self) -> Dict:
+    def getHostState(self) -> Dict:
         """
         Get the state of the VMs on the host.
 
         Returns:
             Dict: The state of the VMs on the host.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def getHostSchedulableResourceUtilization(self) -> Dict:
+    def getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
         Returns:
             Dict: The resources available on the host.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def getVMResourceUtilization(self, vm_name: str) -> Dict:
+    def getHostVMStats(self) -> Dict:
         """
         Get a report of resource utilization for a VM.
 
-        Args:
-            vm_name (str): Name of the VM to get resource utilization for.
-
         Returns:
             Dict: The resources utilized by the VM.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
         """
-        pass
+        raise NotImplementedError

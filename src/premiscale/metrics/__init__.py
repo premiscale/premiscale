@@ -251,7 +251,7 @@ class MetricsCollector:
         Collect metrics for a single host over a readonly Libvirt connection and store them in the appropriate backend database.
 
         Args:
-            host (Host): The host to collect metrics from.
+            host (Host): The host object to collect metrics from.
         """
         with build_hypervisor_connection(host, readonly=True) as host_connection:
             # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
@@ -260,9 +260,24 @@ class MetricsCollector:
 
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
-            state_data = host_connection.getHostVMState()
+            host_state = host_connection.getHostState
+            log.info(host_state)
 
-            log.info(state_data)
+            # {
+            #   'virtualMachines': {
+            #     '57242e4b-1707792163-8fded2e0ca1911ee81b1f3163d141aa8': [5, 0],
+            #     '57242e4b-1707793064-a8568622ca1b11ee981dbfb7d1a25efe': [5, 0],
+            #     'ubuntu-template': [5, 0],
+            #     '57242e4b-1707793603-ea25a672ca1c11eea52cf343fb6d21b6': [5, 0],
+            #     '57242e4b-1707792522-655b2586ca1a11eeb7103f2f6927fc6b': [5, 0]
+            #   }
+            # }
+
+            host_stats = host_connection.getHostStats
+            log.info(host_stats)
+
+            vm_stats = host_connection.getHostVMStats()
+            log.info(vm_stats)
 
             # Diff current state and recorded state and update the state database.
 

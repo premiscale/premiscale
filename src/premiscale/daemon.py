@@ -89,6 +89,16 @@ def start(config: Config, version: str, token: str) -> int:
         # Based on the mode the controller was started in (Kubernetes or standalone), we start the relevant subprocesses.
         match config.controller.mode:
             case 'kubernetes':
+                processes.append(
+                    executor.submit(
+                        MetricsCollector(
+                            config,
+                            # No need for time-series metrics collection in Kubernetes mode.
+                            timeseries_enabled=False
+                        )
+                    )
+                )
+
                 from premiscale.reconciliation.kubernetes import KubernetesAutoscaler
 
                 # Collect actions from the Kubernetes autoscaler and translate them into PremiScale Actions for
@@ -100,28 +110,7 @@ def start(config: Config, version: str, token: str) -> int:
                         platform_message_queue
                     )
                 )
-
-                processes.append(
-                    executor.submit(
-                        MetricsCollector(
-                            config,
-                            # No need for time-series metrics collection in Kubernetes mode.
-                            timeseries_enabled=False
-                        )
-                    )
-                )
             case 'standalone':
-                from premiscale.reconciliation.internal import Reconcile
-
-                # Time series <-> state databases reconciliation subprocess (creates actions on the ASGs queue)
-                processes.append(
-                    executor.submit(
-                        Reconcile(config),
-                        autoscaling_action_queue,
-                        platform_message_queue
-                    )
-                )
-
                 processes.append(
                     executor.submit(
                         MetricsCollector(
@@ -129,6 +118,18 @@ def start(config: Config, version: str, token: str) -> int:
                             # Enable time-series metrics collection in standalone mode since Reconciliation needs it.
                             timeseries_enabled=True
                         )
+                    )
+                )
+
+                from premiscale.reconciliation.internal import Reconcile
+
+                # In standalone mode, we reconcile the state of the ASG with the desired state, as determined by analyzing the
+                # metrics collected by the MetricsCollector subprocess.
+                processes.append(
+                    executor.submit(
+                        Reconcile(config),
+                        autoscaling_action_queue,
+                        platform_message_queue
                     )
                 )
 

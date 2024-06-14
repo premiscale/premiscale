@@ -44,7 +44,7 @@ class Qemu(Libvirt):
             resources=resources
         )
 
-    def getHostVMState(self) -> Dict:
+    def getHostState(self) -> Dict:
         """
         Get the state of the VMs on the host.
 
@@ -60,23 +60,43 @@ class Qemu(Libvirt):
             }
         }
 
-    def getHostSchedulableResourceUtilization(self) -> Dict:
+    def getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
         Returns:
             Dict: The resources available on the host.
         """
-        return {}
+        if self._connection is None:
+            return {}
 
-    def getVMResourceUtilization(self, vm_name: str) -> Dict:
+        return {
+            'hostStats': {
+                'cpu': self._connection.getCPUStats(True),
+                'memory': self._connection.getMemoryStats(-1, 0)
+            }
+        }
+
+    def getHostVMStats(self) -> Dict:
         """
         Get a report of resource utilization for a VM.
-
-        Args:
-            vm_name (str): Name of the VM to get resource utilization for.
 
         Returns:
             Dict: The resources utilized by the VM.
         """
-        return {}
+        if self._connection is None:
+            return {}
+
+        stats: Dict[str, Dict] = {'vmStats': {}}
+
+        for vm in self._connection.listAllDomains():
+            vm_conf = self._connection.lookupByName(vm)
+
+            log.debug(f"VM: {vm_conf}")
+
+            stats['vmStats'][vm] = {
+                'cpu': vm_conf.getCPUStats(True),
+                'memory': vm_conf.memoryStats()
+            }
+
+        return stats
