@@ -1,5 +1,8 @@
 """
-A module for handling metrics collection from hosts. This includes time-series and state data.
+A portion of this module is dedicated to the MetricsCollector class, which oversees visiting every host and collecting
+metrics and storing them in the appropriate backend database.
+
+The other portion is dedicated to factory methods for building connections to the time-series and state databases.
 """
 
 
@@ -18,7 +21,6 @@ from premiscale.hypervisor import build_hypervisor_connection
 
 if TYPE_CHECKING:
     from typing import Iterator, List
-    from libvirt import virConnect
     # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
@@ -118,8 +120,48 @@ class MetricsCollector:
 
         self.stateConnection = build_state_connection(self.config)
         self.stateConnection.open()
-
+        self._initialize_hosts()
         self._collectMetrics()
+
+    def _initialize_hosts(self, host: Host | None = None) -> None:
+        """
+        Ensure this host is tracked in the database. Eventually, this code should get copied to the collection
+        loop to ensure that hosts are added to the database as they are discovered. For now, we'll just add them
+        all at once.
+
+        Args:
+            host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
+        """
+
+        # Minor helper functions to reduce code duplication.
+        def _host_as_dict(_host: Host) -> dict:
+            _h_as_dict = unstructure(_host)
+            del(_h_as_dict['sshKey'])
+
+            return _h_as_dict
+
+        def _host_exists(_host: Host) -> bool:
+            return self.stateConnection.host_exists(_host.name, _host.address)
+
+        _start_time = datetime.now()
+
+        if host is not None:
+            _host_dict = _host_as_dict(host)
+            if not _host_exists(host):
+                self.stateConnection.host_create(**_host_dict)
+
+            _end_time = datetime.now()
+
+            log.debug(f'Host {host.name} initialized in {_end_time - _start_time}')
+
+        for _h in self:
+            _host_dict = _host_as_dict(_h)
+            if not _host_exists(_h):
+                self.stateConnection.host_create(**_host_dict)
+
+        _end_time = datetime.now()
+
+        log.debug(f'All hosts initialized in {_end_time - _start_time}')
 
     def __iter__(self) -> Iterator:
         """
@@ -162,6 +204,7 @@ class MetricsCollector:
             collection_run_start = datetime.now()
 
             # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
+            # TODO: make pagination size configurable, but wrap it as max(self.config.controller.databases.maxHostConnectionThreads, <user-specified-pagination-size>), so that, minimally, we're using all of our threads on each iteration.
             for page in range(0, len(self) // self.config.controller.databases.maxHostConnectionThreads + 1):
 
                 # Set a lower and upper bound for a slice of hosts to visit from the whole config.
@@ -224,5 +267,6 @@ class MetricsCollector:
             # Diff current state and recorded state and update the state database.
 
             if self.timeseries_enabled:
+                # TODO: Iteratively collect metrics for each VM on the host, unless it's separate libvirt calls for each VM; in which case, we could add further, configurable threading to collect them all at once with a similar pagination scheme.
                 # timeseries_data = self._collectVirtualMachineMetrics(host)
                 pass

@@ -1,5 +1,5 @@
 """
-Factory design pattern for building hypervisor connections based on the user-provided configuration.
+Factory method for building hypervisor connections based on the user-provided configuration.
 """
 
 

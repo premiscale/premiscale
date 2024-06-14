@@ -119,6 +119,23 @@ class State(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def host_exists(self, name: str, address: str) -> bool:
+        """
+        Check if a host exists in the database.
+
+        Args:
+            name (str): name of host to check for.
+            address (str): IP address of the host.
+
+        Returns:
+            bool: True if the host exists.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def host_report(self) -> List:
         """
         Get a report of currently-managed hosts.

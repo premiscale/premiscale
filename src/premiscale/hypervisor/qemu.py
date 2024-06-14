@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 class Qemu(Libvirt):
     """
-    Connect to a host with a Qemu hypervisor.
+    A subclass for interacting with a Qemu-based hypervisor/host.
     """
 
     def __init__(self,

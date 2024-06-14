@@ -149,6 +149,22 @@ class Local(State):
         self.commit()
         return True
 
+    def host_exists(self, name: str, address: str) -> bool:
+        """
+        Check if a host exists in the database.
+
+        Args:
+            name (str): name of host to check for.
+            address (str): IP address of the host.
+
+        Returns:
+            bool: True if the host exists.
+        """
+        return self._cursor.execute(
+            'SELECT * FROM hosts WHERE name = ? AND address = ?',
+            (name, address)
+        ).fetchone() is not None
+
     def host_report(self) -> List:
         """
         Get a report of currently-managed hosts.
