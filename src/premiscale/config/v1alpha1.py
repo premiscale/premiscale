@@ -156,6 +156,7 @@ class Resources:
     """
     cpu: int
     memory: int
+    storage: int
 
 
 @define

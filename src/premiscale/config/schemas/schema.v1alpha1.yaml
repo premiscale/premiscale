@@ -101,5 +101,6 @@ group:
     resourceTarget: include('resources')
 ---
 resources:
-  cpu: int(min=0, max=100)
-  memory: int(min=0, max=100)
+  cpu: int(min=0)
+  memory: int(min=0)
+  storage: int(min=0)

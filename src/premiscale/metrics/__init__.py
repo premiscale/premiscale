@@ -137,7 +137,7 @@ class MetricsCollector:
         """
 
         # Minor helper functions to reduce code duplication.
-        def _host_as_dict(_host: Host) -> dict:
+        def _host_to_database_entry(_host: Host) -> dict:
             _h_as_dict = unstructure(_host)
 
             # Filter out fields that are not part of the database record.
@@ -145,15 +145,21 @@ class MetricsCollector:
                 del(_h_as_dict[key])
 
             # These fields need to be unpacked from the resources object since the database record is flat.
-            if _host.resources is not None:
-                if _host.resources.cpu is not None:
-                    _h_as_dict['cpu'] = _host.resources.cpu
-                else:
-                    _h_as_dict['cpu'] = 0
-                if _host.resources.memory is not None:
-                    _h_as_dict['memory'] = _host.resources.memory
-                else:
-                    _h_as_dict['memory'] = 0
+            if _host.resources is not None and _host.resources.cpu is not None:
+                _h_as_dict['cpu'] = _host.resources.cpu
+            else:
+                # Default 0 if not specified. This leaves it up to the autoscaler to discern schedulability.
+                _h_as_dict['cpu'] = 0
+
+            if _host.resources is not None and _host.resources.memory is not None:
+                _h_as_dict['memory'] = _host.resources.memory
+            else:
+                _h_as_dict['memory'] = 0
+
+            if _host.resources is not None and _host.resources.storage is not None:
+                _h_as_dict['storage'] = _host.resources.storage
+            else:
+                _h_as_dict['storage'] = 0
 
             return _h_as_dict
 
@@ -163,7 +169,7 @@ class MetricsCollector:
         _start_time = datetime.now()
 
         if host is not None:
-            _host_dict = _host_as_dict(host)
+            _host_dict = _host_to_database_entry(host)
             if not _host_exists(host):
                 self.stateConnection.host_create(**_host_dict)
 
@@ -174,7 +180,7 @@ class MetricsCollector:
             return None
 
         for _h in self:
-            _host_dict = _host_as_dict(_h)
+            _host_dict = _host_to_database_entry(_h)
             if not _host_exists(_h):
                 self.stateConnection.host_create(**_host_dict)
 
