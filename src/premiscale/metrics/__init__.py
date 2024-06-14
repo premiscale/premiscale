@@ -216,7 +216,7 @@ class MetricsCollector:
             collection_run_start = datetime.now()
 
             # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
-            # TODO: make pagination size configurable, but wrap it as max(self.config.controller.databases.maxHostConnectionThreads, <user-specified-pagination-size>), so that, minimally, we're using all of our threads on each iteration.
+            # TODO: make pagination size configurable, but wrap it as max(1, self.config.controller.databases.maxHostConnectionThreads, <user-specified-pagination-size>), so that, minimally, we're using all of our threads on each iteration.
             for page in range(0, len(self) // self.config.controller.databases.maxHostConnectionThreads + 1):
 
                 # Set a lower and upper bound for a slice of hosts to visit from the whole config.
