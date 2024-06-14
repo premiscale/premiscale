@@ -8,7 +8,11 @@ from __future__ import annotations
 import logging
 
 from typing import TYPE_CHECKING
-from libvirt import libvirtError
+from libvirt import (
+    libvirtError,
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_RUNNING,
+    VIR_DOMAIN_RUNNING
+)
 from premiscale.hypervisor._base import Libvirt
 
 
@@ -100,11 +104,12 @@ class Qemu(Libvirt):
             domain_name = domain.name()
             vm_conf = self._connection.lookupByName(domain_name)
 
-            log.debug(f"VM: {vm_conf}")
+            log.debug(f"VM: {vm_conf.name()}")
 
-            stats['vmStats'][domain_name] = {
-                'cpu': vm_conf.getCPUStats(True),
-                'memory': vm_conf.memoryStats()
-            }
+            if domain.isActive():
+                stats['vmStats'][domain_name] = {
+                    'cpu': vm_conf.getCPUStats(True),
+                    'memory': vm_conf.memoryStats()
+                }
 
         return stats
