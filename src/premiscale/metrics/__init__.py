@@ -154,6 +154,8 @@ class MetricsCollector:
 
             log.debug(f'Host {host.name} initialized in {_end_time - _start_time}')
 
+            return None
+
         for _h in self:
             _host_dict = _host_as_dict(_h)
             if not _host_exists(_h):
