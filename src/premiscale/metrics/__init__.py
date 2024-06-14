@@ -260,7 +260,7 @@ class MetricsCollector:
 
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
-            host_state = host_connection.getHostState
+            host_state = host_connection.getHostState()
             log.info(host_state)
 
             # {
@@ -273,7 +273,7 @@ class MetricsCollector:
             #   }
             # }
 
-            host_stats = host_connection.getHostStats
+            host_stats = host_connection.getHostStats()
             log.info(host_stats)
 
             vm_stats = host_connection.getHostVMStats()

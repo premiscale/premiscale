@@ -54,9 +54,11 @@ class Qemu(Libvirt):
         if self._connection is None:
             return {}
 
+        domains = self._connection.listAllDomains()
+
         return {
             'virtualMachines': {
-                vm.name(): vm.state() for vm in self._connection.listAllDomains()
+                vm.name(): vm.state() for vm in domains
             }
         }
 
@@ -87,14 +89,18 @@ class Qemu(Libvirt):
         if self._connection is None:
             return {}
 
-        stats: Dict[str, Dict] = {'vmStats': {}}
+        stats: Dict[str, Dict] = {
+            'vmStats': {}
+        }
 
-        for vm in self._connection.listAllDomains():
-            vm_conf = self._connection.lookupByName(vm)
+        domains = self._connection.listAllDomains()
+
+        for domain in domains.keys():
+            vm_conf = self._connection.lookupByName(domain)
 
             log.debug(f"VM: {vm_conf}")
 
-            stats['vmStats'][vm] = {
+            stats['vmStats'][domain] = {
                 'cpu': vm_conf.getCPUStats(True),
                 'memory': vm_conf.memoryStats()
             }
