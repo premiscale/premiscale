@@ -7,10 +7,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from premiscale.hypervisor._base import Libvirt
+from premiscale.hypervisor._schemas import DomainStats
 
 
 if TYPE_CHECKING:
-    from typing import Dict
+    from typing import Dict, List
     from ipaddress import IPv4Address
 
 
@@ -58,11 +59,11 @@ class ESX(Libvirt):
         """
         return {}
 
-    def getHostVMStats(self) -> Dict:
+    def getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
         Returns:
-            Dict: The resources utilized by the VM.
+            List[DomainStats]: Stats of all VMs on this particular host connection.
         """
-        return {}
+        return []

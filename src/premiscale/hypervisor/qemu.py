@@ -14,7 +14,7 @@ from libvirt import (
     VIR_DOMAIN_RUNNING
 )
 from premiscale.hypervisor._base import Libvirt
-from premiscale.hypervisor._schemas import vCPU, Net, Block, DomainStats
+from premiscale.hypervisor._schemas import DomainStats
 
 if TYPE_CHECKING:
     from typing import Dict, List
@@ -85,19 +85,15 @@ class Qemu(Libvirt):
             }
         }
 
-    def getHostVMStats(self) -> Dict:
+    def getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
         Returns:
-            Dict: The resources utilized by the VM.
+            List[DomainStats]: Stats of all VMs on this particular host connection.
         """
         if self._connection is None:
-            return {}
-
-        stats: Dict[str, List] = {
-            'vmStats': []
-        }
+            return []
 
         all_domain_stats = self._connection.getAllDomainStats(
             # https://vscode.dev/github/premiscale/premiscale/blob/store-vm-dataremiscale/lib/python3.10/site-packages/libvirt.py#L6424-L6425
@@ -131,43 +127,34 @@ class Qemu(Libvirt):
                 if key.startswith('vcpu_') and key != 'vcpu_current' and key != 'vcpu_maximum':
                     try:
                         index = int(key.split('_')[1])
-                    except IndexError as i:
-                        log.error(f'IndexError: {i}')
-                        return {}
+                    except IndexError as e:
+                        log.error(f'IndexError: {e}')
+                        return []
 
-                    while True:
-                        if index >= len(vcpus):
-                            vcpus.append({})
-                        else:
-                            break
+                    if index + 1 >= len(vcpus):
+                        for _ in range(index, len(vcpus)): vcpus.append({})
 
                     vcpus[index][key] = stat[key]
                 elif key.startswith('block_') and key != 'block_count':
                     try:
                         index = int(key.split('_')[1])
-                    except IndexError as i:
-                        log.error(f'IndexError: {i}')
-                        return {}
+                    except IndexError as e:
+                        log.error(f'IndexError: {e}')
+                        return []
 
-                    while True:
-                        if index >= len(blocks):
-                            blocks.append({})
-                        else:
-                            break
+                    if index + 1 >= len(blocks):
+                        for _ in range(index, len(blocks)): blocks.append({})
 
                     blocks[index][key] = stat[key]
                 elif key.startswith('net_') and key != 'net_count':
                     try:
                         index = int(key.split('_')[1])
-                    except IndexError as i:
-                        log.error(f'IndexError: {i}')
-                        return {}
+                    except IndexError as e:
+                        log.error(f'IndexError: {e}')
+                        return []
 
-                    while True:
-                        if index >= len(nets):
-                            nets.append({})
-                        else:
-                            break
+                    if index + 1 >= len(nets):
+                        for _ in range(index, len(nets)): nets.append({})
 
                     nets[index][key] = stat[key]
                 else:
@@ -181,4 +168,4 @@ class Qemu(Libvirt):
                 DomainStats(**domain_stats_filtered)
             )
 
-        return stats
+        return domain_stats_filtered_list

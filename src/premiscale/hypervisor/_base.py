@@ -15,7 +15,8 @@ from ipaddress import IPv4Address
 
 
 if TYPE_CHECKING:
-    from typing import Any, Dict
+    from premiscale.hypervisor._schemas import DomainStats
+    from typing import Any, Dict, List
 
 
 log = logging.getLogger(__name__)
@@ -131,12 +132,12 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def getHostVMStats(self) -> Dict:
+    def getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
         Returns:
-            Dict: The resources utilized by the VM.
+            List[DomainStats]: Stats of all VMs on this particular host connection.
 
         Raises:
             NotImplementedError: If the method is not implemented by the subclass.
