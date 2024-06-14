@@ -120,6 +120,7 @@ class MetricsCollector:
 
         self.stateConnection = build_state_connection(self.config)
         self.stateConnection.open()
+        self.stateConnection.initialize()
         self._initialize_host()
         self._collectMetrics()
 
@@ -139,7 +140,7 @@ class MetricsCollector:
         def _host_as_dict(_host: Host) -> dict:
             _h_as_dict = unstructure(_host)
             del(_h_as_dict['sshKey'])
-
+            del(_h_as_dict['timeout'])
             return _h_as_dict
 
         def _host_exists(_host: Host) -> bool:

@@ -68,6 +68,16 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def initialize(self) -> None:
+        """
+        Initialize the state backend.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
     def __enter__(self) -> State:
         self.open()
         return self

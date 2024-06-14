@@ -66,6 +66,15 @@ class MySQL(State):
         """
         # self._connection.commit()
 
+    def initialize(self) -> None:
+        """
+        Initialize the state backend.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
      ## Hosts
 
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
