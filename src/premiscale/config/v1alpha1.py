@@ -229,6 +229,28 @@ class Host:
 
         log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds')
 
+    # Minor helper functions to reduce code duplication.
+    def to_db_entry(self) -> Dict:
+        """
+        Convert the host configuration to a flat database record-format.
+
+        Returns:
+            Dict: This instance as a database record.
+        """
+        host_dict = {
+            'name': self.name,
+            'address': self.address,
+            'protocol': self.protocol,
+            'port': self.port,
+            'hypervisor': self.hypervisor,
+            'timeout': self.timeout,
+            'cpu': self.resources.cpu if self.resources is not None and self.resources.cpu is not None else 0,
+            'memory': self.resources.memory if self.resources is not None and self.resources.memory is not None else 0,
+            'storage': self.resources.storage if self.resources is not None and self.resources.storage is not None else 0
+        }
+
+        return host_dict
+
 
 @define
 class CloudInit:

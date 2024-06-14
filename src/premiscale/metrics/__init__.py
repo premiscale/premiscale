@@ -136,40 +136,13 @@ class MetricsCollector:
             host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
         """
 
-        # Minor helper functions to reduce code duplication.
-        def _host_to_database_entry(_host: Host) -> dict:
-            _h_as_dict = unstructure(_host)
-
-            # Filter out fields that are not part of the database record.
-            for key in 'sshKey', 'timeout', 'user', 'resources':
-                del(_h_as_dict[key])
-
-            # These fields need to be unpacked from the resources object since the database record is flat.
-            if _host.resources is not None and _host.resources.cpu is not None:
-                _h_as_dict['cpu'] = _host.resources.cpu
-            else:
-                # Default 0 if not specified. This leaves it up to the autoscaler to discern schedulability.
-                _h_as_dict['cpu'] = 0
-
-            if _host.resources is not None and _host.resources.memory is not None:
-                _h_as_dict['memory'] = _host.resources.memory
-            else:
-                _h_as_dict['memory'] = 0
-
-            if _host.resources is not None and _host.resources.storage is not None:
-                _h_as_dict['storage'] = _host.resources.storage
-            else:
-                _h_as_dict['storage'] = 0
-
-            return _h_as_dict
-
         def _host_exists(_host: Host) -> bool:
             return self.stateConnection.host_exists(_host.name, _host.address)
 
         _start_time = datetime.now()
 
         if host is not None:
-            _host_dict = _host_to_database_entry(host)
+            _host_dict = host.to_db_entry()
             if not _host_exists(host):
                 self.stateConnection.host_create(**_host_dict)
 
@@ -180,9 +153,10 @@ class MetricsCollector:
             return None
 
         for _h in self:
-            _host_dict = _host_to_database_entry(_h)
             if not _host_exists(_h):
-                self.stateConnection.host_create(**_host_dict)
+                self.stateConnection.host_create(
+                    **_h.to_db_entry()
+                )
 
         _end_time = datetime.now()
 
