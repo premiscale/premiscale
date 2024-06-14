@@ -136,14 +136,12 @@ class MetricsCollector:
             host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
         """
 
-        def _host_exists(_host: Host) -> bool:
-            return self.stateConnection.host_exists(_host.name, _host.address)
-
         _start_time = datetime.now()
 
         if host is not None:
             _host_dict = host.to_db_entry()
-            if not _host_exists(host):
+
+            if not self.stateConnection.host_exists(host.name, host.address):
                 self.stateConnection.host_create(**_host_dict)
 
             _end_time = datetime.now()
@@ -153,7 +151,7 @@ class MetricsCollector:
             return None
 
         for _h in self:
-            if not _host_exists(_h):
+            if not self.stateConnection.host_exists(_h.name, _h.address):
                 self.stateConnection.host_create(
                     **_h.to_db_entry()
                 )
