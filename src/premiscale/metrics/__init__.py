@@ -141,6 +141,13 @@ class MetricsCollector:
             _h_as_dict = unstructure(_host)
             del(_h_as_dict['sshKey'])
             del(_h_as_dict['timeout'])
+            del(_h_as_dict['user'])
+
+            # These fields need to be unpacked from the resources object since the database record is flat.
+            if _host.resources is not None:
+                _h_as_dict['cpu'] = _host.resources.cpu
+                _h_as_dict['memory'] = _host.resources.memory
+
             return _h_as_dict
 
         def _host_exists(_host: Host) -> bool:
