@@ -120,14 +120,16 @@ class MetricsCollector:
 
         self.stateConnection = build_state_connection(self.config)
         self.stateConnection.open()
-        self._initialize_hosts()
+        self._initialize_host()
         self._collectMetrics()
 
-    def _initialize_hosts(self, host: Host | None = None) -> None:
+    def _initialize_host(self, host: Host | None = None) -> None:
         """
-        Ensure this host is tracked in the database. Eventually, this code should get copied to the collection
-        loop to ensure that hosts are added to the database as they are discovered. For now, we'll just add them
-        all at once.
+        Ensure hosts are tracked in the database. This is a one-time operation, currently, and no 'host' should be
+        specified.
+
+        Eventually, this code should get copied to the collection loop to ensure that hosts are added to the
+        database as they are discovered. For now, we'll just add them all at once.
 
         Args:
             host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
