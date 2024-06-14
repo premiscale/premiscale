@@ -130,10 +130,7 @@ class Qemu(Libvirt):
                     except IndexError as e:
                         log.error(f'IndexError: {e}')
                         return []
-
-                    if index + 1 >= len(vcpus):
-                        for _ in range(index, len(vcpus)): vcpus.append({})
-
+                    vcpus.extend([{}] * (index - len(vcpus) + 1))
                     vcpus[index][key] = stat[key]
                 elif key.startswith('block_') and key != 'block_count':
                     try:
@@ -141,10 +138,7 @@ class Qemu(Libvirt):
                     except IndexError as e:
                         log.error(f'IndexError: {e}')
                         return []
-
-                    if index + 1 >= len(blocks):
-                        for _ in range(index, len(blocks)): blocks.append({})
-
+                    blocks.extend([{}] * (index - len(blocks) + 1))
                     blocks[index][key] = stat[key]
                 elif key.startswith('net_') and key != 'net_count':
                     try:
@@ -152,10 +146,7 @@ class Qemu(Libvirt):
                     except IndexError as e:
                         log.error(f'IndexError: {e}')
                         return []
-
-                    if index + 1 >= len(nets):
-                        for _ in range(index, len(nets)): nets.append({})
-
+                    nets.extend([{}] * (index - len(nets) + 1))
                     nets[index][key] = stat[key]
                 else:
                     domain_stats_filtered[key] = stat[key]
