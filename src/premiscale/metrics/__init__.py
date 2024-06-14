@@ -157,8 +157,9 @@ class MetricsCollector:
                 )
 
         _end_time = datetime.now()
+        _total_time = round((_end_time - _start_time).total_seconds(), 2)
 
-        log.debug(f'All hosts initialized in {_end_time - _start_time}')
+        log.debug(f'All hosts initialized in {_total_time}')
 
     def __iter__(self) -> Iterator:
         """

@@ -243,7 +243,6 @@ class Host:
             'protocol': self.protocol,
             'port': self.port,
             'hypervisor': self.hypervisor,
-            'timeout': self.timeout,
             'cpu': self.resources.cpu if self.resources is not None and self.resources.cpu is not None else 0,
             'memory': self.resources.memory if self.resources is not None and self.resources.memory is not None else 0,
             'storage': self.resources.storage if self.resources is not None and self.resources.storage is not None else 0
