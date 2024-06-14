@@ -132,15 +132,12 @@ def start(config: Config, version: str, token: str) -> int:
                     )
                 )
 
-        filtered_processes = [process for process in processes if process is not None]
-
-        for process in as_completed(filtered_processes):
-            if process is not None:
-                try:
-                    process.result()
-                except Exception as e:
-                    log.error(f'Process failed: {e}')
-                    _ret_code = 1
+        for process in as_completed(_p for _p in processes if _p is not None):
+            try:
+                process.result()
+            except Exception as e:
+                log.error(f'Process failed: {e}')
+                return 1
 
     for thread in _main_process_daemon_threads:
         thread.join()
