@@ -1,8 +1,8 @@
 """
-A module for handling metrics collection from hosts. This includes time-series and state data.
-The distinguishing factor between state and time-series data is where it's sourced from; state
-data is sourced from the hosts on which the VMs reside, while time-series data is sourced from
-the VMs on the hosts.
+A portion of this module is dedicated to the MetricsCollector class, which oversees visiting every host and collecting
+metrics and storing them in the appropriate backend database.
+
+The other portion is dedicated to factory methods for building connections to the time-series and state databases.
 """
 
 
@@ -120,8 +120,46 @@ class MetricsCollector:
 
         self.stateConnection = build_state_connection(self.config)
         self.stateConnection.open()
-
+        self.stateConnection.initialize()
+        self._initialize_host()
         self._collectMetrics()
+
+    def _initialize_host(self, host: Host | None = None) -> None:
+        """
+        Ensure hosts are tracked in the database. This is a one-time operation, currently, and no 'host' should be
+        specified.
+
+        Eventually, this code should get copied to the collection loop to ensure that hosts are added to the
+        database as they are discovered. For now, we'll just add them all at once.
+
+        Args:
+            host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
+        """
+
+        _start_time = datetime.now()
+
+        if host is not None:
+            _host_dict = host.to_db_entry()
+
+            if not self.stateConnection.host_exists(host.name, host.address):
+                self.stateConnection.host_create(**_host_dict)
+
+            _end_time = datetime.now()
+
+            log.debug(f'Host {host.name} initialized in {_end_time - _start_time}')
+
+            return None
+
+        for _h in self:
+            if not self.stateConnection.host_exists(_h.name, _h.address):
+                self.stateConnection.host_create(
+                    **_h.to_db_entry()
+                )
+
+        _end_time = datetime.now()
+        _total_time = round((_end_time - _start_time).total_seconds(), 2)
+
+        log.debug(f'All hosts initialized in {_total_time}')
 
     def __iter__(self) -> Iterator:
         """
@@ -164,6 +202,7 @@ class MetricsCollector:
             collection_run_start = datetime.now()
 
             # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
+            # TODO: make pagination size configurable, but wrap it as max(1, self.config.controller.databases.maxHostConnectionThreads, <user-specified-pagination-size>), so that, minimally, we're using all of our threads on each iteration.
             for page in range(0, len(self) // self.config.controller.databases.maxHostConnectionThreads + 1):
 
                 # Set a lower and upper bound for a slice of hosts to visit from the whole config.
@@ -209,21 +248,23 @@ class MetricsCollector:
 
     def _collectHostMetrics(self, host: Host) -> None:
         """
-        Collect metrics for a single host over a Libvirt connection and store them in the appropriate backend database.
+        Collect metrics for a single host over a readonly Libvirt connection and store them in the appropriate backend database.
 
         Args:
             host (Host): The host to collect metrics from.
         """
-        with build_hypervisor_connection(host) as host_connection:
+        with build_hypervisor_connection(host, readonly=True) as host_connection:
             # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
             if host_connection is None:
                 return None
 
-            log.info(f'Collecting metrics for host {host.name}')
-            # state_data = self._collectStateMetrics(host_connection)
+            log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
+
+            state_data = host_connection.getHostVMState()
 
             # Diff current state and recorded state and update the state database.
 
             if self.timeseries_enabled:
+                # TODO: Iteratively collect metrics for each VM on the host, unless it's separate libvirt calls for each VM; in which case, we could add further, configurable threading to collect them all at once with a similar pagination scheme.
                 # timeseries_data = self._collectVirtualMachineMetrics(host)
                 pass

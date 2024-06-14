@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 class Qemu(Libvirt):
     """
-    Connect to a host with a Qemu hypervisor.
+    A subclass for interacting with a Qemu-based hypervisor/host.
     """
 
     def __init__(self,
@@ -43,3 +43,41 @@ class Qemu(Libvirt):
             readonly=readonly,
             resources=resources
         )
+
+    def getHostVMState(self) -> Dict:
+        """
+        Get the state of the VMs on the host.
+
+        Returns:
+            Dict: The state of the VMs on the host.
+        """
+        if self._connection is None:
+            return {}
+
+        return {
+            'virtualMachines': {
+                vm.name(): vm.state()
+                for vm in self._connection.listAllDomains()
+            }
+        }
+
+    def getHostSchedulableResourceUtilization(self) -> Dict:
+        """
+        Get a report of schedulable resource utilization on the host.
+
+        Returns:
+            Dict: The resources available on the host.
+        """
+        return {}
+
+    def getVMResourceUtilization(self, vm_name: str) -> Dict:
+        """
+        Get a report of resource utilization for a VM.
+
+        Args:
+            vm_name (str): Name of the VM to get resource utilization for.
+
+        Returns:
+            Dict: The resources utilized by the VM.
+        """
+        return {}

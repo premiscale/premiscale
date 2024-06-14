@@ -85,25 +85,22 @@ class Local(State):
         log.debug('Rolling back changes to in-memory SQLite database')
         self._connection.rollback()
 
-    def reset(self) -> None:
+    def initialize(self) -> None:
         """
-        Reset the SQLite database.
+        Initialize the SQLite database.
         """
-        log.debug('Resetting in-memory SQLite database')
-        self._cursor.execute('DROP TABLE IF EXISTS hosts')
-        self._cursor.execute('DROP TABLE IF EXISTS vms')
-        self._cursor.execute('DROP TABLE IF EXISTS asgs')
+        log.debug('Initializing in-memory SQLite database')
         self._cursor.execute(
-            'CREATE TABLE hosts (name TEXT, address TEXT, protocol TEXT, port INTEGER, hypervisor TEXT, cpu INTEGER, memory INTEGER, storage INTEGER)'
+            'CREATE TABLE IF NOT EXISTS hosts (name TEXT, address TEXT, protocol TEXT, port INTEGER, hypervisor TEXT, cpu INTEGER, memory INTEGER, storage INTEGER)'
         )
         self._cursor.execute(
-            'CREATE TABLE vms (host TEXT, name TEXT, cores INTEGER, memory INTEGER, storage INTEGER)'
+            'CREATE TABLE IF NOT EXISTS vms (host TEXT, name TEXT, cores INTEGER, memory INTEGER, storage INTEGER)'
         )
         self._cursor.execute(
-            'CREATE TABLE asgs (name TEXT)'
+            'CREATE TABLE IF NOT EXISTS asgs (name TEXT)'
         )
         self.commit()
-        log.debug('In-memory SQLite database reset')
+        log.debug('In-memory SQLite database initialized')
 
     ## Hosts
 
@@ -148,6 +145,22 @@ class Local(State):
         )
         self.commit()
         return True
+
+    def host_exists(self, name: str, address: str) -> bool:
+        """
+        Check if a host exists in the database.
+
+        Args:
+            name (str): name of host to check for.
+            address (str): IP address of the host.
+
+        Returns:
+            bool: True if the host exists.
+        """
+        return self._cursor.execute(
+            'SELECT * FROM hosts WHERE name = ? AND address = ?',
+            (name, address)
+        ).fetchone() is not None
 
     def host_report(self) -> List:
         """

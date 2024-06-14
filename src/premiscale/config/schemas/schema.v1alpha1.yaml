@@ -65,11 +65,11 @@ host:
   name: str(min=1)
   address: str(min=1)
   port: int(min=1, max=65535)
-  protocol: enum('ssh', 'SSH', 'tls', 'TLS')
+  protocol: enum('ssh', 'SSH', 'tls', 'TLS', 'http', 'HTTP', 'https', 'HTTPS')
   timeout: int(min=1, max=599940, required=False)
   user: str(min=1, required=False)
   sshKey: str(min=1, required=False)
-  hypervisor: enum('kvm', 'xen', 'esx', 'qemu')
+  hypervisor: enum('xen', 'esx', 'qemu')
 ---
 # The other half of autoscaling configuration
 groups: map(include('group'), min=0)
@@ -101,5 +101,6 @@ group:
     resourceTarget: include('resources')
 ---
 resources:
-  cpu: int(min=0, max=100)
-  memory: int(min=0, max=100)
+  cpu: int(min=0)
+  memory: int(min=0)
+  storage: int(min=0)

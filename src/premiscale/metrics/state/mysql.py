@@ -66,6 +66,15 @@ class MySQL(State):
         """
         # self._connection.commit()
 
+    def initialize(self) -> None:
+        """
+        Initialize the state backend.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
      ## Hosts
 
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
@@ -100,6 +109,22 @@ class MySQL(State):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def host_exists(self, name: str, address: str) -> bool:
+        """
+        Check if a host exists in the database.
+
+        Args:
+            name (str): name of host to check for.
+            address (str): IP address of the host.
+
+        Returns:
+            bool: True if the host exists.
 
         Raises:
             NotImplementedError: If the method is not implemented.

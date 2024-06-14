@@ -1,4 +1,0 @@
-"""
-Manage KubeVirt resources.
-"""
-

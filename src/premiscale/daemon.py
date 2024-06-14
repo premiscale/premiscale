@@ -11,7 +11,7 @@ import logging
 
 from functools import partial
 from multiprocessing.queues import Queue
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from threading import Thread
 from typing import cast, TYPE_CHECKING
 from setproctitle import setproctitle
@@ -40,6 +40,8 @@ def start(config: Config, version: str, token: str) -> int:
     Returns:
         int: status code of the first subprocess to exit.
     """
+    _ret_code = 0
+
     setproctitle('premiscale')
 
     # Start the healthcheck and other APIs in a separate thread off our main process as a daemon thread.
@@ -130,11 +132,20 @@ def start(config: Config, version: str, token: str) -> int:
                     )
                 )
 
-        for process in processes:
-            if process is not None:
+        filtered_processes = [process for process in processes if process is not None]
+
+        for process in as_completed(filtered_processes):
+            try:
                 process.result()
+            except Exception as e:
+                log.error(f'Process failed: "{e}"')
+                _ret_code = 1
+
+                for process in filtered_processes:
+                    if not process.done():
+                        process.cancel()
 
     for thread in _main_process_daemon_threads:
         thread.join()
 
-    return 0
+    return _ret_code

@@ -68,6 +68,16 @@ class State(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def initialize(self) -> None:
+        """
+        Initialize the state backend.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
     def __enter__(self) -> State:
         self.open()
         return self
@@ -112,6 +122,23 @@ class State(ABC):
 
         Returns:
             bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def host_exists(self, name: str, address: str) -> bool:
+        """
+        Check if a host exists in the database.
+
+        Args:
+            name (str): name of host to check for.
+            address (str): IP address of the host.
+
+        Returns:
+            bool: True if the host exists.
 
         Raises:
             NotImplementedError: If the method is not implemented.
