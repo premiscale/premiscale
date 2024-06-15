@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import multiprocessing as mp
 import logging
+import traceback
 
 from functools import partial
 from multiprocessing.queues import Queue
@@ -140,11 +141,9 @@ def start(config: Config, version: str, token: str) -> int:
                 process.result()
             except Exception as e:
                 log.error(f'Process failed: "{e}"')
+                log.error(f'Full traceback: {traceback.format_exc()}')
                 _ret_code = 1
-
-                for process in filtered_processes:
-                    if not process.done():
-                        process.cancel()
+                break
 
     for thread in _main_process_daemon_threads:
         thread.join()
