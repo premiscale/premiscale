@@ -139,9 +139,8 @@ def start(config: Config, version: str, token: str) -> int:
         for process in as_completed(filtered_processes):
             try:
                 process.result()
-            except Exception as e:
-                log.error(f'Process failed: "{e}"')
-                log.error(f'Full traceback: {traceback.format_exc()}')
+            except Exception:
+                log.error(f'Process {process} failed. Full traceback: {traceback.format_exc()}')
                 _ret_code = 1
                 break
 

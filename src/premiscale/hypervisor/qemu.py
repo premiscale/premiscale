@@ -38,6 +38,7 @@ class Qemu(Libvirt):
                  user: str | None = None,
                  readonly: bool = False,
                  resources: Dict | None = None) -> None:
+
         super().__init__(
             name=name,
             address=address,
@@ -87,7 +88,11 @@ class Qemu(Libvirt):
 
     def getHostVMStats(self) -> List[DomainStats]:
         """
-        Get a report of resource utilization for a VM.
+        Get a report of resource utilization for a VM. A typical report includes all the following fields ~
+
+            https://github.com/premiscale/premiscale/pull/196#issuecomment-2168388982
+
+        And these fields are parsed into a DomainStats object.
 
         Returns:
             List[DomainStats]: Stats of all VMs on this particular host connection.
@@ -95,9 +100,10 @@ class Qemu(Libvirt):
         if self._connection is None:
             return []
 
-        all_domain_stats = self._connection.getAllDomainStats(
+        _all_domain_stats = self._connection.getAllDomainStats(
             # https://vscode.dev/github/premiscale/premiscale/blob/store-vm-dataremiscale/lib/python3.10/site-packages/libvirt.py#L6424-L6425
-            # Using 0 for @stats returns all stats groups supported by the given hypervisor.
+            # Using 0 for @stats returns all stats groups supported by the given hypervisor. See the link
+            # above for an example of all the retrieved stats.
             stats=0,
             flags=VIR_DOMAIN_RUNNING
         )
@@ -105,11 +111,13 @@ class Qemu(Libvirt):
         # Normalize domains' stat fields into a list of DomainStats objects.
         domain_stats_filtered_list: List[DomainStats] = []
 
-        for domain_stats in all_domain_stats:
-            domain, stat = domain_stats
+        for (domain, stat) in _all_domain_stats:
             stat['name'] = domain.name()
 
             domain_keys = stat.keys()
+
+            # Set up a bunch of empty iterables to store bins of parsed stats from this domain.
+            # These will be unpacked into the DomainStats object.
             domain_stats_filtered = {}
             vcpus: List[Dict[str, int]] = []
             blocks: List[Dict[str, int]] = []
@@ -117,11 +125,13 @@ class Qemu(Libvirt):
 
             # Normalize all the returned stats fields and parse them into a DomainStats object.
             for key in domain_keys:
+                log.info(f'Parsing key: {key}')
+                log.info(f'Parsing value: {stat[key]}')
                 # Replace '-' and '.' with '_' in the keys for consistency.
-                oldKey = key
-                key.replace('-', '_')
-                key.replace('.', '_')
-                stat[key] = stat.pop(oldKey)
+                oldValue = stat.pop(key)
+                key = key.replace('-', '_')
+                key = key.replace('.', '_')
+                stat[key] = oldValue
 
                 # Bin parsed vCPU, Block, and Net stats to form the proper hierarchy.
                 if key.startswith('vcpu_') and key != 'vcpu_current' and key != 'vcpu_maximum':
@@ -134,6 +144,7 @@ class Qemu(Libvirt):
                     vcpus.extend([{}] * (index - len(vcpus) + 1))
 
                     vcpus[index][key] = stat[key]
+                #
                 elif key.startswith('block_') and key != 'block_count':
                     try:
                         index = int(key.split('_')[1])
@@ -144,6 +155,7 @@ class Qemu(Libvirt):
                     blocks.extend([{}] * (index - len(blocks) + 1))
 
                     blocks[index][key] = stat[key]
+                #
                 elif key.startswith('net_') and key != 'net_count':
                     try:
                         index = int(key.split('_')[1])
@@ -154,12 +166,11 @@ class Qemu(Libvirt):
                     nets.extend([{}] * (index - len(nets) + 1))
 
                     nets[index][key] = stat[key]
-                else:
-                    domain_stats_filtered[key] = stat[key]
-            else:
-                domain_stats_filtered['vcpu'] = vcpus
-                domain_stats_filtered['block'] = blocks
-                domain_stats_filtered['net'] = nets
+
+            domain_stats_filtered[key] = stat[key]
+            domain_stats_filtered['vcpu'] = vcpus
+            domain_stats_filtered['block'] = blocks
+            domain_stats_filtered['net'] = nets
 
             domain_stats_filtered_list.append(
                 DomainStats(**domain_stats_filtered)
