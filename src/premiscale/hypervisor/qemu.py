@@ -6,6 +6,7 @@ Implement a Libvirt connection to a Qemu-based hypervisor/host.
 from __future__ import annotations
 
 import logging
+import re
 
 from typing import TYPE_CHECKING
 from libvirt import (
@@ -22,6 +23,8 @@ if TYPE_CHECKING:
 
 
 log = logging.getLogger(__name__)
+
+NUMBER_REGEX = re.compile(r'(?<=_)\d+(?=_)')
 
 
 class Qemu(Libvirt):
@@ -114,7 +117,7 @@ class Qemu(Libvirt):
         for (domain, stat) in _all_domain_stats:
             stat['name'] = domain.name()
 
-            domain_keys = stat.keys()
+            domain_keys = list(stat.keys())
 
             # Set up a bunch of empty iterables to store bins of parsed stats from this domain.
             # These will be unpacked into the DomainStats object.
@@ -125,8 +128,6 @@ class Qemu(Libvirt):
 
             # Normalize all the returned stats fields and parse them into a DomainStats object.
             for key in domain_keys:
-                log.info(f'Parsing key: {key}')
-                log.info(f'Parsing value: {stat[key]}')
                 # Replace '-' and '.' with '_' in the keys for consistency.
                 oldValue = stat.pop(key)
                 key = key.replace('-', '_')
@@ -143,7 +144,10 @@ class Qemu(Libvirt):
 
                     vcpus.extend([{}] * (index - len(vcpus) + 1))
 
-                    vcpus[index][key] = stat[key]
+                    # Remove the number from the key and strip 'vcpu_' from the beginning.
+                    _new_key = re.sub(NUMBER_REGEX, '', key).lstrip('vcpu_')
+
+                    vcpus[index][_new_key] = stat[key]
                 #
                 elif key.startswith('block_') and key != 'block_count':
                     try:
@@ -154,7 +158,9 @@ class Qemu(Libvirt):
 
                     blocks.extend([{}] * (index - len(blocks) + 1))
 
-                    blocks[index][key] = stat[key]
+                    _new_key = re.sub(NUMBER_REGEX, '', key).lstrip('block_')
+
+                    blocks[index][_new_key] = stat[key]
                 #
                 elif key.startswith('net_') and key != 'net_count':
                     try:
@@ -165,12 +171,18 @@ class Qemu(Libvirt):
 
                     nets.extend([{}] * (index - len(nets) + 1))
 
-                    nets[index][key] = stat[key]
+                    _new_key = re.sub(NUMBER_REGEX, '', key).lstrip('net_')
+
+                    nets[index][_new_key] = stat[key]
+                else:
+                    domain_stats_filtered[key] = stat[key]
 
             domain_stats_filtered[key] = stat[key]
             domain_stats_filtered['vcpu'] = vcpus
             domain_stats_filtered['block'] = blocks
             domain_stats_filtered['net'] = nets
+
+            print(domain_stats_filtered)
 
             domain_stats_filtered_list.append(
                 DomainStats(**domain_stats_filtered)
