@@ -78,6 +78,7 @@ RUN --mount=type=cache,target=${HOME}/.local/bin,uid=1001,gid=1001 python instal
     && rm install-poetry.py
 RUN --mount=type=cache,target=${POETRY_CACHE_DIR},uid=1001,gid=1001 poetry install --without=dev \
     && poetry run premiscale --version
+RUN poetry install --without=dev
 
 ENTRYPOINT [ "/tini", "--" ]
 CMD [ "bash", "-c", "poetry run premiscale --log-stdout --log-level=${PREMISCALE_LOG_LEVEL}" ]
