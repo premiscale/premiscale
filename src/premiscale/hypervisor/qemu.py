@@ -11,9 +11,17 @@ import re
 from typing import TYPE_CHECKING
 from libvirt import (
     libvirtError,
+    VIR_DOMAIN_NOSTATE,      # 0
+    VIR_DOMAIN_RUNNING,      # 1
+    VIR_DOMAIN_BLOCKED,      # 2
+    VIR_DOMAIN_PAUSED,       # 3
+    VIR_DOMAIN_SHUTDOWN,     # 4
+    VIR_DOMAIN_SHUTOFF,      # 5
+    VIR_DOMAIN_CRASHED,      # 6
+    VIR_DOMAIN_PMSUSPENDED,  # 7
     # VIR_CONNECT_GET_ALL_DOMAINS_STATS_RUNNING,
-    VIR_DOMAIN_RUNNING
 )
+from xmltodict import parse as xmlparse
 from premiscale.hypervisor._base import Libvirt
 from premiscale.hypervisor._schemas import DomainStats
 
@@ -59,18 +67,48 @@ class Qemu(Libvirt):
         Get the state of the VMs on the host.
 
         Returns:
-            Dict: The state of the VMs on the host.
+            Dict: The state of the VMs on the host. This takes the form,
+
+            {
+                'vms': [
+                    'name': 'vm_name',
+                    'state': [
+                        5,
+                        8388608,  # memory, in MiB (so this really means, 8 GiB)
+                        8388608,  # ^^
+                        6,  #
+                        0
+                    ]
+                ]
+            }
         """
         if self._connection is None:
             return {}
 
-        domains = self._connection.listAllDomains()
+        domains = self._connection.listAllDomains(
+            flags=VIR_DOMAIN_NOSTATE
+        )
 
         return {
-            'virtualMachines': {
-                vm.name(): vm.info() for vm in domains
-            },
-
+            'vms': [
+                {
+                    'name': vm.name(),
+                    'state': vm.info()
+                } for vm in domains
+            ],
+            'host': {
+                'hostname': self._connection.getHostname(),
+                'type': self._connection.getType(),
+                'uri': self._connection.getURI(),
+                'version': self._connection.getVersion(),
+                'libvirt_version': self._connection.getLibVersion(),
+                'capabilities': xmlparse(self._connection.getCapabilities()),
+                'node_info': self._connection.getInfo(),
+                'max_vcpus': self._connection.getMaxVcpus(None),
+                'free_memory': self._connection.getFreeMemory(),
+                'node_memory': self._connection.getMemoryStats(-1, 0),
+                'node_cpu_stats': self._connection.getCPUStats(True)
+            }
         }
 
     def getHostStats(self) -> Dict:
@@ -85,8 +123,14 @@ class Qemu(Libvirt):
 
         return {
             'hostStats': {
-                'cpu': self._connection.getCPUStats(True),
-                'memory': self._connection.getMemoryStats(-1, 0)
+                'cpu': self._connection.getCPUStats(
+                    cpuNum=-1,
+                    flags=VIR_DOMAIN_NOSTATE
+                ),
+                'memory': self._connection.getMemoryStats(
+                    cellNum=-1,
+                    flags=VIR_DOMAIN_NOSTATE
+                )
             }
         }
 
@@ -109,7 +153,7 @@ class Qemu(Libvirt):
             # Using 0 for @stats returns all stats groups supported by the given hypervisor. See the link
             # above for an example of all the retrieved stats.
             stats=0,
-            flags=VIR_DOMAIN_RUNNING
+            flags=VIR_DOMAIN_NOSTATE
         )
 
         # Normalize domains' stat fields into a list of DomainStats objects.
@@ -182,8 +226,6 @@ class Qemu(Libvirt):
             domain_stats_filtered['vcpu'] = vcpus
             domain_stats_filtered['block'] = blocks
             domain_stats_filtered['net'] = nets
-
-            print(domain_stats_filtered)
 
             domain_stats_filtered_list.append(
                 DomainStats(**domain_stats_filtered)
