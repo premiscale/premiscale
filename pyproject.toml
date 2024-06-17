@@ -4,7 +4,7 @@ version = "0.0.1"
 description = "PremiScale autoscaler"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 maintainers = ["Emma Doyle <emma@premiscale.com>"]
-license = "Proprietary"
+license = "BSL 1.1"
 readme = "README.md"
 packages = [
   { include = "premiscale", from = "src" }
@@ -40,6 +40,7 @@ ruamel-yaml = "^0.18.6"
 prometheus-client = "^0.20.0"
 wrapt = "^1.16.0"
 xmltodict = "^0.13.0"
+tinyflux = "^1.0.0"
 
 [tool.poetry.group.profile.dependencies]
 memray = "^1.12"

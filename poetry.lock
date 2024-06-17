@@ -2000,6 +2000,17 @@ typing-extensions = ">=4.4.0,<5.0.0"
 syntax = ["tree-sitter (>=0.20.1,<0.21.0)", "tree-sitter-languages (==1.10.2)"]
 
 [[package]]
+name = "tinyflux"
+version = "1.0.0"
+description = "The Tiny Time-Series Database Optimized for Your Happiness"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tinyflux-1.0.0-py3-none-any.whl", hash = "sha256:0d191d5a11bb86f01d3b015ccc3130713abaa21cbc8f85d79066cd34a3650490"},
+    {file = "tinyflux-1.0.0.tar.gz", hash = "sha256:a7aea4648d50cdcee4bb7904c37b2eedf27df39a3eb68f1ff22b77e9c30f1447"},
+]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -2323,4 +2334,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7d5a76462499d76a0edabd78b0c5d2a0481d94c91be50e9c6fe5b4237b61fd64"
+content-hash = "5f54aeb3d4e602511d366c43d7acdc50483060f79c16ae933fc20ad907f22992"

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from premiscale.metrics.timeseries._base import TimeSeries
+from tinyflux import TinyFlux, Point, FieldQuery, TagQuery, TimeQuery
 
 if TYPE_CHECKING:
     from premiscale.config.v1alpha1 import Config

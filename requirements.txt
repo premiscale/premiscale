@@ -656,6 +656,9 @@ sqlalchemy==2.0.30 ; python_version >= "3.10" and python_version < "4.0" \
 sqlmodel==0.0.19 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:6c8125d4101970d031e9aae970b20cbeaf44149989f8366d939f4ab21aab8763 \
     --hash=sha256:95449b0b48a40a3eecf0a629fa5735b9dfc8a5574a91090d24ca17f02246ad96
+tinyflux==1.0.0 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:0d191d5a11bb86f01d3b015ccc3130713abaa21cbc8f85d79066cd34a3650490 \
+    --hash=sha256:a7aea4648d50cdcee4bb7904c37b2eedf27df39a3eb68f1ff22b77e9c30f1447
 typing-extensions==4.12.2 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d \
     --hash=sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8

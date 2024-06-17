@@ -73,11 +73,11 @@ class Qemu(Libvirt):
                 'vms': [
                     'name': 'vm_name',
                     'state': [
-                        5,
+                        5,  # state?
                         8388608,  # memory, in MiB (so this really means, 8 GiB)
                         8388608,  # ^^
-                        6,  #
-                        0
+                        6,  # vcpus
+                        0   #
                     ]
                 ]
             }
@@ -89,7 +89,7 @@ class Qemu(Libvirt):
             flags=VIR_DOMAIN_NOSTATE
         )
 
-        return {
+        _state = {
             'vms': [
                 {
                     'name': vm.name(),
@@ -111,6 +111,8 @@ class Qemu(Libvirt):
             }
         }
 
+        return _state
+
     def getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
@@ -121,7 +123,7 @@ class Qemu(Libvirt):
         if self._connection is None:
             return {}
 
-        return {
+        _stats = {
             'hostStats': {
                 'cpu': self._connection.getCPUStats(
                     cpuNum=-1,
@@ -133,6 +135,8 @@ class Qemu(Libvirt):
                 )
             }
         }
+
+        return _stats
 
     def getHostVMStats(self) -> List[DomainStats]:
         """
@@ -153,7 +157,7 @@ class Qemu(Libvirt):
             # Using 0 for @stats returns all stats groups supported by the given hypervisor. See the link
             # above for an example of all the retrieved stats.
             stats=0,
-            flags=VIR_DOMAIN_NOSTATE
+            flags=VIR_DOMAIN_RUNNING
         )
 
         # Normalize domains' stat fields into a list of DomainStats objects.
