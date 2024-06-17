@@ -24,16 +24,16 @@ function cleanup_dotenv()
 }
 
 
+# Cleanup previous stacks.
+./scripts/docker/compose-down.sh "$PROFILE"
+
+
 # Write a temporary .env-file, since docker-compose likes to live in the past.
 cleanup_dotenv
 printf "INFO: Decrypting secrets for %s-file\\n" "$DOTENV"
 cat <<EOF > "$DOTENV"
 PREMISCALE_TEST_SSH_KEY="$(pass show premiscale/doppler/ssh/chelsea-hosts-test)"
 EOF
-
-
-# Cleanup previous stacks.
-./scripts/docker/compose-down.sh "$PROFILE"
 
 
 # Generate self-signed certificates if they don't exist.

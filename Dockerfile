@@ -76,7 +76,7 @@ RUN mkdir -p ${POETRY_CACHE_DIR}
 ADD --chown=premiscale:premiscale https://install.python-poetry.org ./install-poetry.py
 RUN --mount=type=cache,target=${HOME}/.local/bin,uid=1001,gid=1001 python install-poetry.py \
     && rm install-poetry.py
-RUN --mount=type=cache,target=${POETRY_CACHE_DIR},uid=1001,gid=1001 poetry install --without=dev \
+RUN --mount=type=cache,target=${POETRY_CACHE_DIR},uid=1001,gid=1001 poetry install --without=dev --with=profile \
     && poetry run premiscale --version
 RUN poetry install --without=dev
 

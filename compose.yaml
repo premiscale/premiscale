@@ -57,6 +57,29 @@ services:
     ports:
       - 8085:8085
   ##
+  premiscale-two-hosts: &premiscale-two-hosts
+    <<: *premiscale
+    container_name: premiscale-two-hosts
+    profiles:
+      - two_hosts
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      # Mount a different config from the default into the running container for testing.
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
+  ##
+  premiscale-two-hosts-profile:
+    <<: [*premiscale-two-hosts, *premiscale]
+    container_name: premiscale-two-hosts-profile
+    command: [ "bash", "-c", "poetry run memray run -o /opt/premiscale/output.bin premiscale --log-stdout --log-level=${PREMISCALE_LOG_LEVEL}" ]
+    profiles:
+      - two_hosts_profile
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      # Mount a different config from the default into the running container for testing.
+      - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml
+      # Mount the output file to the host for generating flamegraphs of the controller's performance.
+      - ./profile/output.bin:/opt/premiscale/output.bin
+  ##
   premiscale-single-host:
     <<: *premiscale
     container_name: premiscale-single-host
@@ -66,16 +89,6 @@ services:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
-  ##
-  premiscale-two-hosts:
-    <<: *premiscale
-    container_name: premiscale-two-hosts
-    profiles:
-      - two_hosts
-    volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
-      # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
   mysql-agent-state:
     container_name: mysql-agent
     image: mysql:8.4.0
