@@ -97,17 +97,7 @@ class Qemu(Libvirt):
                 } for vm in domains
             ],
             'host': {
-                'hostname': self._connection.getHostname(),
-                'type': self._connection.getType(),
-                'uri': self._connection.getURI(),
-                'version': self._connection.getVersion(),
-                'libvirt_version': self._connection.getLibVersion(),
-                'capabilities': xmlparse(self._connection.getCapabilities()),
-                'node_info': self._connection.getInfo(),
-                'max_vcpus': self._connection.getMaxVcpus(None),
-                'free_memory': self._connection.getFreeMemory(),
-                'node_memory': self._connection.getMemoryStats(-1, 0),
-                'node_cpu_stats': self._connection.getCPUStats(True)
+                'hostname': self._connection.getHostname()
             }
         }
 
@@ -124,7 +114,19 @@ class Qemu(Libvirt):
             return {}
 
         _stats = {
-            'hostStats': {
+            'host': {
+                'type': self._connection.getType(),
+                'uri': self._connection.getURI(),
+                'version': self._connection.getVersion(),
+                'libvirt_version': self._connection.getLibVersion(),
+                'capabilities': xmlparse(self._connection.getCapabilities()),
+                'node_info': self._connection.getInfo(),
+                'max_vcpus': self._connection.getMaxVcpus(None),
+                'free_memory': self._connection.getFreeMemory(),
+                'node_memory': self._connection.getMemoryStats(-1, 0),
+                'node_cpu_stats': self._connection.getCPUStats(True)
+            },
+            'stats': {
                 'cpu': self._connection.getCPUStats(
                     cpuNum=-1,
                     flags=VIR_DOMAIN_NOSTATE
@@ -132,7 +134,11 @@ class Qemu(Libvirt):
                 'memory': self._connection.getMemoryStats(
                     cellNum=-1,
                     flags=VIR_DOMAIN_NOSTATE
-                )
+                ),
+                'block': self._connection.getBlockStats(
+                    path='/',
+                    flags=VIR_DOMAIN_NOSTATE
+                ),
             }
         }
 

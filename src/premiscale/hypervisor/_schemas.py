@@ -75,36 +75,51 @@ class DomainStats:
     A dataclass for storing domain statistics.
     """
     name: str
+
+    # State
     state_state: int
     state_reason: int
+
+    # CPU
     cpu_time: int
     cpu_user: int
     cpu_system: int
     cpu_cache_monitor_count: int
     cpu_haltpoll_success_time: int
     cpu_haltpoll_fail_time: int
-    balloon_current: int
-    balloon_maximum: int
-    balloon_swap_in: int
-    balloon_swap_out: int
-    balloon_major_fault: int
-    balloon_minor_fault: int
-    balloon_unused: int
-    balloon_available: int
-    balloon_usable: int
-    balloon_last_update: int
-    balloon_disk_caches: int
-    balloon_hugetlb_pgalloc: int
-    balloon_hugetlb_pgfail: int
+
     balloon_rss: int
+
+    # vCPU
     vcpu_current: int
     vcpu_maximum: int
     vcpu: List[vCPU]
+
+    # net
     net: List[Net]
+
+    # Block devices
     block: List[Block]
     dirtyrate_calc_status: int
     dirtyrate_calc_start_time: int
     dirtyrate_calc_period: int
+
+    # Ballon fields with defaults (it doesn't seem every hypervisor will have these fields)
+    balloon_current: int | None = ib(default=None)
+    balloon_maximum: int | None = ib(default=None)
+    balloon_swap_in: int | None = ib(default=None)
+    balloon_swap_out: int | None = ib(default=None)
+    balloon_major_fault: int | None = ib(default=None)
+    balloon_minor_fault: int | None = ib(default=None)
+    balloon_unused: int | None = ib(default=None)
+    balloon_available: int | None = ib(default=None)
+    balloon_usable: int | None = ib(default=None)
+    balloon_last_update: int | None = ib(default=None)
+    balloon_disk_caches: int | None = ib(default=None)
+    balloon_hugetlb_pgalloc: int | None = ib(default=None)
+    balloon_hugetlb_pgfail: int | None = ib(default=None)
+
+    # Potentially dependent fields
     net_count: int | None = ib(default=None)
     block_count: int | None = ib(default=None)
 
