@@ -159,7 +159,7 @@ class MetricsCollector:
         _end_time = datetime.now()
         _total_time = round((_end_time - _start_time).total_seconds(), 2)
 
-        log.debug(f'All hosts initialized in {_total_time}')
+        log.debug(f'All hosts initialized in in-memory SQLite database in {_total_time}s')
 
     def __iter__(self) -> Iterator:
         """
@@ -214,7 +214,7 @@ class MetricsCollector:
                     log.debug(f'No hosts to visit. Ensure you list managed hosts in the config file')
                     break
 
-                log.debug(f'Collecting metrics for hosts {lower_bound} to {upper_bound} of total {len(self)}')
+                log.debug(f'Collecting metrics for hosts {lower_bound + 1} to {upper_bound} of total {len(self)}')
 
                 # Reset our collection of threads every paginated iteration over hosts.
                 threads = []
@@ -251,7 +251,7 @@ class MetricsCollector:
         Collect metrics for a single host over a readonly Libvirt connection and store them in the appropriate backend database.
 
         Args:
-            host (Host): The host to collect metrics from.
+            host (Host): The host object to collect metrics from.
         """
         with build_hypervisor_connection(host, readonly=True) as host_connection:
             # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
@@ -260,11 +260,19 @@ class MetricsCollector:
 
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
-            state_data = host_connection.getHostVMState()
+            host_state = host_connection.getHostState()
+            log.info(host_state)
 
             # Diff current state and recorded state and update the state database.
+            self.stateConnection.host_update(
+                **host.to_db_entry(),
+            )
 
             if self.timeseries_enabled:
+                host_stats = host_connection.getHostStats()
+                log.info(host_stats)
+
                 # TODO: Iteratively collect metrics for each VM on the host, unless it's separate libvirt calls for each VM; in which case, we could add further, configurable threading to collect them all at once with a similar pagination scheme.
                 # timeseries_data = self._collectVirtualMachineMetrics(host)
-                pass
+                vm_stats = host_connection.getHostVMStats()
+                log.info(vm_stats)

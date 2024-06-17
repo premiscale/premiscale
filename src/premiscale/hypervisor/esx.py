@@ -7,10 +7,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from premiscale.hypervisor._base import Libvirt
+from premiscale.hypervisor._schemas import DomainStats
 
 
 if TYPE_CHECKING:
-    from typing import Dict
+    from typing import Dict, List
     from ipaddress import IPv4Address
 
 
@@ -40,24 +41,16 @@ class ESX(Libvirt):
             resources=resources
         )
 
-    def getHostVMState(self) -> Dict:
+    def getHostState(self) -> Dict:
         """
         Get the state of the VMs on the host.
 
         Returns:
             Dict: The state of the VMs on the host.
         """
-        if self._connection is None:
-            return {}
+        return {}
 
-        return {
-            'virtualMachines': {
-                vm.name(): vm.state()
-                for vm in self._connection.listAllDomains()
-            }
-        }
-
-    def getHostSchedulableResourceUtilization(self) -> Dict:
+    def getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
@@ -66,14 +59,11 @@ class ESX(Libvirt):
         """
         return {}
 
-    def getVMResourceUtilization(self, vm_name: str) -> Dict:
+    def getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
-        Args:
-            vm_name (str): Name of the VM to get resource utilization for.
-
         Returns:
-            Dict: The resources utilized by the VM.
+            List[DomainStats]: Stats of all VMs on this particular host connection.
         """
-        return {}
+        return []

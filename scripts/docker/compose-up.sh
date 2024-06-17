@@ -12,11 +12,12 @@ else
     PROFILE="zero"
 fi
 
-
 DOTENV=".env"
 
 
-function cleanup_dotenv()
+##
+# Cleanup the temporary .env-file.
+function cleanup_env()
 {
     if [ -f "$DOTENV" ]; then
         rm "${DOTENV:?}"
@@ -24,16 +25,28 @@ function cleanup_dotenv()
 }
 
 
-# Write a temporary .env-file, since docker-compose likes to live in the past.
-cleanup_dotenv
-printf "INFO: Decrypting secrets for %s-file\\n" "$DOTENV"
+##
+# Create a temporary .env-file with decrypted environment variables for docker compose to pick up.
+function decrypt_env()
+{
+    # Decrypt the .env-file.
+    printf "INFO: Decrypting secrets for %s-file\\n" "$DOTENV"
 cat <<EOF > "$DOTENV"
 PREMISCALE_TEST_SSH_KEY="$(pass show premiscale/doppler/ssh/chelsea-hosts-test)"
 EOF
 
+    return 0
+}
+
 
 # Cleanup previous stacks.
 ./scripts/docker/compose-down.sh "$PROFILE"
+
+# Reset the environment.
+cleanup_env
+
+# Decrypt the environment variables.
+decrypt_env
 
 
 # Generate self-signed certificates if they don't exist.
@@ -84,4 +97,5 @@ docker compose \
     -f compose.yaml up \
     -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration
 
-cleanup_dotenv
+
+cleanup_env

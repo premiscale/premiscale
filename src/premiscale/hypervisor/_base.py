@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import libvirt as lv
 import logging
-import os
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
@@ -16,7 +15,8 @@ from ipaddress import IPv4Address
 
 
 if TYPE_CHECKING:
-    from typing import Any, Dict
+    from premiscale.hypervisor._schemas import DomainStats
+    from typing import Any, Dict, List
 
 
 log = logging.getLogger(__name__)
@@ -101,39 +101,45 @@ class Libvirt(ABC):
         """
         if self._connection:
             self._connection.close()
-            log.info(f'Closed connection to host at {self.connection_string}')
+            log.debug(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open')
 
     @abstractmethod
-    def getHostVMState(self) -> Dict:
+    def getHostState(self) -> Dict:
         """
         Get the state of the VMs on the host.
 
         Returns:
             Dict: The state of the VMs on the host.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def getHostSchedulableResourceUtilization(self) -> Dict:
+    def getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
         Returns:
             Dict: The resources available on the host.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def getVMResourceUtilization(self, vm_name: str) -> Dict:
+    def getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
-        Args:
-            vm_name (str): Name of the VM to get resource utilization for.
-
         Returns:
-            Dict: The resources utilized by the VM.
+            List[DomainStats]: Stats of all VMs on this particular host connection.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
         """
-        pass
+        raise NotImplementedError

@@ -9,7 +9,42 @@ else
 fi
 
 
+DOTENV=".env"
+
+
+##
+# Create a temporary .env-file with decrypted environment variables for docker compose to pick up.
+function decrypt_env()
+{
+    # Decrypt the .env-file.
+    printf "INFO: Decrypting secrets for %s-file\\n" "$DOTENV"
+cat <<EOF > "$DOTENV"
+PREMISCALE_TEST_SSH_KEY="$(pass show premiscale/doppler/ssh/chelsea-hosts-test)"
+EOF
+
+    return 0
+}
+
+
+##
+# Cleanup the temporary .env-file.
+function cleanup_env()
+{
+    if [ -f "$DOTENV" ]; then
+        rm "${DOTENV:?}"
+    fi
+}
+
+
+if [ ! -f ".env" ]; then
+    decrypt_env
+fi
+
+
 docker compose --profile="$PROFILE" -f compose.yaml down
+
+
+cleanup_env
 
 
 # clear_containers()
