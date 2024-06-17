@@ -3,7 +3,7 @@
   "description": "Autoscaling for virtual machines with libvirt",
   "repository": "git@github.com:premiscale/premiscale.git",
   "author": "Emma Doyle <emma@premiscale.com>",
-  "license": "Proprietary",
+  "license": "BSL 1.1",
   "private": true,
   "scripts": {
     "install:dependencies": "./scripts/dependencies.sh",

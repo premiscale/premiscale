@@ -16,7 +16,7 @@ ENV PREMISCALE_TOKEN="" \
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 LABEL org.opencontainers.image.description "© PremiScale, Inc. 2024"
-LABEL org.opencontainers.image.licenses "GPLv3"
+LABEL org.opencontainers.image.licenses "BSL 1.1"
 LABEL org.opencontainers.image.authors "Emma Doyle <emma@premiscale.com>"
 LABEL org.opencontainers.image.documentation "https://premiscale.com"
 
