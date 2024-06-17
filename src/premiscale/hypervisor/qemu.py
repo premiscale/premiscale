@@ -68,8 +68,9 @@ class Qemu(Libvirt):
 
         return {
             'virtualMachines': {
-                vm.name(): vm.state() for vm in domains
-            }
+                vm.name(): vm.info() for vm in domains
+            },
+
         }
 
     def getHostStats(self) -> Dict:

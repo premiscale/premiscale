@@ -263,25 +263,16 @@ class MetricsCollector:
             host_state = host_connection.getHostState()
             log.info(host_state)
 
-            # {
-            #   'virtualMachines': {
-            #     '57242e4b-1707792163-8fded2e0ca1911ee81b1f3163d141aa8': [5, 0],
-            #     '57242e4b-1707793064-a8568622ca1b11ee981dbfb7d1a25efe': [5, 0],
-            #     'ubuntu-template': [5, 0],
-            #     '57242e4b-1707793603-ea25a672ca1c11eea52cf343fb6d21b6': [5, 0],
-            #     '57242e4b-1707792522-655b2586ca1a11eeb7103f2f6927fc6b': [5, 0]
-            #   }
-            # }
-
-            host_stats = host_connection.getHostStats()
-            log.info(host_stats)
-
-            vm_stats = host_connection.getHostVMStats()
-            log.info(vm_stats)
-
             # Diff current state and recorded state and update the state database.
+            self.stateConnection.host_update(
+                **host.to_db_entry(),
+            )
 
             if self.timeseries_enabled:
+                host_stats = host_connection.getHostStats()
+                log.info(host_stats)
+
                 # TODO: Iteratively collect metrics for each VM on the host, unless it's separate libvirt calls for each VM; in which case, we could add further, configurable threading to collect them all at once with a similar pagination scheme.
                 # timeseries_data = self._collectVirtualMachineMetrics(host)
-                pass
+                vm_stats = host_connection.getHostVMStats()
+                log.info(vm_stats)

@@ -116,7 +116,7 @@ class DomainStats:
             self.net_count = len(self.net)
 
         if self.vcpu_current != self.vcpu_maximum:
-            log.warning(f'vCPU count disparity for {self.name}: {self.vcpu_current} current != {self.vcpu_maximum} max')
+            log.warning(f'vCPU count disparity for {self.name}: {self.vcpu_current} current != {self.vcpu_maximum} max. ')
 
 
 ##

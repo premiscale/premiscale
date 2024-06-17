@@ -38,6 +38,7 @@ cattrs = "^23.2.3"
 attrs = "^23.2.0"
 ruamel-yaml = "^0.18.6"
 prometheus-client = "^0.20.0"
+wrapt = "^1.16.0"
 
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0"

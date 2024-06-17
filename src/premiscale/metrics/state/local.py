@@ -9,6 +9,7 @@ import logging
 import sqlite3
 
 from typing import TYPE_CHECKING
+from wrapt import synchronized
 from premiscale.metrics.state._base import State
 
 
@@ -37,6 +38,7 @@ class Local(State):
         """
         return self._connection is not None
 
+    @synchronized
     def run(self, query: str, parameters: Tuple | None = None) -> List:
         """
         Run the in-memory database.
@@ -50,6 +52,7 @@ class Local(State):
 
         return q
 
+    @synchronized
     def open(self, database: str = 'file::memory:?cache=shared') -> None:
         """
         Open a connection to a SQLite database. Defaults to an in-memory database.
@@ -59,11 +62,13 @@ class Local(State):
         """
         log.debug('Opening connection to in-memory SQLite database')
         self._connection = sqlite3.connect(
-            database=database
+            database=database,
+            check_same_thread=False
         )
         self._cursor = self._connection.cursor()
         log.debug('Connection to in-memory SQLite database opened')
 
+    @synchronized
     def close(self) -> None:
         """
         Close the connection to the SQLite database.
@@ -71,6 +76,7 @@ class Local(State):
         log.debug('Closing connection to in-memory SQLite database')
         self._connection.close()
 
+    @synchronized
     def commit(self) -> None:
         """
         Commit any changes to the SQLite database.
@@ -78,6 +84,7 @@ class Local(State):
         log.debug('Committing changes to in-memory SQLite database')
         self._connection.commit()
 
+    @synchronized
     def rollback(self) -> None:
         """
         Rollback any changes to the SQLite database.
@@ -85,6 +92,7 @@ class Local(State):
         log.debug('Rolling back changes to in-memory SQLite database')
         self._connection.rollback()
 
+    @synchronized
     def initialize(self) -> None:
         """
         Initialize the SQLite database.
@@ -104,6 +112,7 @@ class Local(State):
 
     ## Hosts
 
+    @synchronized
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
@@ -128,6 +137,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def host_delete(self, name: str, address: str) -> bool:
         """
         Delete a host record.
@@ -146,6 +156,32 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
+    def host_update(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
+        """
+        Update a host record.
+
+        Args:
+            name (str): name to give host.
+            address (str): IP address of the host.
+            protocol (str): protocol to use for communication.
+            port (int): port to communicate over.
+            hypervisor (str): hypervisor to use for VM management.
+            cpu (int): number of CPUs available.
+            memory (int): amount of memory available.
+            storage (int): amount of storage available.
+
+        Returns:
+            bool: True if action completed successfully.
+        """
+        self._cursor.execute(
+            'UPDATE hosts SET protocol = ?, port = ?, hypervisor = ?, cpu = ?, memory = ?, storage = ? WHERE name = ? AND address = ?',
+            (protocol, port, hypervisor, cpu, memory, storage, name, address)
+        )
+        self.commit()
+        return True
+
+    @synchronized
     def host_exists(self, name: str, address: str) -> bool:
         """
         Check if a host exists in the database.
@@ -162,6 +198,7 @@ class Local(State):
             (name, address)
         ).fetchone() is not None
 
+    @synchronized
     def host_report(self) -> List:
         """
         Get a report of currently-managed hosts.
@@ -175,6 +212,7 @@ class Local(State):
 
     ## VMs
 
+    @synchronized
     def vm_create(self, host: str, vm_name: str, cores: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
@@ -196,6 +234,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def vm_delete(self, host: str, vm_name: str) -> bool:
         """
         Delete a VM on a specified host.
@@ -214,6 +253,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def vm_report(self, host: str | None = None) -> List:
         """
         Get a report of VMs presently-managed on a host.
@@ -236,6 +276,7 @@ class Local(State):
 
     ## ASGs
 
+    @synchronized
     def asg_create(self, name: str) -> bool:
         """
         Create an autoscaling group.
@@ -253,6 +294,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def asg_delete(self, name: str) -> bool:
         """
         Delete an autoscaling group.
@@ -270,6 +312,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def asg_add_vm(self, host: str, vm_name: str) -> bool:
         """
         Add a VM on a host to an autoscaling group.
@@ -288,6 +331,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def asg_remove_vm(self, host: str, vm_name: str) -> bool:
         """
         Remove a VM on a host from an ASG.
@@ -306,6 +350,7 @@ class Local(State):
         self.commit()
         return True
 
+    @synchronized
     def get_asg_vms(self, asg_name: str, host: str | None = None) -> List:
         """
         Get all VMs in an autoscaling group, optionally filtering by host.
@@ -328,6 +373,7 @@ class Local(State):
             (asg_name, host)
         ).fetchall()
 
+    @synchronized
     def asg_report(self, vm_enabled: bool = False) -> List:
         """
         Get a report of current autoscaling groups' standings. Optionally enable VMs be returned on hosts as well.

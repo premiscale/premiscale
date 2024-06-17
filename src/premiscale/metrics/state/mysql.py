@@ -115,6 +115,28 @@ class MySQL(State):
         """
         raise NotImplementedError
 
+    def host_update(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
+        """
+        Update a host record.
+
+        Args:
+            name (str): name to give host.
+            address (str): IP address of the host.
+            protocol (str): protocol to use for communication.
+            port (int): port to communicate over.
+            hypervisor (str): hypervisor to use for VM management.
+            cpu (int): number of CPUs available.
+            memory (int): amount of memory available.
+            storage (int): amount of storage available.
+
+        Returns:
+            bool: True if action completed successfully.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
     def host_exists(self, name: str, address: str) -> bool:
         """
         Check if a host exists in the database.
