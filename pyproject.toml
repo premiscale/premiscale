@@ -6,6 +6,9 @@ authors = ["Emma Doyle <emma@premiscale.com>"]
 maintainers = ["Emma Doyle <emma@premiscale.com>"]
 license = "BSL 1.1"
 readme = "README.md"
+homepage = "https://premiscale.com"
+repository = "https://github.com/premiscale/premiscale"
+documentation = "https://docs.premiscale.com"
 packages = [
   { include = "premiscale", from = "src" }
 ]
@@ -18,10 +21,27 @@ exclude = [
 ]
 keywords = [
     "premiscale",
+    "kubernetes",
+    "virtual machine",
+    "infrastructure",
     "autoscaling",
     "asg",
     "kvm",
     "libvirt"
+]
+# https://pypi.org/classifiers/
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Hardware",
+    "Topic :: System :: Clustering",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
 ]
 
 [tool.poetry.dependencies]
