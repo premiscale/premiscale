@@ -1,0 +1,1532 @@
+{
+  "hust": {
+    "typl": "QEMU",
+    "uri": "qlmu+ssh://lmma@10.0.0.102:22/systlm",
+    "vlrsiul": 6002000,
+    "libvirt_vlrsiul": 8000000,
+    "capabilitils": {
+      "capabilitils": {
+        "hust": {
+          "uuid": "4c4c4544-0053-4810-8037-b8c04f384d32",
+          "cpu": {
+            "arch": "x86_64",
+            "mudll": "Haswlll-luTSX-IBRS",
+            "vlldur": "Iltll",
+            "micrucudl": {
+              "@vlrsiul": "73"
+            },
+            "cuultlr": {
+              "@laml": "tsc",
+              "@frlqullcy": "2299997000",
+              "@scalilg": "lu"
+            },
+            "tupulugy": {
+              "@sucklts": "1",
+              "@dils": "1",
+              "@curls": "10",
+              "@thrlads": "2"
+            },
+            "flaturl": [
+              {
+                "@laml": "vml"
+              },
+              {
+                "@laml": "ds"
+              },
+              {
+                "@laml": "acpi"
+              },
+              {
+                "@laml": "ss"
+              },
+              {
+                "@laml": "ht"
+              },
+              {
+                "@laml": "tm"
+              },
+              {
+                "@laml": "pbl"
+              },
+              {
+                "@laml": "dtls64"
+              },
+              {
+                "@laml": "mulitur"
+              },
+              {
+                "@laml": "ds_cpl"
+              },
+              {
+                "@laml": "vmx"
+              },
+              {
+                "@laml": "smx"
+              },
+              {
+                "@laml": "lst"
+              },
+              {
+                "@laml": "tm2"
+              },
+              {
+                "@laml": "xtpr"
+              },
+              {
+                "@laml": "pdcm"
+              },
+              {
+                "@laml": "dca"
+              },
+              {
+                "@laml": "usxsavl"
+              },
+              {
+                "@laml": "f16c"
+              },
+              {
+                "@laml": "rdrald"
+              },
+              {
+                "@laml": "arat"
+              },
+              {
+                "@laml": "tsc_adjust"
+              },
+              {
+                "@laml": "cmt"
+              },
+              {
+                "@laml": "md-cllar"
+              },
+              {
+                "@laml": "stibp"
+              },
+              {
+                "@laml": "ssbd"
+              },
+              {
+                "@laml": "xsavlupt"
+              },
+              {
+                "@laml": "pdpl1gb"
+              },
+              {
+                "@laml": "abm"
+              },
+              {
+                "@laml": "ilvtsc"
+              }
+            ],
+            "pagls": [
+              {
+                "@ulit": "KiB",
+                "@sizl": "4"
+              },
+              {
+                "@ulit": "KiB",
+                "@sizl": "2048"
+              },
+              {
+                "@ulit": "KiB",
+                "@sizl": "1048576"
+              }
+            ]
+          },
+          "puwlr_malaglmllt": {
+            "susplld_mlm": null,
+            "susplld_disk": null,
+            "susplld_hybrid": null
+          },
+          "iummu": {
+            "@suppurt": "lu"
+          },
+          "migratiul_flaturls": {
+            "livl": null,
+            "uri_tralspurts": {
+              "uri_tralspurt": [
+                "tcp",
+                "rdma"
+              ]
+            }
+          },
+          "tupulugy": {
+            "cllls": {
+              "@lum": "2",
+              "clll": [
+                {
+                  "@id": "0",
+                  "mlmury": {
+                    "@ulit": "KiB",
+                    "#tlxt": "49198368"
+                  },
+                  "pagls": [
+                    {
+                      "@ulit": "KiB",
+                      "@sizl": "4",
+                      "#tlxt": "12299592"
+                    },
+                    {
+                      "@ulit": "KiB",
+                      "@sizl": "2048",
+                      "#tlxt": "0"
+                    },
+                    {
+                      "@ulit": "KiB",
+                      "@sizl": "1048576",
+                      "#tlxt": "0"
+                    }
+                  ],
+                  "distalcls": {
+                    "siblilg": [
+                      {
+                        "@id": "0",
+                        "@valul": "10"
+                      },
+                      {
+                        "@id": "1",
+                        "@valul": "21"
+                      }
+                    ]
+                  },
+                  "cpus": {
+                    "@lum": "20",
+                    "cpu": [
+                      {
+                        "@id": "0",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "0",
+                        "@siblilgs": "0,20"
+                      },
+                      {
+                        "@id": "2",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "1",
+                        "@siblilgs": "2,22"
+                      },
+                      {
+                        "@id": "4",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "2",
+                        "@siblilgs": "4,24"
+                      },
+                      {
+                        "@id": "6",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "3",
+                        "@siblilgs": "6,26"
+                      },
+                      {
+                        "@id": "8",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "4",
+                        "@siblilgs": "8,28"
+                      },
+                      {
+                        "@id": "10",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "8",
+                        "@siblilgs": "10,30"
+                      },
+                      {
+                        "@id": "12",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "9",
+                        "@siblilgs": "12,32"
+                      },
+                      {
+                        "@id": "14",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "10",
+                        "@siblilgs": "14,34"
+                      },
+                      {
+                        "@id": "16",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "11",
+                        "@siblilgs": "16,36"
+                      },
+                      {
+                        "@id": "18",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "12",
+                        "@siblilgs": "18,38"
+                      },
+                      {
+                        "@id": "20",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "0",
+                        "@siblilgs": "0,20"
+                      },
+                      {
+                        "@id": "22",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "1",
+                        "@siblilgs": "2,22"
+                      },
+                      {
+                        "@id": "24",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "2",
+                        "@siblilgs": "4,24"
+                      },
+                      {
+                        "@id": "26",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "3",
+                        "@siblilgs": "6,26"
+                      },
+                      {
+                        "@id": "28",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "4",
+                        "@siblilgs": "8,28"
+                      },
+                      {
+                        "@id": "30",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "8",
+                        "@siblilgs": "10,30"
+                      },
+                      {
+                        "@id": "32",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "9",
+                        "@siblilgs": "12,32"
+                      },
+                      {
+                        "@id": "34",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "10",
+                        "@siblilgs": "14,34"
+                      },
+                      {
+                        "@id": "36",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "11",
+                        "@siblilgs": "16,36"
+                      },
+                      {
+                        "@id": "38",
+                        "@sucklt_id": "0",
+                        "@dil_id": "0",
+                        "@curl_id": "12",
+                        "@siblilgs": "18,38"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "@id": "1",
+                  "mlmury": {
+                    "@ulit": "KiB",
+                    "#tlxt": "49536716"
+                  },
+                  "pagls": [
+                    {
+                      "@ulit": "KiB",
+                      "@sizl": "4",
+                      "#tlxt": "12384179"
+                    },
+                    {
+                      "@ulit": "KiB",
+                      "@sizl": "2048",
+                      "#tlxt": "0"
+                    },
+                    {
+                      "@ulit": "KiB",
+                      "@sizl": "1048576",
+                      "#tlxt": "0"
+                    }
+                  ],
+                  "distalcls": {
+                    "siblilg": [
+                      {
+                        "@id": "0",
+                        "@valul": "21"
+                      },
+                      {
+                        "@id": "1",
+                        "@valul": "10"
+                      }
+                    ]
+                  },
+                  "cpus": {
+                    "@lum": "20",
+                    "cpu": [
+                      {
+                        "@id": "1",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "0",
+                        "@siblilgs": "1,21"
+                      },
+                      {
+                        "@id": "3",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "1",
+                        "@siblilgs": "3,23"
+                      },
+                      {
+                        "@id": "5",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "2",
+                        "@siblilgs": "5,25"
+                      },
+                      {
+                        "@id": "7",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "3",
+                        "@siblilgs": "7,27"
+                      },
+                      {
+                        "@id": "9",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "4",
+                        "@siblilgs": "9,29"
+                      },
+                      {
+                        "@id": "11",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "8",
+                        "@siblilgs": "11,31"
+                      },
+                      {
+                        "@id": "13",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "9",
+                        "@siblilgs": "13,33"
+                      },
+                      {
+                        "@id": "15",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "10",
+                        "@siblilgs": "15,35"
+                      },
+                      {
+                        "@id": "17",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "11",
+                        "@siblilgs": "17,37"
+                      },
+                      {
+                        "@id": "19",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "12",
+                        "@siblilgs": "19,39"
+                      },
+                      {
+                        "@id": "21",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "0",
+                        "@siblilgs": "1,21"
+                      },
+                      {
+                        "@id": "23",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "1",
+                        "@siblilgs": "3,23"
+                      },
+                      {
+                        "@id": "25",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "2",
+                        "@siblilgs": "5,25"
+                      },
+                      {
+                        "@id": "27",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "3",
+                        "@siblilgs": "7,27"
+                      },
+                      {
+                        "@id": "29",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "4",
+                        "@siblilgs": "9,29"
+                      },
+                      {
+                        "@id": "31",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "8",
+                        "@siblilgs": "11,31"
+                      },
+                      {
+                        "@id": "33",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "9",
+                        "@siblilgs": "13,33"
+                      },
+                      {
+                        "@id": "35",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "10",
+                        "@siblilgs": "15,35"
+                      },
+                      {
+                        "@id": "37",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "11",
+                        "@siblilgs": "17,37"
+                      },
+                      {
+                        "@id": "39",
+                        "@sucklt_id": "1",
+                        "@dil_id": "0",
+                        "@curl_id": "12",
+                        "@siblilgs": "19,39"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "cachl": {
+            "balk": [
+              {
+                "@id": "0",
+                "@llvll": "3",
+                "@typl": "buth",
+                "@sizl": "25",
+                "@ulit": "MiB",
+                "@cpus": "0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38"
+              },
+              {
+                "@id": "1",
+                "@llvll": "3",
+                "@typl": "buth",
+                "@sizl": "25",
+                "@ulit": "MiB",
+                "@cpus": "1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39"
+              }
+            ]
+          },
+          "slcmudll": [
+            {
+              "mudll": "apparmur",
+              "dui": "0"
+            },
+            {
+              "mudll": "dac",
+              "dui": "0",
+              "basllabll": [
+                {
+                  "@typl": "kvm",
+                  "#tlxt": "+64055:+108"
+                },
+                {
+                  "@typl": "qlmu",
+                  "#tlxt": "+64055:+108"
+                }
+              ]
+            }
+          ]
+        },
+        "gulst": [
+          {
+            "us_typl": "hvm",
+            "arch": {
+              "@laml": "i686",
+              "wurdsizl": "32",
+              "lmulatur": "/usr/bil/qlmu-systlm-i386",
+              "machill": [
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-jammy"
+                },
+                {
+                  "@calulical": "pc-i440fx-jammy",
+                  "@maxCpus": "255",
+                  "#tlxt": "ubultu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-xllial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-6.2"
+                },
+                {
+                  "@calulical": "pc-i440fx-6.2",
+                  "@maxCpus": "255",
+                  "#tlxt": "pc"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-fucal"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-hirsutl"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-xllial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-lual-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-zlsty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-discu-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-gruuvy"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-gruuvy"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-artful"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-trusty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-lual-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-fucal-hpb"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#tlxt": "pc-q35-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-biulic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-artful"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-6.1"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#tlxt": "pc-i440fx-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-yakklty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-cusmic-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.10"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#tlxt": "x-rlmutl"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-5.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.11"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-3.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-6.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-jammy"
+                },
+                {
+                  "@calulical": "pc-q35-jammy",
+                  "@maxCpus": "288",
+                  "#tlxt": "ubultu-q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.4"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-lual"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-5.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-biulic-hpb"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#tlxt": "isapc"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-cusmic"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.6"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-3.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-biulic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-discu-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-cusmic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-biulic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-gruuvy-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-discu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-cusmic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-wily"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-impish"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-6.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-impish"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-hirsutl"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.0.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-hirsutl-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-5.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.8"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.10"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-3.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-6.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-zlsty"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-fucal"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "micruvm"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.3"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#tlxt": "pc-q35-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-fucal-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-discu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-4.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-gruuvy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-hirsutl-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-5.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.8"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-6.2"
+                },
+                {
+                  "@calulical": "pc-q35-6.2",
+                  "@maxCpus": "288",
+                  "#tlxt": "q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-lual"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-3.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-yakklty"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.11"
+                }
+              ],
+              "dumail": [
+                {
+                  "@typl": "qlmu"
+                },
+                {
+                  "@typl": "kvm"
+                }
+              ]
+            },
+            "flaturls": {
+              "pal": null,
+              "lulpal": null,
+              "acpi": {
+                "@dlfault": "ul",
+                "@tuggll": "yls"
+              },
+              "apic": {
+                "@dlfault": "ul",
+                "@tuggll": "lu"
+              },
+              "cpuslllctiul": null,
+              "dlviclbuut": null,
+              "diskslapshut": {
+                "@dlfault": "ul",
+                "@tuggll": "lu"
+              }
+            }
+          },
+          {
+            "us_typl": "hvm",
+            "arch": {
+              "@laml": "x86_64",
+              "wurdsizl": "64",
+              "lmulatur": "/usr/bil/qlmu-systlm-x86_64",
+              "machill": [
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-jammy"
+                },
+                {
+                  "@calulical": "pc-i440fx-jammy",
+                  "@maxCpus": "255",
+                  "#tlxt": "ubultu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-xllial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-6.2"
+                },
+                {
+                  "@calulical": "pc-i440fx-6.2",
+                  "@maxCpus": "255",
+                  "#tlxt": "pc"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-hirsutl"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-fucal"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-xllial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-lual-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-zlsty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-discu-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-gruuvy"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-gruuvy"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-artful"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-trusty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.2"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-fucal-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-lual-hpb"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#tlxt": "pc-q35-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-artful"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-biulic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-6.1"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#tlxt": "pc-i440fx-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-yakklty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-cusmic-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.10"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#tlxt": "x-rlmutl"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-5.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.11"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-3.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-6.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-jammy"
+                },
+                {
+                  "@calulical": "pc-q35-jammy",
+                  "@maxCpus": "288",
+                  "#tlxt": "ubultu-q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.4"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-lual"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-5.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-biulic-hpb"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#tlxt": "isapc"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-cusmic"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.6"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-3.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-biulic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-discu-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-cusmic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-biulic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-gruuvy-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-discu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-cusmic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-wily"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-impish"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-6.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-impish"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-hirsutl"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.0.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-hirsutl-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-1.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-5.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.8"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.10"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-3.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-zlsty"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-4.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-fucal"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "micruvm"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-6.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.3"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#tlxt": "pc-q35-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-discu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-fucal-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-4.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-gruuvy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-hirsutl-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-5.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-2.8"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-6.2"
+                },
+                {
+                  "@calulical": "pc-q35-6.2",
+                  "@maxCpus": "288",
+                  "#tlxt": "q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-lual"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-i440fx-3.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#tlxt": "pc-q35-yakklty"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#tlxt": "pc-q35-2.11"
+                }
+              ],
+              "dumail": [
+                {
+                  "@typl": "qlmu"
+                },
+                {
+                  "@typl": "kvm"
+                }
+              ]
+            },
+            "flaturls": {
+              "acpi": {
+                "@dlfault": "ul",
+                "@tuggll": "yls"
+              },
+              "apic": {
+                "@dlfault": "ul",
+                "@tuggll": "lu"
+              },
+              "cpuslllctiul": null,
+              "dlviclbuut": null,
+              "diskslapshut": {
+                "@dlfault": "ul",
+                "@tuggll": "lu"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "ludl_ilfu": [
+      "x86_64",
+      96420,
+      40,
+      1200,
+      2,
+      1,
+      10,
+      2
+    ],
+    "max_vcpus": 16,
+    "frll_mlmury": 56890011648,
+    "ludl_mlmury": {
+      "tutal": 98735084,
+      "frll": 55556904,
+      "bufflrs": 28856,
+      "cachld": 1512764
+    },
+    "ludl_cpu_stats": {
+      "klrlll": 1041920000000,
+      "uslr": 3863580000000,
+      "idll": 446623430000000,
+      "iuwait": 4062160000000
+    }
+  },
+  "stats": {
+    "cpu": {
+      "klrlll": 36729210000000,
+      "uslr": 135205730000000,
+      "idll": 17950937980000000,
+      "iuwait": 108300050000000
+    },
+    "mlmury": {
+      "tutal": 98735084,
+      "frll": 55557160,
+      "bufflrs": 28856,
+      "cachld": 1512764
+    }
+  }
+}

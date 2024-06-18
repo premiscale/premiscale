@@ -1,0 +1,1405 @@
+{
+  "host": {
+    "type": "QEMU",
+    "uri": "qemu+ssh://emma@10.0.0.100:22/system",
+    "version": 6002000,
+    "libvirt_version": 8000000,
+    "capabilities": {
+      "capabilities": {
+        "host": {
+          "uuid": "4c4c4544-0044-4710-804d-c2c04f524c31",
+          "cpu": {
+            "arch": "x86_64",
+            "model": "Westmere-IBRS",
+            "vendor": "Intel",
+            "microcode": {
+              "@version": "31"
+            },
+            "counter": {
+              "@name": "tsc",
+              "@frequency": "2659997000",
+              "@scaling": "no"
+            },
+            "topology": {
+              "@sockets": "1",
+              "@dies": "1",
+              "@cores": "6",
+              "@threads": "2"
+            },
+            "feature": [
+              {
+                "@name": "vme"
+              },
+              {
+                "@name": "ds"
+              },
+              {
+                "@name": "acpi"
+              },
+              {
+                "@name": "ss"
+              },
+              {
+                "@name": "ht"
+              },
+              {
+                "@name": "tm"
+              },
+              {
+                "@name": "pbe"
+              },
+              {
+                "@name": "pclmuldq"
+              },
+              {
+                "@name": "dtes64"
+              },
+              {
+                "@name": "monitor"
+              },
+              {
+                "@name": "ds_cpl"
+              },
+              {
+                "@name": "vmx"
+              },
+              {
+                "@name": "smx"
+              },
+              {
+                "@name": "est"
+              },
+              {
+                "@name": "tm2"
+              },
+              {
+                "@name": "xtpr"
+              },
+              {
+                "@name": "pdcm"
+              },
+              {
+                "@name": "pcid"
+              },
+              {
+                "@name": "dca"
+              },
+              {
+                "@name": "arat"
+              },
+              {
+                "@name": "stibp"
+              },
+              {
+                "@name": "ssbd"
+              },
+              {
+                "@name": "pdpe1gb"
+              },
+              {
+                "@name": "rdtscp"
+              },
+              {
+                "@name": "invtsc"
+              }
+            ],
+            "pages": [
+              {
+                "@unit": "KiB",
+                "@size": "4"
+              },
+              {
+                "@unit": "KiB",
+                "@size": "2048"
+              },
+              {
+                "@unit": "KiB",
+                "@size": "1048576"
+              }
+            ]
+          },
+          "power_management": {
+            "suspend_mem": null,
+            "suspend_disk": null,
+            "suspend_hybrid": null
+          },
+          "iommu": {
+            "@support": "no"
+          },
+          "migration_features": {
+            "live": null,
+            "uri_transports": {
+              "uri_transport": [
+                "tcp",
+                "rdma"
+              ]
+            }
+          },
+          "topology": {
+            "cells": {
+              "@num": "2",
+              "cell": [
+                {
+                  "@id": "0",
+                  "memory": {
+                    "@unit": "KiB",
+                    "#text": "49492552"
+                  },
+                  "pages": [
+                    {
+                      "@unit": "KiB",
+                      "@size": "4",
+                      "#text": "12373138"
+                    },
+                    {
+                      "@unit": "KiB",
+                      "@size": "2048",
+                      "#text": "0"
+                    },
+                    {
+                      "@unit": "KiB",
+                      "@size": "1048576",
+                      "#text": "0"
+                    }
+                  ],
+                  "distances": {
+                    "sibling": [
+                      {
+                        "@id": "0",
+                        "@value": "10"
+                      },
+                      {
+                        "@id": "1",
+                        "@value": "20"
+                      }
+                    ]
+                  },
+                  "cpus": {
+                    "@num": "12",
+                    "cpu": [
+                      {
+                        "@id": "0",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "0",
+                        "@siblings": "0,12"
+                      },
+                      {
+                        "@id": "2",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "1",
+                        "@siblings": "2,14"
+                      },
+                      {
+                        "@id": "4",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "2",
+                        "@siblings": "4,16"
+                      },
+                      {
+                        "@id": "6",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "8",
+                        "@siblings": "6,18"
+                      },
+                      {
+                        "@id": "8",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "9",
+                        "@siblings": "8,20"
+                      },
+                      {
+                        "@id": "10",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "10",
+                        "@siblings": "10,22"
+                      },
+                      {
+                        "@id": "12",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "0",
+                        "@siblings": "0,12"
+                      },
+                      {
+                        "@id": "14",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "1",
+                        "@siblings": "2,14"
+                      },
+                      {
+                        "@id": "16",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "2",
+                        "@siblings": "4,16"
+                      },
+                      {
+                        "@id": "18",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "8",
+                        "@siblings": "6,18"
+                      },
+                      {
+                        "@id": "20",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "9",
+                        "@siblings": "8,20"
+                      },
+                      {
+                        "@id": "22",
+                        "@socket_id": "1",
+                        "@die_id": "0",
+                        "@core_id": "10",
+                        "@siblings": "10,22"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "@id": "1",
+                  "memory": {
+                    "@unit": "KiB",
+                    "#text": "49462700"
+                  },
+                  "pages": [
+                    {
+                      "@unit": "KiB",
+                      "@size": "4",
+                      "#text": "12365675"
+                    },
+                    {
+                      "@unit": "KiB",
+                      "@size": "2048",
+                      "#text": "0"
+                    },
+                    {
+                      "@unit": "KiB",
+                      "@size": "1048576",
+                      "#text": "0"
+                    }
+                  ],
+                  "distances": {
+                    "sibling": [
+                      {
+                        "@id": "0",
+                        "@value": "20"
+                      },
+                      {
+                        "@id": "1",
+                        "@value": "10"
+                      }
+                    ]
+                  },
+                  "cpus": {
+                    "@num": "12",
+                    "cpu": [
+                      {
+                        "@id": "1",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "0",
+                        "@siblings": "1,13"
+                      },
+                      {
+                        "@id": "3",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "1",
+                        "@siblings": "3,15"
+                      },
+                      {
+                        "@id": "5",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "2",
+                        "@siblings": "5,17"
+                      },
+                      {
+                        "@id": "7",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "8",
+                        "@siblings": "7,19"
+                      },
+                      {
+                        "@id": "9",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "9",
+                        "@siblings": "9,21"
+                      },
+                      {
+                        "@id": "11",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "10",
+                        "@siblings": "11,23"
+                      },
+                      {
+                        "@id": "13",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "0",
+                        "@siblings": "1,13"
+                      },
+                      {
+                        "@id": "15",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "1",
+                        "@siblings": "3,15"
+                      },
+                      {
+                        "@id": "17",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "2",
+                        "@siblings": "5,17"
+                      },
+                      {
+                        "@id": "19",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "8",
+                        "@siblings": "7,19"
+                      },
+                      {
+                        "@id": "21",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "9",
+                        "@siblings": "9,21"
+                      },
+                      {
+                        "@id": "23",
+                        "@socket_id": "0",
+                        "@die_id": "0",
+                        "@core_id": "10",
+                        "@siblings": "11,23"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "cache": {
+            "bank": [
+              {
+                "@id": "0",
+                "@level": "3",
+                "@type": "both",
+                "@size": "12",
+                "@unit": "MiB",
+                "@cpus": "1,3,5,7,9,11,13,15,17,19,21,23"
+              },
+              {
+                "@id": "1",
+                "@level": "3",
+                "@type": "both",
+                "@size": "12",
+                "@unit": "MiB",
+                "@cpus": "0,2,4,6,8,10,12,14,16,18,20,22"
+              }
+            ]
+          },
+          "secmodel": [
+            {
+              "model": "apparmor",
+              "doi": "0"
+            },
+            {
+              "model": "dac",
+              "doi": "0",
+              "baselabel": [
+                {
+                  "@type": "kvm",
+                  "#text": "+64055:+108"
+                },
+                {
+                  "@type": "qemu",
+                  "#text": "+64055:+108"
+                }
+              ]
+            }
+          ]
+        },
+        "guest": [
+          {
+            "os_type": "hvm",
+            "arch": {
+              "@name": "i686",
+              "wordsize": "32",
+              "emulator": "/usr/bin/qemu-system-i386",
+              "machine": [
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-jammy"
+                },
+                {
+                  "@canonical": "pc-i440fx-jammy",
+                  "@maxCpus": "255",
+                  "#text": "ubuntu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-xenial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-6.2"
+                },
+                {
+                  "@canonical": "pc-i440fx-6.2",
+                  "@maxCpus": "255",
+                  "#text": "pc"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-focal"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-hirsute"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-xenial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-eoan-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-zesty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-disco-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-groovy"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-groovy"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-artful"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-trusty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-eoan-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-focal-hpb"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#text": "pc-q35-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-bionic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-artful"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-6.1"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#text": "pc-i440fx-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-yakkety"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-cosmic-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.10"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#text": "x-remote"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-5.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.11"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-3.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-6.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-jammy"
+                },
+                {
+                  "@canonical": "pc-q35-jammy",
+                  "@maxCpus": "288",
+                  "#text": "ubuntu-q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.4"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-eoan"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-5.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-bionic-hpb"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#text": "isapc"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-cosmic"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.6"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-3.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-bionic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-disco-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-cosmic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-bionic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-groovy-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-disco"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-cosmic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-wily"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-impish"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-6.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-impish"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-hirsute"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.0.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-hirsute-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-5.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.8"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.10"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-3.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-6.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-zesty"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-focal"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "microvm"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.3"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#text": "pc-q35-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-focal-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-disco"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-4.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-groovy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-hirsute-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-5.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.8"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-6.2"
+                },
+                {
+                  "@canonical": "pc-q35-6.2",
+                  "@maxCpus": "288",
+                  "#text": "q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-eoan"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-3.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-yakkety"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.11"
+                }
+              ],
+              "domain": [
+                {
+                  "@type": "qemu"
+                },
+                {
+                  "@type": "kvm"
+                }
+              ]
+            },
+            "features": {
+              "pae": null,
+              "nonpae": null,
+              "acpi": {
+                "@default": "on",
+                "@toggle": "yes"
+              },
+              "apic": {
+                "@default": "on",
+                "@toggle": "no"
+              },
+              "cpuselection": null,
+              "deviceboot": null,
+              "disksnapshot": {
+                "@default": "on",
+                "@toggle": "no"
+              }
+            }
+          },
+          {
+            "os_type": "hvm",
+            "arch": {
+              "@name": "x86_64",
+              "wordsize": "64",
+              "emulator": "/usr/bin/qemu-system-x86_64",
+              "machine": [
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-jammy"
+                },
+                {
+                  "@canonical": "pc-i440fx-jammy",
+                  "@maxCpus": "255",
+                  "#text": "ubuntu"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-xenial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-6.2"
+                },
+                {
+                  "@canonical": "pc-i440fx-6.2",
+                  "@maxCpus": "255",
+                  "#text": "pc"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-4.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-hirsute"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-focal"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-xenial"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-5.2"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-eoan-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-zesty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-disco-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-groovy"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-groovy"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-artful"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-trusty"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.2"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-focal-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-eoan-hpb"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#text": "pc-q35-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-artful"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-bionic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-6.1"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#text": "pc-i440fx-jammy-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-yakkety"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-cosmic-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.10"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#text": "x-remote"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-5.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.7"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.11"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-3.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-6.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-jammy"
+                },
+                {
+                  "@canonical": "pc-q35-jammy",
+                  "@maxCpus": "288",
+                  "#text": "ubuntu-q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.4"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-4.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-eoan"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-jammy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-5.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.9"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-bionic-hpb"
+                },
+                {
+                  "@maxCpus": "1",
+                  "#text": "isapc"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.4"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-cosmic"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.6"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-3.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-bionic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-disco-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-cosmic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.12"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-bionic"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-groovy-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-disco"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-cosmic-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.1"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-wily"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-impish"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-6.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-impish"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-impish-hpb"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-hirsute"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.0.1"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-hirsute-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-1.6"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-5.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.8"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.10"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-3.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-zesty"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-4.0"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-focal"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "microvm"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-6.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.3"
+                },
+                {
+                  "@maxCpus": "1024",
+                  "#text": "pc-q35-jammy-hpb-maxcpus"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-disco"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-focal-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-4.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-groovy-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-hirsute-hpb"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-5.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-2.8"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-6.2"
+                },
+                {
+                  "@canonical": "pc-q35-6.2",
+                  "@maxCpus": "288",
+                  "#text": "q35"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-eoan"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-2.5"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-i440fx-3.0"
+                },
+                {
+                  "@maxCpus": "255",
+                  "#text": "pc-q35-yakkety"
+                },
+                {
+                  "@maxCpus": "288",
+                  "#text": "pc-q35-2.11"
+                }
+              ],
+              "domain": [
+                {
+                  "@type": "qemu"
+                },
+                {
+                  "@type": "kvm"
+                }
+              ]
+            },
+            "features": {
+              "acpi": {
+                "@default": "on",
+                "@toggle": "yes"
+              },
+              "apic": {
+                "@default": "on",
+                "@toggle": "no"
+              },
+              "cpuselection": null,
+              "deviceboot": null,
+              "disksnapshot": {
+                "@default": "on",
+                "@toggle": "no"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "node_info": [
+      "x86_64",
+      96635,
+      24,
+      1596,
+      2,
+      1,
+      6,
+      2
+    ],
+    "max_vcpus": 16,
+    "free_memory": 76674420736,
+    "node_memory": {
+      "total": 98955252,
+      "free": 74877364,
+      "buffers": 47256,
+      "cached": 1864012
+    },
+    "node_cpu_stats": {
+      "kernel": 742630000000,
+      "user": 2514910000000,
+      "idle": 457855840000000,
+      "iowait": 126810000000
+    }
+  },
+  "stats": {
+    "cpu": {
+      "kernel": 16011940000000,
+      "user": 52777070000000,
+      "idle": 10999524970000000,
+      "iowait": 1284840000000
+    },
+    "memory": {
+      "total": 98955252,
+      "free": 74877364,
+      "buffers": 47256,
+      "cached": 1864012
+    }
+  }
+}

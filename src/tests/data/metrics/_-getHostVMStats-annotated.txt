@@ -1,0 +1,276 @@
+[
+    DomainStats(
+        name='57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018',
+        state_state=1,
+        state_reason=1,
+        cpu_time=36205890688000,
+        cpu_user=28093211019000,
+        cpu_system=8112679668000,
+        cpu_cache_monitor_count=0,
+        cpu_haltpoll_success_time=2955677057508,
+        cpu_haltpoll_fail_time=1480845580890,
+        balloon_rss=6532068,
+        vcpu_current=12,
+        vcpu_maximum=12,
+        vcpu=[
+            {
+                'state': 1,
+                'time': 2973810000000,
+                'wait': 0,
+                'delay': 2185732234
+            },
+            {
+                'state': 1,
+                'time': 3044800000000,
+                'wait': 0,
+                'delay': 2292115333
+            },
+            {
+                'state': 1,
+                'time': 3018740000000,
+                'wait': 0,
+                'delay': 2262848904
+            },
+            {
+                'state': 1,
+                'time': 2975330000000,
+                'wait': 0,
+                'delay': 2228887393
+            },
+            {
+                'state': 1,
+                'time': 2976450000000,
+                'wait': 0,
+                'delay': 2220777057
+            },
+            {
+                'state': 1,
+                'time': 2974310000000,
+                'wait': 0,
+                'delay': 2180412909
+            },
+            {
+                'state': 1,
+                'time': 2936880000000,
+                'wait': 0,
+                'delay': 2172613377
+            },
+            {
+                'state': 1,
+                'time': 3114410000000,
+                'wait': 0,
+                'delay': 2360687715
+            },
+            {
+                'state': 1,
+                'time': 2941170000000,
+                'wait': 0,
+                'delay': 2181364157
+            },
+            {
+                'state': 1,
+                'time': 3034780000000,
+                'wait': 0,
+                'delay': 2489739100
+            },
+            {
+                'state': 1,
+                'time': 2932250000000,
+                'wait': 0,
+                'delay': 2210845431
+            },
+            {
+                'state': 1,
+                'time': 2949870000000,
+                'wait': 0,
+                'delay': 2245220956
+            }
+        ],
+        net=[
+            {
+                'ame': 'vnet1',
+                'rx_bytes': 2040249042,
+                'rx_pkts': 3667103,
+                'rx_errs': 0,
+                'rx_drop': 97,
+                'x_bytes': 507043850,
+                'x_pkts': 3343653,
+                'x_errs': 0,
+                'x_drop': 0
+            }
+        ],
+        block=[
+            {
+                'name': 'vda',
+                'path': '/var/lib/libvirt/images/57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018.raw',
+                'ackingIndex': 1,
+                'rd_reqs': 71207,
+                'rd_bytes': 2593318912,
+                'rd_times': 40456380691,
+                'wr_reqs': 317439,
+                'wr_bytes': 7154990592,
+                'wr_times': 200517451230,
+                'fl_reqs': 75367,
+                'fl_times': 68976897041,
+                'allocation': 110440349696,
+                'apacity': 214748364800,
+                'physical': 110341484544
+            }
+        ],
+        dirtyrate_calc_status=0,
+        dirtyrate_calc_start_time=0,
+        dirtyrate_calc_period=0,
+        balloon_current=48234496,
+        balloon_maximum=48234496,
+        balloon_swap_in=0,
+        balloon_swap_out=0,
+        balloon_major_fault=0,
+        balloon_minor_fault=0,
+        balloon_unused=47126500,
+        balloon_available=47223100,
+        balloon_usable=46778304,
+        balloon_last_update=1718643518,
+        balloon_disk_caches=37584,
+        balloon_hugetlb_pgalloc=0,
+        balloon_hugetlb_pgfail=0,
+        net_count=1,
+        block_count=1
+    ),
+    DomainStats(
+        name='57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c',
+        state_state=1,
+        state_reason=1,
+        cpu_time=33074597843000,
+        cpu_user=25808349662000,
+        cpu_system=7266248181000,
+        cpu_cache_monitor_count=0,
+        cpu_haltpoll_success_time=2754028674588,
+        cpu_haltpoll_fail_time=1258936910508,
+        balloon_rss=6245140,
+        vcpu_current=12,
+        vcpu_maximum=12,
+        vcpu=[
+            {
+                'state': 1,
+                'time': 2672080000000,
+                'wait': 0,
+                'delay': 1566019338
+            },
+            {
+                'state': 1,
+                'time': 2780840000000,
+                'wait': 0,
+                'delay': 1631181860
+            },
+            {
+                'state': 1,
+                'time': 2753400000000,
+                'wait': 0,
+                'delay': 1601775312
+            },
+            {
+                'state': 1,
+                'time': 2718880000000,
+                'wait': 0,
+                'delay': 1552135811
+            },
+            {
+                'state': 1,
+                'time': 2719480000000,
+                'wait': 0,
+                'delay': 1546417702
+            },
+            {
+                'state': 1,
+                'time': 2706660000000,
+                'wait': 0,
+                'delay': 1559987300
+            },
+            {
+                'state': 1,
+                'time': 2678440000000,
+                'wait': 0,
+                'delay': 1544517577
+            },
+            {
+                'state': 1,
+                'time': 2884330000000,
+                'wait': 0,
+                'delay': 1774115921
+            },
+            {
+                'state': 1,
+                'time': 2706120000000,
+                'wait': 0,
+                'delay': 1546906601
+            },
+            {
+                'state': 1,
+                'time': 2754740000000,
+                'wait': 0,
+                'delay': 1870530235
+            },
+            {
+                'state': 1,
+                'time': 2661060000000,
+                'wait': 0,
+                'delay': 1544943769
+            },
+            {
+                'state': 1,
+                'time': 2693820000000,
+                'wait': 0,
+                'delay': 1618145872
+            }
+        ],
+        net=[
+            {
+                'ame': 'vnet0',
+                'rx_bytes': 1266981782,
+                'rx_pkts': 2696504,
+                'rx_errs': 0,
+                'rx_drop': 0,
+                'x_bytes': 850653509,
+                'x_pkts': 2844168,
+                'x_errs': 0,
+                'x_drop': 0
+            }
+        ],
+        block=[
+            {
+                'name': 'vda',
+                'path': '/var/lib/libvirt/images/57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c.raw',
+                'ackingIndex': 1,
+                'rd_reqs': 67775,
+                'rd_bytes': 3373693440,
+                'rd_times': 54111416487,
+                'wr_reqs': 415454,
+                'wr_bytes': 5777702400,
+                'wr_times': 178110488038,
+                'fl_reqs': 88274,
+                'fl_times': 74656355635,
+                'allocation': 101811879936,
+                'apacity': 214748364800,
+                'physical': 101724811776
+            }
+        ],
+        dirtyrate_calc_status=0,
+        dirtyrate_calc_start_time=0,
+        dirtyrate_calc_period=0,
+        balloon_current=48234496,
+        balloon_maximum=48234496,
+        balloon_swap_in=0,
+        balloon_swap_out=0,
+        balloon_major_fault=0,
+        balloon_minor_fault=0,
+        balloon_unused=47128104,
+        balloon_available=47223112,
+        balloon_usable=46779736,
+        balloon_last_update=1718643514,
+        balloon_disk_caches=35316,
+        balloon_hugetlb_pgalloc=0,
+        balloon_hugetlb_pgfail=0,
+        net_count=1,
+        block_count=1
+    )
+]
