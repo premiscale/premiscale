@@ -10,15 +10,6 @@ orbs:
   slack: circleci/slack@4.13.3
 
 
-executors:
-  python-3-10-libvirt:
-      docker:
-        - image: docker.ops.premiscale.com/executors/python-3-10:1.0.6
-          auth:
-            username: $DOCKER_USERNAME
-            password: $DOCKER_PASSWORD
-
-
 workflows:
   premiscale:
     jobs:
@@ -58,8 +49,6 @@ workflows:
 
       - general/python-release-poetry:
           name: pypi premiscale upload [python]
-          executor: python-3-10-libvirt
-          resource-class: premiscale/small
           context: nexus
           repository: python
           requires:
@@ -70,25 +59,25 @@ workflows:
             tags:
               only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
-      - general/docker-hub:
-          name: docker [docker/premiscale]
-          image-name: premiscale
-          context: nexus
-          path: .
-          args: >-
-            --build-arg=PYTHON_PACKAGE_VERSION=$CIRCLE_TAG
-            --build-arg=PYTHON_USERNAME=$DOCKER_USERNAME
-            --build-arg=PYTHON_PASSWORD=$DOCKER_PASSWORD
-            --build-arg=PYTHON_REPOSITORY=python
-            --target=production
-          tag: 0.0.<< pipeline.number >>
-          requires:
-            - 'hold: create tagged release artifacts'
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
+      # - general/docker-hub:
+      #     name: docker [docker/premiscale]
+      #     image-name: premiscale
+      #     context: nexus
+      #     path: .
+      #     args: >-
+      #       --build-arg=PYTHON_PACKAGE_VERSION=$CIRCLE_TAG
+      #       --build-arg=PYTHON_USERNAME=$DOCKER_USERNAME
+      #       --build-arg=PYTHON_PASSWORD=$DOCKER_PASSWORD
+      #       --build-arg=PYTHON_REPOSITORY=python
+      #       --target=production
+      #     tag: 0.0.<< pipeline.number >>
+      #     requires:
+      #       - 'hold: create tagged release artifacts'
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v?[0-9]+\.[0-9]+\.[0-9]+$/
 
       # - general/docker-nexus:
       #     name: docker [docker/premiscale]
