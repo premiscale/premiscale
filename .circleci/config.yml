@@ -38,7 +38,9 @@ workflows:
 
       - general/github-release:
           name: Create GitHub release from tag
-          context: github
+          context:
+            - github
+            - circleci
           requires:
             - 'hold: create tagged release artifacts'
           filters:
