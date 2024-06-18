@@ -135,10 +135,12 @@ class Qemu(Libvirt):
                     cellNum=-1,
                     flags=VIR_DOMAIN_NOSTATE
                 ),
-                'block': self._connection.getBlockStats(
-                    path='/',
-                    flags=VIR_DOMAIN_NOSTATE
-                ),
+                'block': {
+                    'root': self._connection.getBlockStats(
+                        path='/',
+                        flags=VIR_DOMAIN_NOSTATE
+                    )
+                }
             }
         }
 
