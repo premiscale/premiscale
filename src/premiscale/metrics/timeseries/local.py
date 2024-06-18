@@ -33,7 +33,7 @@ class Local(TimeSeries):
         """
         Open a connection to the metrics backend these methods interact with.
         """
-        if self.file:
+        if self.file is not None:
             self._connection = TinyFlux(self.file)
         else:
             self._connection = TinyFlux()
@@ -59,10 +59,16 @@ class Local(TimeSeries):
         self._connection.insert(point)
         self._run_retention_policy()
 
+    def clear(self) -> None:
+        """
+        Clear the metrics store of all data.
+        """
+        self._connection.remove_all()
+
     def _run_retention_policy(self) -> None:
         """
         Run the retention policy on the database, removing points older than the retention policy.
         """
         timeq = TimeQuery()
-        t = datetime.now(timezone.utc) - self.retention
-        self._connection.remove(timeq < t)
+        time_now = datetime.now(timezone.utc) - self.retention
+        self._connection.remove(timeq < time_now)
