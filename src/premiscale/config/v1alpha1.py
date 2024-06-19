@@ -82,6 +82,7 @@ class TimeSeries:
     """
     type: str
     trailing: int
+    dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
 
 

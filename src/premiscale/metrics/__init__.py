@@ -53,6 +53,7 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
 
             return Local(
                 retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
+                file=config.controller.databases.timeseries.dbfile
             )
         case 'influxdb':
             log.debug(f'Using InfluxDB for time series database')
