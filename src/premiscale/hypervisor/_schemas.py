@@ -9,10 +9,7 @@ import logging
 
 from attrs import define
 from attr import ib
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import List
+from typing import List
 
 
 log = logging.getLogger(__name__)

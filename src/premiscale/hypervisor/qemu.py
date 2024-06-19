@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 
-NUMBER_REGEX = re.compile(r'(?<=_)\d+(?=_)')
+MIDDLE_NUMBER_REGEX = re.compile(r'(?<=_)[0-9]+(?=_)')
 
 
 class Qemu(Libvirt):
@@ -196,7 +196,7 @@ class Qemu(Libvirt):
                     vcpus.extend([{}] * (index - len(vcpus) + 1))
 
                     # Remove the number from the key and strip 'vcpu_' from the beginning.
-                    _new_key = re.sub(NUMBER_REGEX, '', key).lstrip('vcpu_')
+                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key).lstrip('vcpu_')
 
                     vcpus[index][_new_key] = stat[key]
                 #
@@ -209,7 +209,7 @@ class Qemu(Libvirt):
 
                     blocks.extend([{}] * (index - len(blocks) + 1))
 
-                    _new_key = re.sub(NUMBER_REGEX, '', key).lstrip('block_')
+                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key).lstrip('block_')
 
                     blocks[index][_new_key] = stat[key]
                 #
@@ -222,7 +222,7 @@ class Qemu(Libvirt):
 
                     nets.extend([{}] * (index - len(nets) + 1))
 
-                    _new_key = re.sub(NUMBER_REGEX, '', key).lstrip('net_')
+                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key).lstrip('net_')
 
                     nets[index][_new_key] = stat[key]
                 else:
