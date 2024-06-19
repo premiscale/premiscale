@@ -1,20 +1,31 @@
 [
     DomainStats(
+        ## store ID in TS db & State db
         name='57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018',
-        state_state=1,
-        state_reason=1,
-        cpu_time=36205890688000,
-        cpu_user=28093211019000,
-        cpu_system=8112679668000,
-        cpu_cache_monitor_count=0,
+        ## store
+        state_state=1,  # virDomainState = VIR_DOMAIN_RUNNING = 1
+        state_reason=1, # Read getAllDomainStats ~ virDomainRunningReason = VIR_DOMAIN_RUNNING_BOOTED = 1
+        ## store
+        cpu_time=36205890688000,  # guest time (?); also, cpu_time > (sum(vcpu[*]['time'])) by about ~0.92%
+        cpu_user=28093211019000,  # userspace time (?)
+        cpu_system=8112679668000,  # system / host time (?)
+
+        ## store computation
+        # https://stackoverflow.com/a/41508346
+        # So guest load / processing time per unit interval is allegedly [cpu_time - (user_time + system_time)] = 36205890688000 - (28093211019000 + 8112679668000) = 1000
+        # So CPU percentage usage is a diff
+        # % = 100 * (cpu_time 2 - cpu_time 1) / N
+
+        cpu_cache_monitor_count=0, # also known as CMT, I think this is a cache Qos metric that we shouldn't be too concerned with?
+        # I don't think we're interested in the following two fields ~ https://docs.kernel.org/virt/kvm/halt-polling.html
         cpu_haltpoll_success_time=2955677057508,
         cpu_haltpoll_fail_time=1480845580890,
-        balloon_rss=6532068,
-        vcpu_current=12,
-        vcpu_maximum=12,
+        balloon_rss=6532068,  # I don't think we're particularly interested in this metric ~ https://en.wikipedia.org/wiki/Memory_ballooning ~ https://libvirt.org/formatdomain.html#memory-balloon-device
+        vcpu_current=12,  # current number of vCPUs
+        vcpu_maximum=12,  # maximum number of vCPUs
         vcpu=[
             {
-                'state': 1,
+                'state': 1,  # virDomainVcpuFlags = VIR_DOMAIN_VCPU_LIVE = 1
                 'time': 2973810000000,
                 'wait': 0,
                 'delay': 2185732234
@@ -86,24 +97,33 @@
                 'delay': 2245220956
             }
         ],
+        ## store
         net=[
             {
-                'ame': 'vnet1',
+                ## key for the record
+                'name': 'vnet1',
+                ## Received
+                ## definitely store, + maybe the diff of this read minus the last one, so we know the rate of bytes received and transmitted;
+                ## will require a read, compute, write to the next point in the series
                 'rx_bytes': 2040249042,
                 'rx_pkts': 3667103,
                 'rx_errs': 0,
                 'rx_drop': 97,
+                ## Sent
                 'x_bytes': 507043850,
                 'x_pkts': 3343653,
                 'x_errs': 0,
                 'x_drop': 0
             }
         ],
+        ## store
         block=[
             {
+                ## key or tag
                 'name': 'vda',
+                ## key
                 'path': '/var/lib/libvirt/images/57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018.raw',
-                'ackingIndex': 1,
+                'backingIndex': 1,
                 'rd_reqs': 71207,
                 'rd_bytes': 2593318912,
                 'rd_times': 40456380691,
@@ -112,9 +132,13 @@
                 'wr_times': 200517451230,
                 'fl_reqs': 75367,
                 'fl_times': 68976897041,
+                ## store
                 'allocation': 110440349696,
-                'apacity': 214748364800,
+                ## store
+                'capacity': 214748364800,
+                ## store + cross-reference against available host storage at the mountpoint above ~ probably host storage utilization, because, compression?
                 'physical': 110341484544
+                ## store computation of percentage storage utilization ~ allocation / capacity, allocation / physical
             }
         ],
         dirtyrate_calc_status=0,
@@ -133,7 +157,9 @@
         balloon_disk_caches=37584,
         balloon_hugetlb_pgalloc=0,
         balloon_hugetlb_pgfail=0,
+        ## store
         net_count=1,
+        ## store
         block_count=1
     ),
     DomainStats(

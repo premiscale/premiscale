@@ -106,7 +106,7 @@ class MetricsCollector:
         timeseries_enabled (bool): Whether to enable time-series data collection. Defaults to False.
     """
     def __init__(self, config: Config, timeseries_enabled: bool = False) -> None:
-        self.timeseriesConnection: TimeSeries | None = None
+        self._timeseriesConnection: TimeSeries | None = None
         self.timeseries_enabled = timeseries_enabled
         self.config = config
 
@@ -119,12 +119,12 @@ class MetricsCollector:
 
         # Set up database interfaces.
         if self.timeseries_enabled:
-            self.timeseriesConnection = build_timeseries_connection(self.config)
-            self.timeseriesConnection.open()
+            self._timeseriesConnection = build_timeseries_connection(self.config)
+            self._timeseriesConnection.open()
 
-        self.stateConnection = build_state_connection(self.config)
-        self.stateConnection.open()
-        self.stateConnection.initialize()
+        self._stateConnection = build_state_connection(self.config)
+        self._stateConnection.open()
+        self._stateConnection.initialize()
         self._initialize_host()
         self._collectMetrics()
 
@@ -145,8 +145,8 @@ class MetricsCollector:
         if host is not None:
             _host_dict = host.to_db_entry()
 
-            if not self.stateConnection.host_exists(host.name, host.address):
-                self.stateConnection.host_create(**_host_dict)
+            if not self._stateConnection.host_exists(host.name, host.address):
+                self._stateConnection.host_create(**_host_dict)
 
             _end_time = datetime.now()
 
@@ -155,8 +155,8 @@ class MetricsCollector:
             return None
 
         for _h in self:
-            if not self.stateConnection.host_exists(_h.name, _h.address):
-                self.stateConnection.host_create(
+            if not self._stateConnection.host_exists(_h.name, _h.address):
+                self._stateConnection.host_create(
                     **_h.to_db_entry()
                 )
 
@@ -268,7 +268,7 @@ class MetricsCollector:
             log.info(host_state)
 
             # Diff current state and recorded state and update the state database.
-            self.stateConnection.host_update(
+            self._stateConnection.host_update(
                 **host.to_db_entry(),
             )
 
@@ -281,3 +281,5 @@ class MetricsCollector:
                 # timeseries_data = self._collectVirtualMachineMetrics(host)
                 vm_stats = host_connection.getHostVMStats()
                 log.info(vm_stats)
+
+                # self._timeseriesConnection.insert(timeseries_data)
