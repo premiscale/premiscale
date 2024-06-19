@@ -134,13 +134,7 @@ class Qemu(Libvirt):
                 'memory': self._connection.getMemoryStats(
                     cellNum=-1,
                     flags=VIR_DOMAIN_NOSTATE
-                ),
-                'block': {
-                    'root': self._connection.getBlockStats(
-                        path='/',
-                        flags=VIR_DOMAIN_NOSTATE
-                    )
-                }
+                )
             }
         }
 
