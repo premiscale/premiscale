@@ -133,6 +133,30 @@ def start(config: Config, version: str, token: str) -> int:
                         platform_message_queue
                     )
                 )
+            case 'standalone-external-metrics':
+                from premiscale.reconciliation.internal import Reconcile
+
+                # In standalone mode, we reconcile the state of the ASG with the desired state, as determined by analyzing the
+                # metrics collected by the MetricsCollector subprocess.
+                processes.append(
+                    executor.submit(
+                        Reconcile(config),
+                        autoscaling_action_queue,
+                        platform_message_queue
+                    )
+                )
+            case 'kubernetes-external-metrics':
+                from premiscale.reconciliation.kubernetes import KubernetesAutoscaler
+
+                # Collect actions from the Kubernetes autoscaler and translate them into PremiScale Actions for
+                # the Autoscaling subprocess to process.
+                processes.append(
+                    executor.submit(
+                        KubernetesAutoscaler(config),
+                        autoscaling_action_queue,
+                        platform_message_queue
+                    )
+                )
 
         filtered_processes = [process for process in processes if process is not None]
 

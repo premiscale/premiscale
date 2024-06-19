@@ -3,7 +3,7 @@ controller: include('controller')
 ---
 controller:
   pidFile: str(min=1)
-  mode: enum('kubernetes', 'standalone')
+  mode: enum('kubernetes', 'standalone', 'standalone-external-metrics', 'kubernetes-external-metrics')
   kubernetes: include('kubernetes')
   healthcheck: include('healthcheck')
   databases: include('databases')

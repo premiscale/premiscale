@@ -49,8 +49,11 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
         case 'memory':
             log.debug(f'Using local memory for time series database')
             from premiscale.metrics.timeseries.local import Local
+            from datetime import timedelta
 
-            return Local(config)
+            return Local(
+                retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
+            )
         case 'influxdb':
             log.debug(f'Using InfluxDB for time series database')
             from premiscale.metrics.timeseries.influxdb import InfluxDB
@@ -269,6 +272,7 @@ class MetricsCollector:
             )
 
             if self.timeseries_enabled:
+                # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
                 host_stats = host_connection.getHostStats()
                 log.info(host_stats)
 

@@ -64,6 +64,7 @@ prometheus-client = "^0.20.0"
 wrapt = "^1.16.0"
 xmltodict = "^0.13.0"
 tinyflux = "^1.0.0"
+grpcio = "^1.64.1"
 
 [tool.poetry.group.profile.dependencies]
 memray = "^1.12"
