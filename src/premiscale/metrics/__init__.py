@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from setproctitle import setproctitle
 from cattrs import unstructure
 from time import sleep
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from premiscale.hypervisor import build_hypervisor_connection
 
 
@@ -107,6 +107,7 @@ class MetricsCollector:
     """
     def __init__(self, config: Config, timeseries_enabled: bool = False) -> None:
         self._timeseriesConnection: TimeSeries | None = None
+        self._stateConnection: State
         self.timeseries_enabled = timeseries_enabled
         self.config = config
 
@@ -139,6 +140,9 @@ class MetricsCollector:
         Args:
             host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
         """
+
+        if host is not None:
+            log.warning(f'Host initialization is not yet implemented for individual hosts. All hosts will be initialized at once.')
 
         _start_time = datetime.now()
 
@@ -202,12 +206,21 @@ class MetricsCollector:
         """
         Collect metrics from all hosts and store them in the appropriate backend database.
         """
+        # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
+        maxpages = max(
+            1,
+            len(self) // self.config.controller.databases.maxHostConnectionThreads + (
+                1 if len(self) % self.config.controller.databases.maxHostConnectionThreads > 0 else 0
+            ),
+            len(self) // (1 if (self.config.controller.databases.hostConnectionQueueSize is None) else self.config.controller.databases.hostConnectionQueueSize) + (
+                1 if len(self) % (len(self) if (self.config.controller.databases.hostConnectionQueueSize is None) else self.config.controller.databases.hostConnectionQueueSize) > 0 else 0
+            )
+        )
+
         while True:
             collection_run_start = datetime.now()
 
-            # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
-            # TODO: make pagination size configurable, but wrap it as max(1, self.config.controller.databases.maxHostConnectionThreads, <user-specified-pagination-size>), so that, minimally, we're using all of our threads on each iteration.
-            for page in range(0, len(self) // self.config.controller.databases.maxHostConnectionThreads + 1):
+            for page in range(0, maxpages):
 
                 # Set a lower and upper bound for a slice of hosts to visit from the whole config.
                 lower_bound = page * self.config.controller.databases.maxHostConnectionThreads
@@ -254,32 +267,37 @@ class MetricsCollector:
         """
         Collect metrics for a single host over a readonly Libvirt connection and store them in the appropriate backend database.
 
+        This method is intended to be called with a host argument from a ThreadPoolExecutor-based thread.
+
         Args:
             host (Host): The host object to collect metrics from.
         """
         with build_hypervisor_connection(host, readonly=True) as host_connection:
-            # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
+            # Exit early; instantiating the connection to the host failed and has already been logged.
+            # We'll try again on the next iteration.
             if host_connection is None:
                 return None
 
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
-            host_state = host_connection.getHostState()
-            log.info(host_state)
+            # Diff current state and recorded state and update the state database. We
+            # plit reads and writes here to avoid locking the database for too long.
+            if self._stateConnection.get_host(host.name, host.address) != (_host_db_entry := host.to_db_entry()):
+                self._stateConnection.host_update(
+                    **_host_db_entry,
+                )
 
-            # Diff current state and recorded state and update the state database.
-            self._stateConnection.host_update(
-                **host.to_db_entry(),
-            )
-
-            if self.timeseries_enabled:
+            if self.timeseries_enabled and self._timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                host_stats = host_connection.getHostStats()
-                log.info(host_stats)
+                vms_metrics_db_entry = host_connection.statsToMetricsDB()
 
-                # TODO: Iteratively collect metrics for each VM on the host, unless it's separate libvirt calls for each VM; in which case, we could add further, configurable threading to collect them all at once with a similar pagination scheme.
-                # timeseries_data = self._collectVirtualMachineMetrics(host)
-                vm_stats = host_connection.getHostVMStats()
-                log.info(vm_stats)
+                self._timeseriesConnection.insert(
+                    {
+                        'time': str(datetime.now(timezone.utc)),
+                        'data': vms_metrics_db_entry
+                    }
+                )
 
-                # self._timeseriesConnection.insert(timeseries_data)
+        # Now take the consolidated data and store it in the appropriate backend database.
+
+        # self._timeseriesConnection.insert(timeseries_data)

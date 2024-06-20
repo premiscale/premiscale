@@ -65,11 +65,11 @@ class Local(TimeSeries):
         self._connection.insert(point)
         self._run_retention_policy()
 
-    def insert_batch(self, data: List[Dict]) -> None:
+    def insert_batch(self, data: Dict) -> None:
         """
         Insert a batch of points into the metrics store.
         """
-        points = [Point(d) for d in data]
+        points = [Point(d) for d in data.get('data', [])]
 
         self._connection.insert_multiple(points)
         self._run_retention_policy()

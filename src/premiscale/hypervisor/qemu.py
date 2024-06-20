@@ -238,3 +238,11 @@ class Qemu(Libvirt):
             )
 
         return domain_stats_filtered_list
+
+    def statsToStateDB(self) -> None:
+        """
+        Convert the stats from the host into a state database entry. Instead of relying on the calling class to
+        format these correctly, every interface is required to implement its own method to do so, since it's not
+        guaranteed that the stats will be the same across different hypervisors.
+        """
+        return None

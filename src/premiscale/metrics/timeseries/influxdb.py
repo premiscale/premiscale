@@ -2,9 +2,16 @@
 Methods for interacting with influxdb.
 """
 
+
+from __future__ import annotations
+
 import influxdb
 
+from typing import TYPE_CHECKING
 from premiscale.metrics.timeseries._base import TimeSeries
+
+if TYPE_CHECKING:
+    from typing import Dict
 
 
 class InfluxDB(TimeSeries):
@@ -21,12 +28,6 @@ class InfluxDB(TimeSeries):
             password
         )
 
-    def __call__(self) -> None:
-        """
-        Connect to the InfluxDB database.
-        """
-        ...
-
     def open(self) -> None:
         """
         Open a connection to the metrics backend these methods interact with.
@@ -36,13 +37,35 @@ class InfluxDB(TimeSeries):
     def close(self) -> None:
         """
         Close the connection to the metrics backend.
-
-        This method should also dereference any secrets that may be stored in memory.
         """
         raise NotImplementedError
 
     def commit(self) -> None:
         """
         Commit any changes to the database.
+        """
+        raise NotImplementedError
+
+    def insert(self, data: Dict) -> None:
+        """
+        Insert a point into the metrics store.
+        """
+        raise NotImplementedError
+
+    def insert_batch(self, data: Dict) -> None:
+        """
+        Insert a batch of points into the metrics store.
+        """
+        raise NotImplementedError
+
+    def clear(self) -> None:
+        """
+        Clear the metrics store of all data.
+        """
+        raise NotImplementedError
+
+    def _run_retention_policy(self) -> None:
+        """
+        Run the retention policy on the database, removing points older than the retention policy.
         """
         raise NotImplementedError

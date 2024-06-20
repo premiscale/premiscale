@@ -7,8 +7,11 @@ from __future__ import annotations
 
 import logging
 
-from typing import Any
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
+
+if TYPE_CHECKING:
+    from typing import Any, Dict
 
 
 log = logging.getLogger(__name__)
@@ -23,9 +26,6 @@ class TimeSeries(ABC):
     def open(self) -> None:
         """
         Open a connection to the metrics backend these methods interact with.
-
-        Raises:
-            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -33,11 +33,6 @@ class TimeSeries(ABC):
     def close(self) -> None:
         """
         Close the connection to the metrics backend.
-
-        This method should also dereference any secrets that may be stored in memory.
-
-        Raises:
-            NotImplementedError: If the method is not implemented.
         """
         raise NotImplementedError
 
@@ -45,9 +40,34 @@ class TimeSeries(ABC):
     def commit(self) -> None:
         """
         Commit any changes to the database.
+        """
+        raise NotImplementedError
 
-        Raises:
-            NotImplementedError: If the method is not implemented.
+    @abstractmethod
+    def insert(self, data: Dict) -> None:
+        """
+        Insert a point into the metrics store.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def insert_batch(self, data: Dict) -> None:
+        """
+        Insert a batch of points into the metrics store.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def clear(self) -> None:
+        """
+        Clear the metrics store of all data.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def _run_retention_policy(self) -> None:
+        """
+        Run the retention policy on the database, removing points older than the retention policy.
         """
         raise NotImplementedError
 

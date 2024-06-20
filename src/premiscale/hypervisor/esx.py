@@ -41,7 +41,7 @@ class ESX(Libvirt):
             resources=resources
         )
 
-    def getHostState(self) -> Dict:
+    def _getHostState(self) -> Dict:
         """
         Get the state of the VMs on the host.
 
@@ -50,7 +50,7 @@ class ESX(Libvirt):
         """
         return {}
 
-    def getHostStats(self) -> Dict:
+    def _getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
@@ -59,7 +59,7 @@ class ESX(Libvirt):
         """
         return {}
 
-    def getHostVMStats(self) -> List[DomainStats]:
+    def _getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
@@ -67,3 +67,9 @@ class ESX(Libvirt):
             List[DomainStats]: Stats of all VMs on this particular host connection.
         """
         return []
+
+    def statsToMetricsDB(self) -> None:
+        return None
+
+    def statsToStateDB(self) -> None:
+        return None
