@@ -19,9 +19,11 @@ workflows:
           name: pylint
           resource-class: premiscale/small
           context: nexus
+          dependencies: libvirt-dev
 
       - general/python-mypy:
           name: mypy
+          dependencies: libvirt-dev
 
       - general/helm-lint:
           name: helm lint [helm/premiscale]
