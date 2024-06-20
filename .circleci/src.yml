@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  general: premiscale/general@dev:b798233aee2e1710622573fe57ae879a9d923a81
+  general: premiscale/general@dev:43f32b5521ef87bfbc3563326981bfa93c307f90
   slack: circleci/slack@4.13.3
 
 
