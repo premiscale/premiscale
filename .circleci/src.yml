@@ -23,6 +23,7 @@ workflows:
 
       - general/python-mypy:
           name: mypy
+          configuration_file: pyproject.toml
           dependencies: libvirt-dev
 
       - general/helm-lint:
