@@ -62,7 +62,7 @@ class Qemu(Libvirt):
             resources=resources
         )
 
-    def getHostState(self) -> Dict:
+    def _getHostState(self) -> Dict:
         """
         Get the state of the VMs on the host.
 
@@ -103,7 +103,7 @@ class Qemu(Libvirt):
 
         return _state
 
-    def getHostStats(self) -> Dict:
+    def _getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
@@ -140,7 +140,7 @@ class Qemu(Libvirt):
 
         return _stats
 
-    def getHostVMStats(self) -> List[DomainStats]:
+    def _getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM. A typical report includes all the following fields ~
 
@@ -242,6 +242,14 @@ class Qemu(Libvirt):
     def statsToStateDB(self) -> None:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
+        format these correctly, every interface is required to implement its own method to do so, since it's not
+        guaranteed that the stats will be the same across different hypervisors.
+        """
+        return None
+
+    def statsToMetricsDB(self) -> None:
+        """
+        Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
         """
