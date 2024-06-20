@@ -78,6 +78,7 @@ cogapp = "^3.4"
 mypy = "^1"
 pydoclint = "^0.4"
 pdoc = "^14.5.0"
+types-pyyaml = "^6.0.12.20240311"
 
 [build-system]
 requires = ["poetry-core"]
