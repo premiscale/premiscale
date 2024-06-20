@@ -15,7 +15,7 @@ workflows:
   src-premiscale-config-data:
     jobs:
       - general/python-yamale:
-          name: v1alpha1 default config schema validation
+          name: v1alpha1 config schema validation
           executor: premiscale-libvirt
           path: src/premiscale/config/data/default.yaml
           schema-path: src/premiscale/config/data/schema.v1alpha1.yaml
