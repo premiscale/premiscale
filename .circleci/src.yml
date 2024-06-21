@@ -17,7 +17,6 @@ workflows:
     jobs:
       - general/python-pylint:
           name: pylint
-          resource-class: premiscale/small
           context: nexus
           dependencies: libvirt-dev
 
