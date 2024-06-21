@@ -15,12 +15,12 @@ from concurrent.futures import ThreadPoolExecutor
 from setproctitle import setproctitle
 from cattrs import unstructure
 from time import sleep
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from premiscale.hypervisor import build_hypervisor_connection
 
 
 if TYPE_CHECKING:
-    from typing import Iterator, List
+    from typing import Iterator, List, Dict
     # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
@@ -49,8 +49,12 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
         case 'memory':
             log.debug(f'Using local memory for time series database')
             from premiscale.metrics.timeseries.local import Local
+            from datetime import timedelta
 
-            return Local(config)
+            return Local(
+                retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
+                file=config.controller.databases.timeseries.dbfile
+            )
         case 'influxdb':
             log.debug(f'Using InfluxDB for time series database')
             from premiscale.metrics.timeseries.influxdb import InfluxDB
@@ -102,7 +106,8 @@ class MetricsCollector:
         timeseries_enabled (bool): Whether to enable time-series data collection. Defaults to False.
     """
     def __init__(self, config: Config, timeseries_enabled: bool = False) -> None:
-        self.timeseriesConnection: TimeSeries | None = None
+        self._timeseriesConnection: TimeSeries | None = None
+        self._stateConnection: State
         self.timeseries_enabled = timeseries_enabled
         self.config = config
 
@@ -115,12 +120,12 @@ class MetricsCollector:
 
         # Set up database interfaces.
         if self.timeseries_enabled:
-            self.timeseriesConnection = build_timeseries_connection(self.config)
-            self.timeseriesConnection.open()
+            self._timeseriesConnection = build_timeseries_connection(self.config)
+            self._timeseriesConnection.open()
 
-        self.stateConnection = build_state_connection(self.config)
-        self.stateConnection.open()
-        self.stateConnection.initialize()
+        self._stateConnection = build_state_connection(self.config)
+        self._stateConnection.open()
+        self._stateConnection.initialize()
         self._initialize_host()
         self._collectMetrics()
 
@@ -136,13 +141,16 @@ class MetricsCollector:
             host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
         """
 
+        if host is not None:
+            log.warning(f'Host initialization is not yet implemented for individual hosts. All hosts will be initialized at once.')
+
         _start_time = datetime.now()
 
         if host is not None:
             _host_dict = host.to_db_entry()
 
-            if not self.stateConnection.host_exists(host.name, host.address):
-                self.stateConnection.host_create(**_host_dict)
+            if not self._stateConnection.host_exists(host.name, host.address):
+                self._stateConnection.host_create(**_host_dict)
 
             _end_time = datetime.now()
 
@@ -151,8 +159,8 @@ class MetricsCollector:
             return None
 
         for _h in self:
-            if not self.stateConnection.host_exists(_h.name, _h.address):
-                self.stateConnection.host_create(
+            if not self._stateConnection.host_exists(_h.name, _h.address):
+                self._stateConnection.host_create(
                     **_h.to_db_entry()
                 )
 
@@ -198,12 +206,21 @@ class MetricsCollector:
         """
         Collect metrics from all hosts and store them in the appropriate backend database.
         """
+        # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
+        maxpages = max(
+            1,
+            len(self) // self.config.controller.databases.maxHostConnectionThreads + (
+                1 if len(self) % self.config.controller.databases.maxHostConnectionThreads > 0 else 0
+            ),
+            len(self) // (1 if (self.config.controller.databases.hostConnectionQueueSize is None) else self.config.controller.databases.hostConnectionQueueSize) + (
+                1 if len(self) % (len(self) if (self.config.controller.databases.hostConnectionQueueSize is None) else self.config.controller.databases.hostConnectionQueueSize) > 0 else 0
+            )
+        )
+
         while True:
             collection_run_start = datetime.now()
 
-            # Paginate through hosts to avoid queuing up a large number of jobs to visit hosts.
-            # TODO: make pagination size configurable, but wrap it as max(1, self.config.controller.databases.maxHostConnectionThreads, <user-specified-pagination-size>), so that, minimally, we're using all of our threads on each iteration.
-            for page in range(0, len(self) // self.config.controller.databases.maxHostConnectionThreads + 1):
+            for page in range(0, maxpages):
 
                 # Set a lower and upper bound for a slice of hosts to visit from the whole config.
                 lower_bound = page * self.config.controller.databases.maxHostConnectionThreads
@@ -250,29 +267,37 @@ class MetricsCollector:
         """
         Collect metrics for a single host over a readonly Libvirt connection and store them in the appropriate backend database.
 
+        This method is intended to be called with a host argument from a ThreadPoolExecutor-based thread.
+
         Args:
             host (Host): The host object to collect metrics from.
         """
         with build_hypervisor_connection(host, readonly=True) as host_connection:
-            # Exit early; instantiating the connection to the host failed. We'll try again on the next iteration.
+            # Exit early; instantiating the connection to the host failed and has already been logged.
+            # We'll try again on the next iteration.
             if host_connection is None:
                 return None
 
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
-            host_state = host_connection.getHostState()
-            log.info(host_state)
+            # Diff current state and recorded state and update the state database. We
+            # plit reads and writes here to avoid locking the database for too long.
+            if self._stateConnection.get_host(host.name, host.address) != (_host_db_entry := host.to_db_entry()):
+                self._stateConnection.host_update(
+                    **_host_db_entry,
+                )
 
-            # Diff current state and recorded state and update the state database.
-            self.stateConnection.host_update(
-                **host.to_db_entry(),
-            )
+            if self.timeseries_enabled and self._timeseriesConnection is not None:
+                # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
+                vms_metrics_db_entry: Dict = host_connection.statsToMetricsDB()
 
-            if self.timeseries_enabled:
-                host_stats = host_connection.getHostStats()
-                log.info(host_stats)
+                self._timeseriesConnection.insert_batch(
+                    {
+                        'time': str(datetime.now(timezone.utc)),
+                        'data': vms_metrics_db_entry
+                    }
+                )
 
-                # TODO: Iteratively collect metrics for each VM on the host, unless it's separate libvirt calls for each VM; in which case, we could add further, configurable threading to collect them all at once with a similar pagination scheme.
-                # timeseries_data = self._collectVirtualMachineMetrics(host)
-                vm_stats = host_connection.getHostVMStats()
-                log.info(vm_stats)
+        # Now take the consolidated data and store it in the appropriate backend database.
+
+        # self._timeseriesConnection.insert(timeseries_data)

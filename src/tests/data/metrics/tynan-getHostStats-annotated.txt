@@ -1,0 +1,37 @@
+{
+    'host': {
+        'hostname': 'tynan'
+    },
+    'vms': [
+        {
+            'name': '57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018',
+            'state': [
+                1,  # VIR_DOMAIN_RUNNING
+                48234496,
+                48234496,
+                12, # number of CPUs
+                769560000000
+            ]
+        },
+        {
+            'name': 'ubuntu-template',
+            'state': [
+                5,  # VIR_DOMAIN_SHUTOFF
+                4194304,
+                4194304,
+                2,  # number of CPUs
+                0
+            ]
+        },
+        {
+            'name': '57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c',
+            'state': [
+                1,
+                48234496,
+                48234496,
+                12,
+                1043430000000
+            ]
+        }
+    ]
+}

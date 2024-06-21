@@ -82,6 +82,7 @@ class TimeSeries:
     """
     type: str
     trailing: int
+    dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
 
 
@@ -95,6 +96,17 @@ class Databases:
     maxHostConnectionThreads: int
     state: State
     timeseries: TimeSeries
+    hostConnectionQueueSize: int | None = ib(default=None)
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        if self.hostConnectionQueueSize is None:
+            self.hostConnectionQueueSize = self.maxHostConnectionThreads
+        elif self.hostConnectionQueueSize < self.maxHostConnectionThreads:
+            log.warning(f'Host connection queue size must be greater than or equal to the maximum host connection threads. Defaulting to {self.maxHostConnectionThreads}.')
+            self.hostConnectionQueueSize = self.maxHostConnectionThreads
 
 
 @define

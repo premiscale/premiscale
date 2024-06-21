@@ -106,20 +106,7 @@ class Libvirt(ABC):
             log.error(f'No host connection to close, probably due to an error on connection open')
 
     @abstractmethod
-    def getHostState(self) -> Dict:
-        """
-        Get the state of the VMs on the host.
-
-        Returns:
-            Dict: The state of the VMs on the host.
-
-        Raises:
-            NotImplementedError: If the method is not implemented by the subclass.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def getHostStats(self) -> Dict:
+    def _getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
 
@@ -132,12 +119,42 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def getHostVMStats(self) -> List[DomainStats]:
+    def _getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
         Returns:
             List[DomainStats]: Stats of all VMs on this particular host connection.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def statsToStateDB(self) -> Dict:
+        """
+        Convert the stats from the host into a state database entry. Instead of relying on the calling class to
+        format these correctly, every interface is required to implement its own method to do so, since it's not
+        guaranteed that the stats will be the same across different hypervisors.
+
+        Returns:
+            Dict: The state of the host and VMs on it.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by the subclass.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def statsToMetricsDB(self) -> Dict:
+        """
+        Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
+        format these correctly, every interface is required to implement its own method to do so, since it's not
+        guaranteed that the stats will be the same across different hypervisors.
+
+        Returns:
+            Dict: The metrics for the host and VMs on it.
 
         Raises:
             NotImplementedError: If the method is not implemented by the subclass.

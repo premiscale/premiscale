@@ -17,6 +17,8 @@ controller:
     ## @param controller.kubernetes.autoscalerHost [string, default: cluster-autoscaler] The host on which the Kubernetes autoscaler is running. See also the cluster autoscaler Helm chart: https://github.com/premiscale/kubernetes-autoscaler/tree/master/charts/cluster-autoscaler.
     autoscalerHost: cluster-autoscaler
 
+  ## @section Healthcheck Configuration
+
   ## @param controller.healthcheck [object] Configure the healthcheck endpoint for the controller.
   healthcheck:
     ## @param controller.healthcheck.host [string, default: 127.0.0.1] The host to bind the healthcheck endpoint to.
@@ -25,9 +27,14 @@ controller:
     ## @param controller.healthcheck.port [default: 8085] The port to bind the healthcheck endpoint to.
     port: 8085
 
+  ## @section Database Configuration
+
   databases:
     ## @param controller.databases.maxHostConnectionThreads [default: 10] The maximum number of threads to use for connecting to hosts.
     maxHostConnectionThreads: 10
+
+    ## @param controller.databases.hostConnectionQueueSize [default: 10] The maximum number of host connections to queue up at a time for the host connection threads to process. Defaults to the same value as 'controller.databases.maxHostConnectionThreads'.
+    # hostConnectionQueueSize: 10
 
     ## @param controller.databases.collectionInterval [default: 60] How often the agent retrieves state from all of the connected hosts.
     collectionInterval: 60
@@ -43,8 +50,13 @@ controller:
       ## @param controller.databases.timeseries.type [string, default: memory] The type of database to use for storing time series data. At this time, can be 'influxdb' or 'memory'.
       type: memory
 
+      ## @param controller.databases.timeseries.dbfile [string, default: /opt/premiscale/timeseries.db] If using the 'memory' type, the path to the file where the time series data is stored as a CSV format.
+      # dbfile: /opt/premiscale/timeseries.csv
+
       ## @param controller.databases.timeseries.trailing [default: 1200] Seconds of collected time series data to keep and evaluate upon (must be >=interval). Default is 20 minutes
       trailing: 1200
+
+  ## @section Platform Configuration
 
   ## @param controller.platform [object] Configure the platform
   platform:

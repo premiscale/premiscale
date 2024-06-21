@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 
 
 if TYPE_CHECKING:
-    from typing import Any, List
+    from typing import Any, List, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -87,6 +87,23 @@ class State(ABC):
         return
 
     ## Hosts
+
+    @abstractmethod
+    def get_host(self, name: str, address: str) -> Tuple | None:
+        """
+        Get a host record.
+
+        Args:
+            name (str): name of host to retrieve.
+            address (str): IP address of the host.
+
+        Returns:
+            Tuple | None: Host record, if it exists. Otherwise, None.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:

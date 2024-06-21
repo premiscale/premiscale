@@ -10,10 +10,11 @@ import logging
 from typing import TYPE_CHECKING
 from datetime import timedelta, datetime, timezone
 from tinyflux import TinyFlux, Point, FieldQuery, TagQuery, TimeQuery
+from tinyflux.storages import MemoryStorage, CSVStorage
 from premiscale.metrics.timeseries._base import TimeSeries
 
 if TYPE_CHECKING:
-    from typing import Dict
+    from typing import Dict, List
 
 
 log = logging.getLogger(__name__)
@@ -34,9 +35,14 @@ class Local(TimeSeries):
         Open a connection to the metrics backend these methods interact with.
         """
         if self.file is not None:
-            self._connection = TinyFlux(self.file)
+            self._connection = TinyFlux(
+                path=self.file,
+                storage=CSVStorage
+            )
         else:
-            self._connection = TinyFlux()
+            self._connection = TinyFlux(
+                storage=MemoryStorage
+            )
 
     def close(self) -> None:
         """
@@ -57,6 +63,15 @@ class Local(TimeSeries):
         point = Point(data)
 
         self._connection.insert(point)
+        self._run_retention_policy()
+
+    def insert_batch(self, data: Dict) -> None:
+        """
+        Insert a batch of points into the metrics store.
+        """
+        points = [Point(d) for d in data.get('data', [])]
+
+        self._connection.insert_multiple(points)
         self._run_retention_policy()
 
     def clear(self) -> None:

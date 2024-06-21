@@ -3,7 +3,7 @@ controller: include('controller')
 ---
 controller:
   pidFile: str(min=1)
-  mode: enum('kubernetes', 'standalone')
+  mode: enum('kubernetes', 'standalone', 'standalone-external-metrics', 'kubernetes-external-metrics')
   kubernetes: include('kubernetes')
   healthcheck: include('healthcheck')
   databases: include('databases')
@@ -32,6 +32,8 @@ databases:
   maxHostConnectionThreads: int(min=0)
   state: include('state')
   timeseries: include('timeseries')
+  # This field depends on maxHostConnectionThreads. If it is less than that field, it will be set to that value.
+  hostConnectionQueueSize: int(min=1, required=False)
 ---
 state:
   type: enum('memory', 'mysql')
@@ -40,6 +42,8 @@ state:
 timeseries:
   type: enum('memory', 'influxdb')
   trailing: int(min=5)
+  # Only relevant for type 'memory'.
+  dbfile: str(min=1, required=False)
   connection: include('connection', required=False)
 ---
 connection:
@@ -69,7 +73,7 @@ host:
   timeout: int(min=1, max=599940, required=False)
   user: str(min=1, required=False)
   sshKey: str(min=1, required=False)
-  hypervisor: enum('xen', 'esx', 'qemu')
+  hypervisor: enum('esx', 'qemu')
 ---
 # The other half of autoscaling configuration
 groups: map(include('group'), min=0)

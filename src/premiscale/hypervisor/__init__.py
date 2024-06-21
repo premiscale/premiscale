@@ -42,27 +42,27 @@ def build_hypervisor_connection(host: Host, readonly: bool = False) -> Libvirt:
                 readonly=readonly,
                 **conf
             )
-        case 'esx':
-            log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}')
+        # case 'esx':
+        #     log.debug(f'Using ESX hypervisor for host {host.name} at {host.address}')
 
-            from premiscale.hypervisor.esx import ESX
+        #     from premiscale.hypervisor.esx import ESX
 
-            del conf['hypervisor']
+        #     del conf['hypervisor']
 
-            return ESX(
-                readonly=readonly,
-                **conf
-            )
-        case 'xen':
-            log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}')
+        #     return ESX(
+        #         readonly=readonly,
+        #         **conf
+        #     )
+        # case 'xen':
+        #     log.debug(f'Using Xen hypervisor for host {host.name} at {host.address}')
 
-            from premiscale.hypervisor.xen import Xen
+        #     from premiscale.hypervisor.xen import Xen
 
-            del conf['hypervisor']
+        #     del conf['hypervisor']
 
-            return Xen(
-                readonly=readonly,
-                **conf
-            )
+        #     return Xen(
+        #         readonly=readonly,
+        #         **conf
+        #     )
         case _:
             raise ValueError(f'Unknown hypervisor type: {host.hypervisor}')

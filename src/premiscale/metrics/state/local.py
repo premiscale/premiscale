@@ -112,6 +112,31 @@ class Local(State):
 
     ## Hosts
 
+    def get_host(self, name: str, address: str) -> Tuple | None:
+        """
+        Get a host record.
+
+        Args:
+            name (str): name of host to retrieve.
+            address (str): IP address of the host.
+
+        Returns:
+            Tuple | None: Host record, if it exists. Otherwise, None.
+        """
+        entries = self._cursor.execute(
+            'SELECT * FROM hosts WHERE name = ? AND address = ?',
+            (name, address)
+        ).fetchall()
+
+        if len(entries) > 1:
+            log.error(f'Expected 1 host record, got {len(entries)}. Returning the first entry.')
+            log.debug(f'Host records: {entries}')
+        elif len(entries) == 0:
+            log.error('No host records found. Returning None.')
+            return None
+
+        return entries[0]
+
     @synchronized
     def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
         """
