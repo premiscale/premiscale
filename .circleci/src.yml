@@ -18,6 +18,7 @@ workflows:
       - general/python-pylint:
           name: pylint
           context: nexus
+          configuration_file: pyproject.toml
           dependencies: libvirt-dev
 
       - general/python-mypy:
