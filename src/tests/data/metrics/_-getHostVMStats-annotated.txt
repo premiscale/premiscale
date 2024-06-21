@@ -14,7 +14,7 @@
         # https://stackoverflow.com/a/41508346
         # So guest load / processing time per unit interval is allegedly [cpu_time - (user_time + system_time)] = 36205890688000 - (28093211019000 + 8112679668000) = 1000
         # So CPU percentage usage is a diff
-        # % = 100 * (cpu_time 2 - cpu_time 1) / N
+        # % = 100 * (cpu_time 2 - cpu_time 1) / (N nanoseconds)
 
         cpu_cache_monitor_count=0, # also known as CMT, I think this is a cache Qos metric that we shouldn't be too concerned with?
         # I don't think we're interested in the following two fields ~ https://docs.kernel.org/virt/kvm/halt-polling.html

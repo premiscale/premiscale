@@ -20,7 +20,7 @@ from premiscale.hypervisor import build_hypervisor_connection
 
 
 if TYPE_CHECKING:
-    from typing import Iterator, List
+    from typing import Iterator, List, Dict
     # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
@@ -289,9 +289,9 @@ class MetricsCollector:
 
             if self.timeseries_enabled and self._timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                vms_metrics_db_entry = host_connection.statsToMetricsDB()
+                vms_metrics_db_entry: Dict = host_connection.statsToMetricsDB()
 
-                self._timeseriesConnection.insert(
+                self._timeseriesConnection.insert_batch(
                     {
                         'time': str(datetime.now(timezone.utc)),
                         'data': vms_metrics_db_entry
