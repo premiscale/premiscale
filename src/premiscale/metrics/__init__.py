@@ -297,7 +297,3 @@ class MetricsCollector:
                         'data': vms_metrics_db_entry
                     }
                 )
-
-        # Now take the consolidated data and store it in the appropriate backend database.
-
-        # self._timeseriesConnection.insert(timeseries_data)

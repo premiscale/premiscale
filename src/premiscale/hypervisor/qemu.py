@@ -220,9 +220,13 @@ class Qemu(Libvirt):
         """
 
         vm_stats: List[DomainStats] = self._getHostVMStats()
+
+        # TODO: Implement a method to convert the host stats into a metrics database entry.
         host_stats: Dict = self._getHostStats()
 
-        return {}
+        return {
+            'vms': [vm.to_tinyflux() for vm in vm_stats],
+        }
 
 
 # Schemas for parsing retrieved hypervisor objects.
@@ -390,6 +394,9 @@ class DomainStats:
                 'block_count': self.block_count,
                 # Total physical allocation is the sum of all the physical block devices' 'block.physical' attributes.
                 # This metric is grouped by block devices' mount points.
+                #
+                # Example:
+                #
                 # [
                 #     {
                 #         'mountpoint': '/var/lib/libvirt/images',
@@ -400,6 +407,7 @@ class DomainStats:
                 #         'utilization': 159723239415
                 #     }
                 # ]
+                #
                 # Later on, this metric can be used to determine the total physical allocation of a given mount point by VMs,
                 # so scheduling can take this into account when placing VMs.
                 'total_physical_allocation_bins': [
