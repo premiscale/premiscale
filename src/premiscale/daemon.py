@@ -19,7 +19,6 @@ from setproctitle import setproctitle
 from premiscale.api.healthcheck import app as healthcheck
 from premiscale.autoscaling.group import Autoscaler
 from premiscale.platform import Platform
-from premiscale.metrics import MetricsCollector
 
 
 if TYPE_CHECKING:
@@ -41,6 +40,7 @@ def start(config: Config, version: str, token: str) -> int:
     Returns:
         int: status code of the first subprocess to exit.
     """
+
     _ret_code = 0
 
     setproctitle('premiscale')
@@ -90,6 +90,8 @@ def start(config: Config, version: str, token: str) -> int:
         # Based on the mode the controller was started in (Kubernetes or standalone), we start the relevant subprocesses.
         match config.controller.mode:
             case 'kubernetes':
+                from premiscale.metrics import MetricsCollector
+
                 processes.append(
                     executor.submit(
                         MetricsCollector(
@@ -112,6 +114,8 @@ def start(config: Config, version: str, token: str) -> int:
                     )
                 )
             case 'standalone':
+                from premiscale.metrics import MetricsCollector
+
                 processes.append(
                     executor.submit(
                         MetricsCollector(
@@ -165,10 +169,16 @@ def start(config: Config, version: str, token: str) -> int:
                 process.result()
             except Exception:
                 log.error(f'Process {process} failed. Full traceback: {traceback.format_exc()}')
+
+                for _process in filtered_processes:
+                    if _process is not process:
+                        _process.cancel()
+
                 _ret_code = 1
+
                 break
 
     for thread in _main_process_daemon_threads:
-        thread.join()
+        thread.join(timeout=5)
 
     return _ret_code

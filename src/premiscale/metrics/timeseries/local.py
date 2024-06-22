@@ -60,7 +60,7 @@ class Local(TimeSeries):
         """
         Insert a point into the metrics store.
         """
-        point = Point(data)
+        point = Point(**data)
 
         self._connection.insert(point)
         self._run_retention_policy()
@@ -69,7 +69,10 @@ class Local(TimeSeries):
         """
         Insert a batch of points into the metrics store.
         """
-        points = [Point(d) for d in data.get('data', [])]
+
+        # https://tinyflux.readthedocs.io/en/latest/preparing-data.html
+        # This field requires 4 arguments: measurement, time, tags, and fields.
+        points = [Point(**datum) for datum in data]
 
         self._connection.insert_multiple(points)
         self._run_retention_policy()
