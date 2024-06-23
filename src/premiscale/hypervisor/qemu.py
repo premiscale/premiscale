@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 import re
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Tuple
 from libvirt import (
     libvirtError,
     VIR_DOMAIN_NOSTATE,      # 0
@@ -204,19 +204,25 @@ class Qemu(Libvirt):
 
         return domain_stats_filtered_list
 
-    def statsToStateDB(self) -> Dict:
+    def statsToStateDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
-        """
-        return {}
 
-    def statsToMetricsDB(self) -> Dict:
+        Returns:
+            List[Tuple]: The state of the host and VMs on it.
+        """
+        return []
+
+    def statsToMetricsDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
+
+        Returns:
+            List[Tuple]: Stats to a list of metrics database entries.
         """
 
         vm_stats: List[DomainStats] = self._getHostVMStats()
@@ -224,6 +230,4 @@ class Qemu(Libvirt):
         # TODO: Implement a method to convert the host stats into a metrics database entry.
         host_stats: Dict = self._getHostStats()
 
-        return {
-            'vms': [vm.to_tinyflux() for vm in vm_stats],
-        }
+        return [vm.to_tinyflux() for vm in vm_stats]

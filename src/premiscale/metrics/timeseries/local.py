@@ -14,7 +14,7 @@ from tinyflux.storages import MemoryStorage, CSVStorage
 from premiscale.metrics.timeseries._base import TimeSeries
 
 if TYPE_CHECKING:
-    from typing import Dict, List
+    from typing import Dict, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -52,22 +52,29 @@ class Local(TimeSeries):
 
     def commit(self) -> None:
         """
-        Commit any changes to the database. In this class' case, we do nothing since everything is committed by default.
+        Commit any changes to the database. In this class' case, we do nothing since everything is
+        committed by default.
         """
         return None
 
     def insert(self, data: Dict) -> None:
         """
         Insert a point into the metrics store.
+
+        Args:
+            data (Dict): a dictionary containing the data to insert.
         """
         point = Point(**data)
 
         self._connection.insert(point)
         self._run_retention_policy()
 
-    def insert_batch(self, data: Dict) -> None:
+    def insert_batch(self, data: Tuple) -> None:
         """
         Insert a batch of points into the metrics store.
+
+        Args:
+            data (Tuple): a tuple of dictionaries containing the data to insert.
         """
 
         # https://tinyflux.readthedocs.io/en/latest/preparing-data.html

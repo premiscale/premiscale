@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
-    from typing import Any, Dict
+    from typing import Any, Dict, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class TimeSeries(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def insert_batch(self, data: Dict) -> None:
+    def insert_batch(self, data: Tuple[Dict]) -> None:
         """
         Insert a batch of points into the metrics store.
         """
