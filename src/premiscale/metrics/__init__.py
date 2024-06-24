@@ -297,4 +297,4 @@ class MetricsCollector:
                     # each Dict is a different measurement by which we can scale on.
                     self._timeseriesConnection.insert_batch(vm)
 
-                log.debug(self._timeseriesConnection.get_all())
+                log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
