@@ -26,6 +26,9 @@ class TimeSeries(ABC):
     def open(self) -> None:
         """
         Open a connection to the metrics backend these methods interact with.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -33,6 +36,9 @@ class TimeSeries(ABC):
     def close(self) -> None:
         """
         Close the connection to the metrics backend.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -40,6 +46,9 @@ class TimeSeries(ABC):
     def commit(self) -> None:
         """
         Commit any changes to the database.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -47,6 +56,12 @@ class TimeSeries(ABC):
     def insert(self, data: Dict) -> None:
         """
         Insert a point into the metrics store.
+
+        Args:
+            data (Dict): the data to insert.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -54,6 +69,12 @@ class TimeSeries(ABC):
     def insert_batch(self, data: Tuple[Dict]) -> None:
         """
         Insert a batch of points into the metrics store.
+
+        Args:
+            data (Tuple[Dict]): the data to insert.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -61,6 +82,9 @@ class TimeSeries(ABC):
     def clear(self) -> None:
         """
         Clear the metrics store of all data.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -68,6 +92,22 @@ class TimeSeries(ABC):
     def _run_retention_policy(self) -> None:
         """
         Run the retention policy on the database, removing points older than the retention policy.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all(self) -> Tuple:
+        """
+        Get all the data in the metrics store.
+
+        Returns:
+            Tuple: all the data in the metrics store.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 

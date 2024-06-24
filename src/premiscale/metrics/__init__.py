@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from setproctitle import setproctitle
 from cattrs import unstructure
 from time import sleep
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from premiscale.hypervisor import build_hypervisor_connection
 
 
@@ -118,14 +118,15 @@ class MetricsCollector:
         setproctitle('metrics-collector')
         log.debug('Starting metrics collection subprocess')
 
+        self._stateConnection = build_state_connection(self.config)
+        self._stateConnection.open()
+        self._stateConnection.initialize()
+
         # Set up database interfaces.
         if self.timeseries_enabled:
             self._timeseriesConnection = build_timeseries_connection(self.config)
             self._timeseriesConnection.open()
 
-        self._stateConnection = build_state_connection(self.config)
-        self._stateConnection.open()
-        self._stateConnection.initialize()
         self._initialize_host()
         self._collectMetrics()
 
@@ -292,4 +293,8 @@ class MetricsCollector:
                 vms_metrics_db_entry: List[Tuple] = host_connection.statsToMetricsDB()
 
                 for vm in vms_metrics_db_entry:
+                    # vm :: Tuple[Dict, Dict, Dict, Dict]
+                    # each Dict is a different measurement by which we can scale on.
                     self._timeseriesConnection.insert_batch(vm)
+
+                log.debug(self._timeseriesConnection.get_all())

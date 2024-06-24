@@ -409,13 +409,13 @@ files = [
 
 [[package]]
 name = "docstring-parser-fork"
-version = "0.0.7"
+version = "0.0.8"
 description = "Parse Python docstrings in reST, Google and Numpydoc format"
 optional = false
-python-versions = "<4.0,>=3.6"
+python-versions = "<4.0,>=3.7"
 files = [
-    {file = "docstring_parser_fork-0.0.7-py3-none-any.whl", hash = "sha256:5bcd177c07b0036923030e5e5ea2adfe415eb7471335fa675667e5895e7f553f"},
-    {file = "docstring_parser_fork-0.0.7.tar.gz", hash = "sha256:6c7587d41d15431018e4ba35cd2cbfa5ab2866bc1a4762ebacd2c3128b00ac5d"},
+    {file = "docstring_parser_fork-0.0.8-py3-none-any.whl", hash = "sha256:88098ae01b0909b241954ad2c50c0c29ec2292223366a540bfd68332be8fd595"},
+    {file = "docstring_parser_fork-0.0.8.tar.gz", hash = "sha256:59d3b00d42ba9f4e229a7df7e1f6fc742845f88a1190973cc33ba336a5405425"},
 ]
 
 [[package]]
