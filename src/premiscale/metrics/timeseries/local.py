@@ -108,23 +108,6 @@ class Local(TimeSeries):
         time_now = datetime.now(timezone.utc) - self.retention
         self._connection.remove(timeq < time_now)
 
-    def query(self, query: Query, measurement: str | None = None) -> Tuple:
-        """
-        Query the metrics store for data.
-
-        Args:
-            query (Query): the query to run.
-            measurement (str | None): the measurement to query.
-
-        Returns:
-            Tuple: the result of the query.
-        """
-        return self._connection.search(
-            query,
-            measurement,
-            sorted=True
-        )
-
     def get_all(self) -> Tuple:
         """
         Get all the data in the metrics store.
@@ -133,6 +116,6 @@ class Local(TimeSeries):
             Tuple: all the data in the metrics store.
         """
         return self._connection.search(
-            TimeQuery() < (datetime.now(timezone.utc) - self.retention),
+            TimeQuery() > (datetime.now(timezone.utc) - self.retention),
             sorted=True
         )
