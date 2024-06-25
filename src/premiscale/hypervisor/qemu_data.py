@@ -36,7 +36,7 @@ class vCPU:
 @define
 class Net:
     """
-    A dataclass for storing network statistics.
+    A dataclass for storing network interface statistics.
     """
     name: str
     rx_bytes: int
@@ -52,7 +52,7 @@ class Net:
 @define
 class Block:
     """
-    A dataclass for storing block statistics.
+    A dataclass for storing block device statistics.
     """
     name: str
     path: str
@@ -204,6 +204,7 @@ class DomainStats:
                 # Roughly speaking, these are the four main categories of stats we're interested in autoscaling virtual machines on.
                 # Actual CPU utilization percentage is the difference between two consecutive differences between the total CPU time
                 # and the sum of user and system time over some interval.
+                # $\max(\frac{1}{I}\left(\frac{\text{cpu_time}_1 - (\text{cpu_user}_1 - \text{cpu_system}_1)}{\text{vcpu_current}_1}-\frac{\text{cpu_time}_2 - (\text{cpu_user}_2 - \text{cpu_system}_2)}{\text{vcpu_current}_2}\right), 0)
                 'total_cpu_utilization': self.cpu_time - (self.cpu_user + self.cpu_system),
                 'cpu_time': self.cpu_time,
                 'cpu_user': self.cpu_user,
