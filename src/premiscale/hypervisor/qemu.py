@@ -227,6 +227,8 @@ class Qemu(Libvirt):
 
         vm_stats: List[DomainStats] = self._getHostVMStats()
 
+        log.debug(f'VM Stats: {vm_stats}')
+
         # TODO: Implement a method to convert the host stats into a metrics database entry.
         host_stats: Dict = self._getHostStats()
 

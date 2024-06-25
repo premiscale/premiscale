@@ -81,6 +81,7 @@ class DomainStats:
     # Name and host are enough to uniquely identify a domain.
     name: str
     host: str
+    address: str
 
     # State
     state_state: int

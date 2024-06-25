@@ -32,52 +32,7 @@ Note that, in this configuration, the controller does not require a time series 
 
 ## Configuration
 
-The controller is configured in a couple ways, including its command line interface, environment variables (as indicated in the help text below), and through the required config file (all versions of which are documented [here](https://github.com/premiscale/premiscale/tree/master/src/premiscale/config) in this repository).
-
-<!-- [[[cog
-import subprocess
-import cog
-
-cog.outl(f'```text\n$ premiscale --help\n{subprocess.run("poetry run premiscale --help".split(" "), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode()}\n```')
-]]] -->
-```text
-$ premiscale --help
-usage: premiscale [-h] [--token TOKEN] [-c CONFIG] [--validate] [--version]
-                  [--log-level {info,error,warn,debug}]
-                  [--log-file LOG_FILE | --log-stdout]
-
-The PremiScale autoscaling controller for Kubernetes.
-
-options:
-  -h, --help            show this help message and exit
-  --token TOKEN         Platform registration token. Also available as the
-                        environment variable 'PREMISCALE_TOKEN'. If no token
-                        is provided, the controller will not register with the
-                        platform and start in standalone mode.
-  -c CONFIG, --config CONFIG
-                        Configuration file path to use. Also available as the
-                        environment variable 'PREMISCALE_CONFIG_PATH'.
-                        (default: /opt/premiscale/config.yaml)
-  --validate            Validate the provided configuration file and exit.
-                        (default: false)
-  --version             Display controller version.
-  --log-level {info,error,warn,debug}
-                        Set the logging level. Also available as the
-                        environment variable 'PREMISCALE_LOG_LEVEL'. (default:
-                        info)
-  --log-file LOG_FILE   Specify the file the service logs to if --log-stdout
-                        is not set. Also available as the environment variable
-                        'PREMISCALE_LOG_FILE'. (default:
-                        /opt/premiscale/controller.log)
-  --log-stdout          Log to stdout (for use in containerized deployments).
-                        (default: false)
-
-For more information, visit https://premiscale.com.
-
-© PremiScale, Inc. 2024.
-
-```
-<!-- [[[end]]] (checksum: 83576b46aefcfd04dba8baa176fd05ff) (checksum: ) -->
+The controller is configured in a couple ways, including its command line interface, environment variables (as indicated in the help text below), and through the required config file (all versions of which are documented [here](https://github.com/premiscale/premiscale/tree/master/src/premiscale/config/docs) in this repository).
 
 ## Installation
 
