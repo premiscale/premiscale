@@ -26,8 +26,6 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 
-MIDDLE_NUMBER_REGEX = re.compile(r'(?<=_)[0-9]+(?=_)')
-
 
 class Qemu(Libvirt):
     """
@@ -114,6 +112,9 @@ class Qemu(Libvirt):
         Returns:
             List[DomainStats]: Stats of all VMs on this particular host connection.
         """
+
+        MIDDLE_NUMBER_REGEX = re.compile(r'^(vcpu|block|net)_[0-9]+_')
+
         if self._connection is None:
             return []
 
@@ -159,7 +160,7 @@ class Qemu(Libvirt):
                     vcpus.extend([{}] * (index - len(vcpus) + 1))
 
                     # Remove the number from the key and strip 'vcpu_' from the beginning.
-                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key).removeprefix('vcpu_')
+                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key)
 
                     vcpus[index][_new_key] = stat[key]
                 #
@@ -172,7 +173,7 @@ class Qemu(Libvirt):
 
                     blocks.extend([{}] * (index - len(blocks) + 1))
 
-                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key).removeprefix('block_')
+                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key)
 
                     blocks[index][_new_key] = stat[key]
                 #
@@ -185,13 +186,12 @@ class Qemu(Libvirt):
 
                     nets.extend([{}] * (index - len(nets) + 1))
 
-                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key).removeprefix('net_')
+                    _new_key = re.sub(MIDDLE_NUMBER_REGEX, '', key)
 
                     nets[index][_new_key] = stat[key]
                 else:
                     domain_stats_filtered[key] = stat[key]
 
-            domain_stats_filtered[key] = stat[key]
             domain_stats_filtered['vcpu'] = vcpus
             domain_stats_filtered['block'] = blocks
             domain_stats_filtered['net'] = nets
