@@ -114,15 +114,18 @@ class Local(TimeSeries):
 
         log.debug(f"Retention removed {removed_item_number} items from the database.")
 
-    def get_all(self) -> Tuple:
+    def get_all(self, measurement: str | None = None) -> Tuple:
         """
         Get all the data in the metrics store.
+
+        Args:
+            measurement (str | None): the measurement to get data for. If None, all data is returned. (Default: None.)
 
         Returns:
             Tuple: all the data in the metrics store.
         """
         return self._connection.search(
             TimeQuery() > (datetime.now(timezone.utc) - self.retention),
-            measurement='domain_stats',
+            measurement=measurement,
             sorted=True
         )
