@@ -10,6 +10,7 @@ import os
 
 from attrs import define
 from attr import ib
+from cattr import structure
 from typing import TYPE_CHECKING, List
 from datetime import datetime, timezone
 
@@ -100,6 +101,7 @@ class DomainStats:
     # vCPU
     vcpu_current: int
     vcpu_maximum: int
+    # TODO: https://github.com/python-attrs/attrs/issues/1298
     vcpu: List[vCPU]
 
     # net
@@ -143,161 +145,190 @@ class DomainStats:
         if self.vcpu_current != self.vcpu_maximum:
             log.warning(f'vCPU count disparity for {self.name}: {self.vcpu_current} current != {self.vcpu_maximum} max. ')
 
+        # Normalize the network interfaces.
+        _net = []
+        for _net_dict in self.net:
+            _net.append(
+                structure(
+                    _net_dict,
+                    Net
+                )
+            )
+        self.net = _net
 
-def to_tinyflux(domain_stat_obj: DomainStats) -> Tuple[Dict, Dict, Dict, Dict]:
-    """
-    Convert the domain statistics into a compatible format for TinyFlux Point objects.
+        # Normalize the block devices.
+        _block = []
+        for _block_dict in self.block:
+            _block.append(
+                structure(
+                    _block_dict,
+                    Block
+                )
+            )
+        self.block = _block
 
-    In the process, 4 different points are created for the CPU, memory, network, and block device statistics.
+        # Normalize the vCPUs.
+        _vcpu = []
+        for _vcpu_dict in self.vcpu:
+            _vcpu.append(
+                structure(
+                    _vcpu_dict,
+                    vCPU
+                )
+            )
+        self.vcpu = _vcpu
 
-    Block devices are a bit more complex than the other stats, so we'll break down the schema for them here.
+    def to_tinyflux(self) -> Tuple[Dict, Dict, Dict, Dict]:
+        """
+        Convert the domain statistics into a compatible format for TinyFlux Point objects.
 
-    Block
-    =====
+        In the process, 4 different points are created for the CPU, memory, network, and block device statistics.
 
-        Total physical allocation is the sum of all the physical block devices' 'block.physical' attributes.
-        This metric is grouped by block devices' mount points.
+        Block devices are a bit more complex than the other stats, so we'll break down the schema for them here.
 
-        Example:
+        Block
+        =====
 
-            {
-                '/var/lib/libvirt/images_utilization': int,
-                '/var/lib/libvirt/images2_utilization': int
-            }
+            Total physical allocation is the sum of all the physical block devices' 'block.physical' attributes.
+            This metric is grouped by block devices' mount points.
 
-        Later on, this metric can be used to determine the total physical allocation of a given mount point by VMs,
-        so scheduling can take this into account when placing VMs.
+            Example:
 
-    Args:
-        domain_stat_obj (DomainStats): the domain statistics object to convert into TinyFlux Point objects.
+                {
+                    '/var/lib/libvirt/images_utilization': int,
+                    '/var/lib/libvirt/images2_utilization': int
+                }
 
-    Returns:
-        Tuple[Dict, Dict, Dict, Dict]: all of the concatenated domain statistics on which we can scale on with some
-            additional fields. This object takes the following schema
+            Later on, this metric can be used to determine the total physical allocation of a given mount point by VMs,
+            so scheduling can take this into account when placing VMs.
 
-        (
-            {
-                # Name of the measurement. This is the name of the table in the database.
-                'measurement': str,
+        Returns:
+            Tuple[Dict, Dict, Dict, Dict]: all of the concatenated domain statistics on which we can scale on with some
+                additional fields. This object takes the following schema
 
-                # Time of the measurement. It is important this data is stored alongside the collection time.
-                'time': datetime,
+            (
+                {
+                    # Name of the measurement. This is the name of the table in the database.
+                    'measurement': str,
 
-                # Tag attributes that are searchable in the database
-                'tags': Dict[str, str],
+                    # Time of the measurement. It is important this data is stored alongside the collection time.
+                    'time': datetime,
 
-                # Actual data
-                'fields': Dict[str, int | float]
+                    # Tag attributes that are searchable in the database
+                    'tags': Dict[str, str],
+
+                    # Actual data
+                    'fields': Dict[str, int | float]
+                },
+                ... 4 times
+            )
+        """
+
+        # Put together a record of the domain statistics that's palatable for TinyFlux.
+
+        _cpu_datum: Dict = {
+            'measurement': 'domain_stats',
+            'time': self.time,
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
             },
-            ... 4 times
+            'fields': {
+                # Roughly speaking, these are the four main categories of stats we're interested in autoscaling virtual machines on.
+                # Actual CPU utilization percentage is the difference between two consecutive differences between the total CPU time
+                # and the sum of user and system time over some interval.
+                # $\max(\frac{1}{I}\left(\frac{\text{cpu_time}_1 - (\text{cpu_user}_1 - \text{cpu_system}_1)}{\text{vcpu_current}_1}-\frac{\text{cpu_time}_2 - (\text{cpu_user}_2 - \text{cpu_system}_2)}{\text{vcpu_current}_2}\right), 0)
+                'total_cpu_utilization': self.cpu_time - (self.cpu_user + self.cpu_system),
+                'cpu_time': self.cpu_time,
+                'cpu_user': self.cpu_user,
+                'cpu_system': self.cpu_system,
+                'vcpu_current': self.vcpu_current,
+                'vcpu_maximum': self.vcpu_maximum,
+            }
+        }
+
+        _memory_datum: Dict = {
+            'measurement': 'domain_stats',
+            'time': self.time,
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                # Memory utilization is the difference between the current and maximum balloon values.
+                'total_memory_utilization': (self.balloon_current / self.balloon_maximum * 100 if self.balloon_current is not None and self.balloon_maximum is not None else -1)
+            }
+        }
+
+        _net_datum: Dict = {
+            'measurement': 'domain_stats',
+            'time': self.time,
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                'net_count': self.net_count,
+                # Sum utilization, errors and drops across all network interfaces. We can use this to autoscale on network and
+                # set thresholds for network errors and drops to either trigger a scale verb or affect scheduling of workloads.
+                'total_net_utilization': sum(net.rx_bytes + net.tx_bytes for net in self.net),
+                'total_net_errors': sum(net.rx_errs + net.tx_errs for net in self.net),
+                'total_net_drops': sum(net.rx_drop + net.tx_drop for net in self.net)
+            }
+        }
+
+        # Calculate the utilization of each network interface.
+        for net in self.net:
+            # To autoscale on network interface utilization, we can use the sum of the rx_bytes and tx_bytes fields.
+            # This said, we don't know the % utilization of the physical NICs on the host from this metric. Virtual
+            # NICs are likely never going to be bottleneck intra-host, but physical NICs are.
+            _net_datum['fields'][f'{net.name}_utilization'] = net.rx_bytes + net.tx_bytes
+
+        _block_datum: Dict = {
+            'measurement': 'domain_stats',
+            'time': self.time,
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                'block_count': self.block_count
+            }
+        }
+
+        # Calculate the capacity utilization of each block device.
+        for block in self.block:
+            _block_datum['fields'][f'{block.name}_capacity_utilization'] = block.allocation / block.capacity * 100
+
+            for mountpoint in set(os.path.dirname(block.path)):
+                _block_datum['fields'][f'{mountpoint}_utilization'] = sum(block.physical for block in self.block if os.path.dirname(block.path) == mountpoint)
+
+        return (
+            _cpu_datum,
+            _memory_datum,
+            _net_datum,
+            _block_datum
         )
-    """
 
-    # Put together a record of the domain statistics that's palatable for TinyFlux.
+    def to_influx(self) -> Dict:
+        """
+        Convert the domain statistics into a compatible format for InfluxDB.
 
-    _cpu_datum: Dict = {
-        'measurement': 'domain_stats',
-        'time': domain_stat_obj.time,
-        'tags': {
-            'name': domain_stat_obj.name,
-            'host': domain_stat_obj.host,
-            'state': str(domain_stat_obj.state_state),
-            'reason': str(domain_stat_obj.state_reason)
-        },
-        'fields': {
-            # Roughly speaking, these are the four main categories of stats we're interested in autoscaling virtual machines on.
-            # Actual CPU utilization percentage is the difference between two consecutive differences between the total CPU time
-            # and the sum of user and system time over some interval.
-            # $\max(\frac{1}{I}\left(\frac{\text{cpu_time}_1 - (\text{cpu_user}_1 - \text{cpu_system}_1)}{\text{vcpu_current}_1}-\frac{\text{cpu_time}_2 - (\text{cpu_user}_2 - \text{cpu_system}_2)}{\text{vcpu_current}_2}\right), 0)
-            'total_cpu_utilization': domain_stat_obj.cpu_time - (domain_stat_obj.cpu_user + domain_stat_obj.cpu_system),
-            'cpu_time': domain_stat_obj.cpu_time,
-            'cpu_user': domain_stat_obj.cpu_user,
-            'cpu_system': domain_stat_obj.cpu_system,
-            'vcpu_current': domain_stat_obj.vcpu_current,
-            'vcpu_maximum': domain_stat_obj.vcpu_maximum,
-        }
-    }
+        Returns:
+            Dict: all of the collected domain statistics with some additional fields.
 
-    _memory_datum: Dict = {
-        'measurement': 'domain_stats',
-        'time': domain_stat_obj.time,
-        'tags': {
-            'name': domain_stat_obj.name,
-            'host': domain_stat_obj.host,
-            'state': str(domain_stat_obj.state_state),
-            'reason': str(domain_stat_obj.state_reason)
-        },
-        'fields': {
-            # Memory utilization is the difference between the current and maximum balloon values.
-            'total_memory_utilization': (domain_stat_obj.balloon_current / domain_stat_obj.balloon_maximum * 100 if domain_stat_obj.balloon_current is not None and domain_stat_obj.balloon_maximum is not None else -1)
-        }
-    }
-
-    _net_datum: Dict = {
-        'measurement': 'domain_stats',
-        'time': domain_stat_obj.time,
-        'tags': {
-            'name': domain_stat_obj.name,
-            'host': domain_stat_obj.host,
-            'state': str(domain_stat_obj.state_state),
-            'reason': str(domain_stat_obj.state_reason)
-        },
-        'fields': {
-            'net_count': domain_stat_obj.net_count,
-            # Sum utilization, errors and drops across all network interfaces. We can use this to autoscale on network and
-            # set thresholds for network errors and drops to either trigger a scale verb or affect scheduling of workloads.
-            'total_net_utilization': sum(net.rx_bytes + net.tx_bytes for net in domain_stat_obj.net),
-            'total_net_errors': sum(net.rx_errs + net.tx_errs for net in domain_stat_obj.net),
-            'total_net_drops': sum(net.rx_drop + net.tx_drop for net in domain_stat_obj.net)
-        }
-    }
-
-    # Calculate the utilization of each network interface.
-    for net in domain_stat_obj.net:
-        # To autoscale on network interface utilization, we can use the sum of the rx_bytes and tx_bytes fields.
-        # This said, we don't know the % utilization of the physical NICs on the host from this metric. Virtual
-        # NICs are likely never going to be bottleneck intra-host, but physical NICs are.
-        _net_datum['fields'][f'{net.name}_utilization'] = net.rx_bytes + net.tx_bytes
-
-    _block_datum: Dict = {
-        'measurement': 'domain_stats',
-        'time': domain_stat_obj.time,
-        'tags': {
-            'name': domain_stat_obj.name,
-            'host': domain_stat_obj.host,
-            'state': str(domain_stat_obj.state_state),
-            'reason': str(domain_stat_obj.state_reason)
-        },
-        'fields': {
-            'block_count': domain_stat_obj.block_count
-        }
-    }
-
-    # Calculate the capacity utilization of each block device.
-    for block in domain_stat_obj.block:
-        _block_datum['fields'][f'{block.name}_capacity_utilization'] = block.allocation / block.capacity * 100
-
-        for mountpoint in set(os.path.dirname(block.path)):
-            _block_datum['fields'][f'{mountpoint}_utilization'] = sum(block.physical for block in domain_stat_obj.block if os.path.dirname(block.path) == mountpoint)
-
-    return (
-        _cpu_datum,
-        _memory_datum,
-        _net_datum,
-        _block_datum
-    )
-
-def to_influx() -> Dict:
-    """
-    Convert the domain statistics into a compatible format for InfluxDB.
-
-    Returns:
-        Dict: all of the collected domain statistics with some additional fields.
-
-    Raises:
-        NotImplementedError: This method has not been implemented yet.
-    """
-    raise NotImplementedError('This method has not been implemented yet.')
+        Raises:
+            NotImplementedError: This method has not been implemented yet.
+        """
+        raise NotImplementedError('This method has not been implemented yet.')
 
 
 @define
