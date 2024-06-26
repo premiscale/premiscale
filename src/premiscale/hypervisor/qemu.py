@@ -17,7 +17,7 @@ from libvirt import (
 from xmltodict import parse as xmlparse
 from cachetools import cached, TTLCache
 from premiscale.hypervisor._base import Libvirt
-from premiscale.hypervisor.qemu_data import DomainStats
+from premiscale.hypervisor.qemu_data import DomainStats, to_tinyflux
 
 if TYPE_CHECKING:
     from typing import Dict
@@ -232,6 +232,6 @@ class Qemu(Libvirt):
         # TODO: Implement a method to convert the host stats into a metrics database entry.
         host_stats: Dict = self._getHostStats()
 
-        tinflux_vm_stats = [vm.to_tinyflux() for vm in vm_stats]
+        tinflux_vm_stats = [to_tinyflux(vm) for vm in vm_stats]
 
         return tinflux_vm_stats
