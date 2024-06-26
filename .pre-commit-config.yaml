@@ -40,9 +40,9 @@ repos:
       - id: cog
         language: script
         name: cog
-        entry: /usr/bin/env poetry run cog --check -r -c -U README.md
+        entry: /usr/bin/env poetry run cog --check -r -c -U ./src/premiscale/config/docs/README.md
         args: []
-        files: ^(README.md|src/premiscale/controller/cli.py)$
+        files: ^(src/premiscale/config/docs/README.md|src/premiscale/controller/cli.py)$
         types:
           - markdown
         # additional_dependencies:

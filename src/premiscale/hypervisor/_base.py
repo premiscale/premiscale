@@ -15,8 +15,8 @@ from ipaddress import IPv4Address
 
 
 if TYPE_CHECKING:
-    from premiscale.hypervisor._schemas import DomainStats
-    from typing import Any, Dict, List
+    from premiscale.hypervisor.qemu_data import DomainStats
+    from typing import Any, Dict, List, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -132,14 +132,14 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def statsToStateDB(self) -> Dict:
+    def statsToStateDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
 
         Returns:
-            Dict: The state of the host and VMs on it.
+            List[Tuple]: The state of the host and VMs on it.
 
         Raises:
             NotImplementedError: If the method is not implemented by the subclass.
@@ -147,14 +147,14 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def statsToMetricsDB(self) -> Dict:
+    def statsToMetricsDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
 
         Returns:
-            Dict: The metrics for the host and VMs on it.
+            List[Tuple]: The metrics for the host and VMs on it.
 
         Raises:
             NotImplementedError: If the method is not implemented by the subclass.

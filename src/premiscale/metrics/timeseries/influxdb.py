@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from premiscale.metrics.timeseries._base import TimeSeries
 
 if TYPE_CHECKING:
-    from typing import Dict
+    from typing import Dict, Tuple
 
 
 class InfluxDB(TimeSeries):
@@ -31,30 +31,63 @@ class InfluxDB(TimeSeries):
     def open(self) -> None:
         """
         Open a connection to the metrics backend these methods interact with.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
     def close(self) -> None:
         """
         Close the connection to the metrics backend.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
+        """
+        raise NotImplementedError
+
+    def get_all(self) -> Tuple:
+        """
+        Get all the data in the metrics store.
+
+        Returns:
+            Tuple: all the data in the metrics store.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
     def commit(self) -> None:
         """
         Commit any changes to the database.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
     def insert(self, data: Dict) -> None:
         """
         Insert a point into the metrics store.
+
+        Args:
+            data (Dict): the data to insert.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
-    def insert_batch(self, data: Dict) -> None:
+    def insert_batch(self, data: Tuple) -> None:
         """
         Insert a batch of points into the metrics store.
+
+        Args:
+            data (Tuple): the data to insert.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError
 
@@ -67,5 +100,8 @@ class InfluxDB(TimeSeries):
     def _run_retention_policy(self) -> None:
         """
         Run the retention policy on the database, removing points older than the retention policy.
+
+        Raises:
+            NotImplementedError: if the method is not implemented.
         """
         raise NotImplementedError

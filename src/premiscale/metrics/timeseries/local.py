@@ -14,7 +14,8 @@ from tinyflux.storages import MemoryStorage, CSVStorage
 from premiscale.metrics.timeseries._base import TimeSeries
 
 if TYPE_CHECKING:
-    from typing import Dict, List
+    from tinyflux.queries import Query
+    from typing import Dict, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -29,6 +30,15 @@ class Local(TimeSeries):
         self.retention: timedelta = retention
         self._connection: TinyFlux
         self.file = file
+
+    def is_connected(self) -> bool:
+        """
+        Check if the connection to the MySQL database is open.
+
+        Returns:
+            bool: True if the connection is open.
+        """
+        return self._connection is not None
 
     def open(self) -> None:
         """
@@ -52,24 +62,34 @@ class Local(TimeSeries):
 
     def commit(self) -> None:
         """
-        Commit any changes to the database. In this class' case, we do nothing since everything is committed by default.
+        Commit any changes to the database. In this class' case, we do nothing since everything is
+        committed by default.
         """
         return None
 
     def insert(self, data: Dict) -> None:
         """
         Insert a point into the metrics store.
+
+        Args:
+            data (Dict): a dictionary containing the data to insert.
         """
-        point = Point(data)
+        point = Point(**data)
 
         self._connection.insert(point)
         self._run_retention_policy()
 
-    def insert_batch(self, data: Dict) -> None:
+    def insert_batch(self, data: Tuple) -> None:
         """
         Insert a batch of points into the metrics store.
+
+        Args:
+            data (Tuple): a tuple of dictionaries containing the data to insert.
         """
-        points = [Point(d) for d in data.get('data', [])]
+
+        # https://tinyflux.readthedocs.io/en/latest/preparing-data.html
+        # This field requires 4 arguments: measurement, time, tags, and fields.
+        points = [Point(**datum) for datum in data]
 
         self._connection.insert_multiple(points)
         self._run_retention_policy()
@@ -84,6 +104,28 @@ class Local(TimeSeries):
         """
         Run the retention policy on the database, removing points older than the retention policy.
         """
-        timeq = TimeQuery()
-        time_now = datetime.now(timezone.utc) - self.retention
-        self._connection.remove(timeq < time_now)
+        removed_item_number = 0
+
+        for measurement in ['cpu', 'memory', 'block', 'net']:
+            removed_item_number += self._connection.remove(
+                TimeQuery() < datetime.now(timezone.utc) - self.retention,
+                measurement=measurement
+            )
+
+        log.debug(f"Retention removed {removed_item_number} items from the database.")
+
+    def get_all(self, measurement: str | None = None) -> Tuple:
+        """
+        Get all the data in the metrics store.
+
+        Args:
+            measurement (str | None): the measurement to get data for. If None, all data is returned. (Default: None.)
+
+        Returns:
+            Tuple: all the data in the metrics store.
+        """
+        return self._connection.search(
+            TimeQuery() > (datetime.now(timezone.utc) - self.retention),
+            measurement=measurement,
+            sorted=True
+        )

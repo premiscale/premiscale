@@ -15,12 +15,12 @@ from concurrent.futures import ThreadPoolExecutor
 from setproctitle import setproctitle
 from cattrs import unstructure
 from time import sleep
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from premiscale.hypervisor import build_hypervisor_connection
 
 
 if TYPE_CHECKING:
-    from typing import Iterator, List, Dict
+    from typing import Iterator, List, Tuple
     # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
     from premiscale.config.v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
@@ -118,14 +118,15 @@ class MetricsCollector:
         setproctitle('metrics-collector')
         log.debug('Starting metrics collection subprocess')
 
+        self._stateConnection = build_state_connection(self.config)
+        self._stateConnection.open()
+        self._stateConnection.initialize()
+
         # Set up database interfaces.
         if self.timeseries_enabled:
             self._timeseriesConnection = build_timeseries_connection(self.config)
             self._timeseriesConnection.open()
 
-        self._stateConnection = build_state_connection(self.config)
-        self._stateConnection.open()
-        self._stateConnection.initialize()
         self._initialize_host()
         self._collectMetrics()
 
@@ -289,15 +290,14 @@ class MetricsCollector:
 
             if self.timeseries_enabled and self._timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                vms_metrics_db_entry: Dict = host_connection.statsToMetricsDB()
+                vms_metrics_db_entry: List[Tuple] = host_connection.statsToMetricsDB()
 
-                self._timeseriesConnection.insert_batch(
-                    {
-                        'time': str(datetime.now(timezone.utc)),
-                        'data': vms_metrics_db_entry
-                    }
-                )
+                log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
 
-        # Now take the consolidated data and store it in the appropriate backend database.
+                for vm in vms_metrics_db_entry:
+                    # vm :: Tuple[Dict, Dict, Dict, Dict]
+                    # each Dict is a different measurement by which we can scale on.
+                    log.debug(f'Inserting time series metrics for VM: {vm}')
+                    self._timeseriesConnection.insert_batch(vm)
 
-        # self._timeseriesConnection.insert(timeseries_data)
+                log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')

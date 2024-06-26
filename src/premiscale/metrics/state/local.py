@@ -112,6 +112,7 @@ class Local(State):
 
     ## Hosts
 
+    @synchronized
     def get_host(self, name: str, address: str) -> Tuple | None:
         """
         Get a host record.

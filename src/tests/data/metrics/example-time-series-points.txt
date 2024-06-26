@@ -1,0 +1,74 @@
+[
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=cpu,
+        tags=name:57242e4b-1707792163-8fded2e0ca1911ee81b1f3163d141aa8; host:rocinante-local; state:1; reason:1,
+        fields=total_cpu_utilization:0; cpu_time:18775484942000; cpu_user:16002274026000; cpu_system:2773210916000; vcpu_current:6; vcpu_maximum:6
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=memory,
+        tags=name:57242e4b-1707792163-8fded2e0ca1911ee81b1f3163d141aa8; host:rocinante-local; state:1; reason:1,
+        fields=total_memory_utilization:100.0
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=net,
+        tags=name:57242e4b-1707792163-8fded2e0ca1911ee81b1f3163d141aa8; host:rocinante-local; state:1; reason:1,
+        fields=net_count:1; total_net_utilization:60674601; total_net_errors:0; total_net_drops:0; vnet0_utilization:60674601
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=block,
+        tags=name:57242e4b-1707792163-8fded2e0ca1911ee81b1f3163d141aa8; host:rocinante-local; state:1; reason:1,
+        fields=block_count:1; vda_capacity_utilization:93; /var/lib/libvirt/images_utlization:30071206912
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=cpu,
+        tags=name:57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c; host:tynan-local; state:1; reason:1,
+        fields=total_cpu_utilization:1000; cpu_time:10030228683000; cpu_user:7794126098000; cpu_system:2236102584000; vcpu_current:12; vcpu_maximum:12
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=memory,
+        tags=name:57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c; host:tynan-local; state:1; reason:1,
+        fields=total_memory_utilization:100.0
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=net,
+        tags=name:57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c; host:tynan-local; state:1; reason:1,
+        fields=net_count:1; total_net_utilization:64618841; total_net_errors:0; total_net_drops:0; vnet0_utilization:64618841
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=block,
+        tags=name:57242e4b-1707793977-c8b70dd6ca1d11eea4f4a75090e5740c; host:tynan-local; state:1; reason:1,
+        fields=block_count:1; vda_capacity_utilization:47; /var/lib/libvirt/images_utlization:101786647552
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=cpu,
+        tags=name:57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018; host:tynan-local; state:1; reason:1,
+        fields=total_cpu_utilization:1000; cpu_time:9596101977000; cpu_user:7367037247000; cpu_system:2229064729000; vcpu_current:12; vcpu_maximum:12
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=memory,
+        tags=name:57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018; host:tynan-local; state:1; reason:1,
+        fields=total_memory_utilization:100.0
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=net,
+        tags=name:57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018; host:tynan-local; state:1; reason:1,
+        fields=net_count:1; total_net_utilization:57036802; total_net_errors:0; total_net_drops:0; vnet1_utilization:57036802
+    ),
+    Point(
+        time=2024-06-26T05:53:20.964207+00:00,
+        measurement=block,
+        tags=name:57242e4b-1707794900-ef33d2d0ca1f11eeb4988fb706474018; host:tynan-local; state:1; reason:1,
+        fields=block_count:1; vda_capacity_utilization:51; /var/lib/libvirt/images_utlization:110355722752
+    )
+]
