@@ -227,7 +227,7 @@ class DomainStats:
         # Put together a record of the domain statistics that's palatable for TinyFlux.
 
         _cpu_datum: Dict = {
-            'measurement': 'domain_stats',
+            'measurement': 'cpu',
             'time': self.time,
             'tags': {
                 'name': self.name,
@@ -250,7 +250,7 @@ class DomainStats:
         }
 
         _memory_datum: Dict = {
-            'measurement': 'domain_stats',
+            'measurement': 'memory',
             'time': self.time,
             'tags': {
                 'name': self.name,
@@ -265,7 +265,7 @@ class DomainStats:
         }
 
         _net_datum: Dict = {
-            'measurement': 'domain_stats',
+            'measurement': 'net',
             'time': self.time,
             'tags': {
                 'name': self.name,
@@ -291,7 +291,7 @@ class DomainStats:
             _net_datum['fields'][f'{net.name}_utilization'] = net.rx_bytes + net.tx_bytes
 
         _block_datum: Dict = {
-            'measurement': 'domain_stats',
+            'measurement': 'block',
             'time': self.time,
             'tags': {
                 'name': self.name,
@@ -308,7 +308,7 @@ class DomainStats:
         for block in self.block:
             _block_datum['fields'][f'{block.name}_capacity_utilization'] = block.allocation / block.capacity * 100
 
-            mountpoint = os.path.dirname(block.path)
+        for mountpoint in set(os.path.dirname(block.path) for block in self.block):
             _block_datum['fields'][f'{mountpoint}_utlization'] = sum(block.physical for _block in self.block if os.path.dirname(_block.path) == mountpoint)
 
         return (
