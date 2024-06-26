@@ -260,7 +260,7 @@ class DomainStats:
             },
             'fields': {
                 # Memory utilization is the difference between the current and maximum balloon values.
-                'total_memory_utilization': (self.balloon_current / self.balloon_maximum * 100 if self.balloon_current is not None and self.balloon_maximum is not None else -1)
+                'total_memory_utilization': round(self.balloon_current / self.balloon_maximum * 100, 2) if self.balloon_current is not None and self.balloon_maximum is not None else -1
             }
         }
 
@@ -306,7 +306,7 @@ class DomainStats:
 
         # Calculate the capacity utilization of each block device.
         for block in self.block:
-            _block_datum['fields'][f'{block.name}_capacity_utilization'] = block.allocation / block.capacity * 100
+            _block_datum['fields'][f'{block.name}_capacity_utilization'] = round(block.allocation / block.capacity * 100, )
 
         for mountpoint in set(os.path.dirname(block.path) for block in self.block):
             _block_datum['fields'][f'{mountpoint}_utlization'] = sum(block.physical for _block in self.block if os.path.dirname(_block.path) == mountpoint)
