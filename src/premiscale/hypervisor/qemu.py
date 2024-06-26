@@ -16,6 +16,7 @@ from libvirt import (
 )
 from xmltodict import parse as xmlparse
 from cachetools import cached, TTLCache
+from cattrs import structure
 from premiscale.hypervisor._base import Libvirt
 from premiscale.hypervisor.qemu_data import DomainStats
 
@@ -199,7 +200,7 @@ class Qemu(Libvirt):
             domain_stats_filtered['address'] = self.address
 
             domain_stats_filtered_list.append(
-                DomainStats(**domain_stats_filtered)
+                structure(domain_stats_filtered, DomainStats)
             )
 
         return domain_stats_filtered_list
