@@ -145,39 +145,6 @@ class DomainStats:
         if self.vcpu_current != self.vcpu_maximum:
             log.warning(f'vCPU count disparity for {self.name}: {self.vcpu_current} current != {self.vcpu_maximum} max. ')
 
-        # Normalize the network interfaces.
-        _net = []
-        for _net_dict in self.net:
-            _net.append(
-                structure(
-                    _net_dict,
-                    Net
-                )
-            )
-        self.net = _net
-
-        # Normalize the block devices.
-        _block = []
-        for _block_dict in self.block:
-            _block.append(
-                structure(
-                    _block_dict,
-                    Block
-                )
-            )
-        self.block = _block
-
-        # Normalize the vCPUs.
-        _vcpu = []
-        for _vcpu_dict in self.vcpu:
-            _vcpu.append(
-                structure(
-                    _vcpu_dict,
-                    vCPU
-                )
-            )
-        self.vcpu = _vcpu
-
     def to_tinyflux(self) -> Tuple[Dict, Dict, Dict, Dict]:
         """
         Convert the domain statistics into a compatible format for TinyFlux Point objects.
