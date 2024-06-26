@@ -104,9 +104,12 @@ class Local(TimeSeries):
         """
         Run the retention policy on the database, removing points older than the retention policy.
         """
-        timeq = TimeQuery()
-        time_now = datetime.now(timezone.utc) - self.retention
-        self._connection.remove(timeq < time_now)
+        removed_item_count = self._connection.remove(
+            TimeQuery() < datetime.now(timezone.utc) - self.retention,
+            measurement='domain_stats'
+        )
+
+        log.debug(f"Retention removed {removed_item_count} items from the database.")
 
     def get_all(self) -> Tuple:
         """
@@ -117,5 +120,6 @@ class Local(TimeSeries):
         """
         return self._connection.search(
             TimeQuery() > (datetime.now(timezone.utc) - self.retention),
+            measurement='domain_stats',
             sorted=True
         )

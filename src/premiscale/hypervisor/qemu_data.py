@@ -308,8 +308,8 @@ class DomainStats:
         for block in self.block:
             _block_datum['fields'][f'{block.name}_capacity_utilization'] = block.allocation / block.capacity * 100
 
-            for mountpoint in set(os.path.dirname(block.path)):
-                _block_datum['fields'][f'{mountpoint}_utilization'] = sum(block.physical for block in self.block if os.path.dirname(block.path) == mountpoint)
+            mountpoint = os.path.dirname(block.path)
+            _block_datum['fields'][f'{mountpoint}_utlization'] = sum(block.physical for _block in self.block if os.path.dirname(_block.path) == mountpoint)
 
         return (
             _cpu_datum,
