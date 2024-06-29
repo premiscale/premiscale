@@ -44,4 +44,3 @@ class Reconcile:
         self.platform_queue = platform_queue
 
         log.debug('Starting reconciliation subprocess')
-
