@@ -1,5 +1,5 @@
 """
-Reconcile metrics and state databases and place Actions on the autoscaling queue for the Autoscaling subprocess to handle.
+Reconcile metrics and state databases and place Actions on the autoscaling queue for the Autoscaling subprocess.
 """
 
 
@@ -10,6 +10,15 @@ import logging
 from typing import TYPE_CHECKING
 from setproctitle import setproctitle
 from premiscale.metrics import build_state_connection, build_timeseries_connection
+from premiscae.autoscaling.actions import (
+    Verb,
+    NULL,
+    CREATE,
+    MIGRATE,
+    CLONE,
+    REPLACE,
+    DELETE,
+)
 
 
 if TYPE_CHECKING:
@@ -44,3 +53,41 @@ class Reconcile:
         self.platform_queue = platform_queue
 
         log.debug('Starting reconciliation subprocess')
+
+        self._reconcile()
+
+    def _reconcile(self) -> None:
+        """
+        Reconcile metrics and state databases and place Actions on the autoscaling queue for the Autoscaling subprocess.
+        """
+        pass
+
+    def _create(self) -> None:
+        """
+        Add a CREATE-event to an autoscaling queue.
+        """
+
+    def _delete(self) -> None:
+        """
+        Add a DELETE-event to an autoscaling queue.
+        """
+
+    def _null(self) -> None:
+        """
+        Add a NULL-event to an autoscaling queue.
+        """
+
+    def _migrate(self) -> None:
+        """
+        Add a MIGRATE-event to an autoscaling queue.
+        """
+
+    def _clone(self) -> None:
+        """
+        Add a CLONE-event to an autoscaling queue.
+        """
+
+    def _replace(self) -> None:
+        """
+        Add a REPLACE-event to an autoscaling queue.
+        """

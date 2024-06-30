@@ -5,18 +5,17 @@ Define actions the agent can take against infrastructure.
 
 from __future__ import annotations
 
-import enum
-
 from typing import TYPE_CHECKING
+from attrs import define
 from abc import ABC, abstractmethod
-from premiscale.hypervisor._base import Libvirt
-
 
 if TYPE_CHECKING:
+    from premiscale.hypervisor._base import Libvirt
     from typing import Any
 
 
-class Verb(enum.Enum):
+@define
+class Verb:
     """
     Classify different C[R]UD operations the controller can take on infrastructure, e.g. creating, deleting,
     or migrating VMs.
@@ -34,7 +33,6 @@ class Verb(enum.Enum):
 
     # Deletes
     DELETE = 10
-    DELETE_STORAGE = 11
 
 
 class Action(ABC):
@@ -43,7 +41,7 @@ class Action(ABC):
     autoscaling subprocess as threads. One action is processed at a time in each thread, and each thread
     corresponds to an ASG.
     """
-    def __init__(self, action: Verb) -> None:
+    def __init__(self, action: int) -> None:
         self.action = action
 
     @abstractmethod
@@ -56,12 +54,12 @@ class Action(ABC):
         """
         return {}
 
-    def kind(self) -> Verb:
+    def kind(self) -> int:
         """
         Return the type of action.
 
         Returns:
-            Verb: the type of action.
+            int: the type of action.
         """
         return self.action
 
