@@ -1,5 +1,7 @@
 """
 Implement a Libvirt connection to a Qemu-based hypervisor/host.
+
+https://www.qemu.org/
 """
 
 

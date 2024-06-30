@@ -76,7 +76,7 @@ function reverse_lookup_profile()
     local controller profile
 
     profile="$1"
-    mapfile -t controller < <(yq ".services | to_entries[] | select(.value.profiles[0] == \"$profile\") | .key" compose.yaml)
+    mapfile -t controller < <(yq ".services | to_entries | .[] | select(.value.profiles[0] == \"$profile\") | .key" compose.yaml)
 
     if [ "${#controller[@]}" -eq 0 ]; then
         printf "ERROR: Could not find a controller for the profile \"%s\".\\n" "$1" >&2

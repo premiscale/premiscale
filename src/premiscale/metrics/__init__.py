@@ -292,7 +292,7 @@ class MetricsCollector:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
                 vms_metrics_db_entry: List[Tuple] = host_connection.statsToMetricsDB()
 
-                log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
+                # log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
 
                 for vm in vms_metrics_db_entry:
                     # vm :: Tuple[Dict, Dict, Dict, Dict]
@@ -300,4 +300,4 @@ class MetricsCollector:
                     log.debug(f'Inserting time series metrics for VM: {vm}')
                     self._timeseriesConnection.insert_batch(vm)
 
-                log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
+                # log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
