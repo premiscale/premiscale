@@ -28,6 +28,8 @@ from premiscae.autoscaling.actions import (
 )
 
 if TYPE_CHECKING:
+    from premiscale.metrics.state._base import State
+    from premiscale.metrics.timeseries._base import TimeSeries
     from premiscale.config.v1alpha1 import Config
     from multiprocessing.queues import Queue
 
@@ -45,8 +47,8 @@ class Reconcile:
     """
     def __init__(self, config: Config) -> None:
         # Database connections
-        self.state_database = build_state_connection(config)
-        self.metrics_database = build_timeseries_connection(config)
+        self.state_database: State
+        self.timeseries_database: TimeSeries
 
         # Queues
         self.platform_queue: Queue
@@ -57,10 +59,13 @@ class Reconcile:
     def __call__(self, asg_queue: Queue, platform_queue: Queue) -> None:
         setproctitle('reconcile')
 
+        log.debug('Starting reconciliation subprocess')
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
 
-        log.debug('Starting reconciliation subprocess')
+        log.debug('Opening connections to state and metrics databases')
+        self.state_database = build_state_connection(self._config)
+        self.timeseries_database = build_timeseries_connection(self._config)
 
         self._reconcile()
 
@@ -85,6 +90,8 @@ class Reconcile:
             else:
                 log.debug(f'Sleeping for {self._config.controller.reconciliation.interval - reconciliation_duration}s')
                 sleep(self._config.controller.reconciliation.interval - reconciliation_duration)
+
+    # Actions to place on the autoscaling queue.
 
     def _create(self) -> None:
         """
