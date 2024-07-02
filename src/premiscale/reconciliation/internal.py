@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 
 from typing import TYPE_CHECKING
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from time import sleep
 from setproctitle import setproctitle
 
@@ -84,9 +84,8 @@ class Reconcile:
             reconciliation_duration = round((reconciliation_run_end - reconciliation_run_start).total_seconds(), 2)
             log.debug(f'Reconciliation run took {reconciliation_duration}s')
 
-            if reconciliation_duration > self._config.controller.reconciliation.interval:
-                log.debug(f'Reconciliation run took longer than the interval of {self._config.controller.reconciliation.interval}s, starting another run immediately')
-                continue
+            if reconciliation_duration >= self._config.controller.reconciliation.interval:
+                log.debug(f'Reconciliation run took longer than the allowed interval of <{self._config.controller.reconciliation.interval}s, starting another run immediately')
             else:
                 log.debug(f'Sleeping for {self._config.controller.reconciliation.interval - reconciliation_duration}s')
                 sleep(self._config.controller.reconciliation.interval - reconciliation_duration)

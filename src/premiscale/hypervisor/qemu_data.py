@@ -133,7 +133,7 @@ class DomainStats:
     block_count: int | None = ib(default=None)
 
     # Time of the collection. This is important for time series databases.
-    time: datetime = ib(default=datetime.now(timezone.utc))
+    time: datetime = ib(default=datetime.now(tz=timezone.utc))
 
     def __attrs_post_init__(self) -> None:
         if self.block_count is None:
