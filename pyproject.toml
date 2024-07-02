@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "premiscale"
 version = "0.0.1"
-description = "A Kubernetes controller that autoscales and administers private virtual and physical infrastructure"
+description = "A Kubernetes controller that automatically scales and administers private virtual and physical infrastructure"
 authors = ["Emma Doyle <emma@premiscale.com>"]
 maintainers = ["Emma Doyle <emma@premiscale.com>"]
 license = "BSL 1.1"
@@ -26,6 +26,10 @@ keywords = [
     "infrastructure",
     "autoscaling",
     "asg",
+    "qemu",
+    "xen",
+    "esx",
+    "esxi",
     "kvm",
     "libvirt"
 ]
