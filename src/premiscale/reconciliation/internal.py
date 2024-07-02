@@ -17,7 +17,7 @@ from premiscale.metrics import (
     build_timeseries_connection
 )
 
-from premiscae.autoscaling.actions import (
+from premiscale.autoscaling.actions import (
     Verb,
     Null,
     Create,

@@ -92,3 +92,27 @@ class Migrate(Action):
     """
     def __init__(self, vm_name: str, host: str) -> None:
         super().__init__(action=Verb.MIGRATE)
+
+
+class Clone(Action):
+    """
+    Action encapsulating logic to clone a VM on a particular host.
+    """
+    def __init__(self, vm_name: str, host: str) -> None:
+        super().__init__(action=Verb.CLONE)
+
+
+class Replace(Action):
+    """
+    Action encapsulating logic to replace a VM on a particular host.
+    """
+    def __init__(self, vm_name: str, host: str) -> None:
+        super().__init__(action=Verb.REPLACE)
+
+
+class Delete(Action):
+    """
+    Action encapsulating logic to delete a VM on a particular host.
+    """
+    def __init__(self, vm_name: str, host: str) -> None:
+        super().__init__(action=Verb.DELETE)
