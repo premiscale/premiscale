@@ -240,6 +240,9 @@ class Qemu(Libvirt):
         # TODO: Implement a method to convert the host stats into a metrics database entry.
         host_stats: Dict = self._getHostStats()
 
-        tinflux_vm_stats = [vm.to_tinyflux() for vm in vm_stats]
+        if vm_stats is None:
+            return []
 
-        return tinflux_vm_stats
+        tinyflux_vm_stats = [vm.to_tinyflux() for vm in vm_stats]
+
+        return tinyflux_vm_stats
