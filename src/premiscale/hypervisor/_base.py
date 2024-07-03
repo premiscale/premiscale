@@ -33,12 +33,13 @@ def retry_libvirt_connection(retries: int = 3) -> Callable:
     Returns:
         Callable: The decorated function.
     """
-    def decorator(func: Callable[[Any], Callable]) -> Callable:
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             nonlocal retries
 
             self_ = args[0]
+            assert isinstance(self_, Libvirt)
             tries = 0
 
             while tries < retries:
@@ -144,6 +145,15 @@ class Libvirt(ABC):
             log.debug(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open')
+
+    def is_connected(self) -> bool:
+        """
+        Check if the connection to the Libvirt hypervisor is open.
+
+        Returns:
+            bool: True if the connection is open.
+        """
+        return self._connection is not None
 
     @abstractmethod
     def _getHostStats(self) -> Dict:
