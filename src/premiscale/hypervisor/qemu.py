@@ -1,5 +1,7 @@
 """
 Implement a Libvirt connection to a Qemu-based hypervisor/host.
+
+https://www.qemu.org/
 """
 
 
@@ -10,14 +12,13 @@ import re
 
 from typing import TYPE_CHECKING, List, Tuple
 from libvirt import (
-    libvirtError,
     VIR_DOMAIN_NOSTATE,      # 0
     VIR_DOMAIN_RUNNING,      # 1
 )
 from xmltodict import parse as xmlparse
 from cachetools import cached, TTLCache
 from cattrs import structure
-from premiscale.hypervisor._base import Libvirt
+from premiscale.hypervisor._base import Libvirt, retry_libvirt_connection
 from premiscale.hypervisor.qemu_data import DomainStats
 
 if TYPE_CHECKING:
@@ -56,6 +57,7 @@ class Qemu(Libvirt):
         )
 
     @cached(cache=TTLCache(maxsize=1, ttl=5))
+    @retry_libvirt_connection()
     def _getHostStats(self) -> Dict:
         """
         Get a report of schedulable resource utilization on the host.
@@ -102,6 +104,7 @@ class Qemu(Libvirt):
         return _stats
 
     @cached(cache=TTLCache(maxsize=1, ttl=5))
+    @retry_libvirt_connection()
     def _getHostVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM. A typical report includes all the following fields ~
@@ -205,6 +208,8 @@ class Qemu(Libvirt):
 
         return domain_stats_filtered_list
 
+    @cached(cache=TTLCache(maxsize=1, ttl=5))
+    @retry_libvirt_connection()
     def statsToStateDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
@@ -216,6 +221,8 @@ class Qemu(Libvirt):
         """
         return []
 
+    @cached(cache=TTLCache(maxsize=1, ttl=5))
+    @retry_libvirt_connection()
     def statsToMetricsDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
@@ -228,11 +235,14 @@ class Qemu(Libvirt):
 
         vm_stats: List[DomainStats] = self._getHostVMStats()
 
-        log.debug(f'VM Stats: {vm_stats}')
+        log.debug(f'VM Stats for host {self.name}: {vm_stats}')
 
         # TODO: Implement a method to convert the host stats into a metrics database entry.
         host_stats: Dict = self._getHostStats()
 
-        tinflux_vm_stats = [vm.to_tinyflux() for vm in vm_stats]
+        if vm_stats is None:
+            return []
 
-        return tinflux_vm_stats
+        tinyflux_vm_stats = [vm.to_tinyflux() for vm in vm_stats]
+
+        return tinyflux_vm_stats

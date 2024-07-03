@@ -49,7 +49,6 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
         case 'memory':
             log.debug(f'Using local memory for time series database')
             from premiscale.metrics.timeseries.local import Local
-            from datetime import timedelta
 
             return Local(
                 retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
@@ -292,7 +291,7 @@ class MetricsCollector:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
                 vms_metrics_db_entry: List[Tuple] = host_connection.statsToMetricsDB()
 
-                log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
+                # log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
 
                 for vm in vms_metrics_db_entry:
                     # vm :: Tuple[Dict, Dict, Dict, Dict]
@@ -300,4 +299,4 @@ class MetricsCollector:
                     log.debug(f'Inserting time series metrics for VM: {vm}')
                     self._timeseriesConnection.insert_batch(vm)
 
-                log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
+                # log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')

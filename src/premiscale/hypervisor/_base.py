@@ -11,15 +11,56 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from libvirt import libvirtError
-from ipaddress import IPv4Address
+from functools import wraps
 
 
 if TYPE_CHECKING:
+    from ipaddress import IPv4Address
     from premiscale.hypervisor.qemu_data import DomainStats
-    from typing import Any, Dict, List, Tuple
+    from typing import Any, Dict, List, Tuple, Callable
 
 
 log = logging.getLogger(__name__)
+
+
+def retry_libvirt_connection(retries: int = 3) -> Callable:
+    """
+    Decorator to retry a connection to the Libvirt hypervisor if it fails.
+
+    Args:
+        retries (int): Number of times to retry the connection. Defaults to 3.
+
+    Returns:
+        Callable: The decorated function.
+    """
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            nonlocal retries
+
+            self_ = args[0]
+            assert isinstance(self_, Libvirt)
+            tries = 0
+
+            while tries < retries:
+                try:
+                    if self_.is_connected():
+                        return func(*args, **kwargs)
+                    else:
+                        log.warning(f'Connection to host at "{self_.connection_string}" is not open, attempting to reconnect')
+                        self_.open()
+                        tries += 1
+                        continue
+
+                except libvirtError as e:
+                    log.error(f'Failed to connect to host at "{self_.connection_string}" on try {tries + 1} / {retries}: {e}')
+                    tries += 1
+
+            log.error(f'Failed to connect to host at "{self_.connection_string}" after {retries} tries')
+
+            return None
+        return wrapper
+    return decorator
 
 
 class Libvirt(ABC):
@@ -104,6 +145,15 @@ class Libvirt(ABC):
             log.debug(f'Closed connection to host at {self.connection_string}')
         else:
             log.error(f'No host connection to close, probably due to an error on connection open')
+
+    def is_connected(self) -> bool:
+        """
+        Check if the connection to the Libvirt hypervisor is open.
+
+        Returns:
+            bool: True if the connection is open.
+        """
+        return self._connection is not None
 
     @abstractmethod
     def _getHostStats(self) -> Dict:
