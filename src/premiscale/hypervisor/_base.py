@@ -41,7 +41,11 @@ def retry_libvirt_connection(retries: int = 3) -> Callable:
             tries = 0
             while tries < retries:
                 try:
-                    return func(*args, **kwargs)
+                    if self.is_connected():
+                        return func(*args, **kwargs)
+                    else:
+                        log.warning(f'Connection to host at "{self.connection_string}" is not open, attempting to reconnect')
+                        self.open()
                 except libvirtError as e:
                     log.error(f'Failed to connect to host at "{self.connection_string}" on try {e}/{retries}')
                     tries += 1
