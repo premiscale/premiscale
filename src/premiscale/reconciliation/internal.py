@@ -32,6 +32,8 @@ if TYPE_CHECKING:
     from premiscale.metrics.timeseries._base import TimeSeries
     from premiscale.config.v1alpha1 import Config
     from multiprocessing.queues import Queue
+    from premiscale.autoscaling.actions import Action
+    from typing import List, Dict
 
 
 log = logging.getLogger(__name__)
@@ -76,8 +78,14 @@ class Reconcile:
         while True:
             reconciliation_run_start = datetime.now(timezone.utc)
 
-            # Reconcile metrics and state databases into queued actions to bring the ASG back into the desired state.
+            # On every reconcile of collected metrics, we queue up actions that would bring the ASG back into the desired state.
+            # Then there's a second pass that reduces this list of actions to the most efficient set of actions to achieve
+            # that state.
+            initial_queue: Dict[str, List[Action]] = {}
 
+            # Reconcile metrics and state databases into queued actions to bring the ASG back into the desired state.
+            with self.timeseries_database as timeseries, self.state_database as state:
+                ts = timeseries.get_all()
 
             reconciliation_run_end = datetime.now(timezone.utc)
 

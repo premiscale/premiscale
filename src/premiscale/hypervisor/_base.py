@@ -11,15 +11,44 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from libvirt import libvirtError
-from ipaddress import IPv4Address
+from functools import wraps
 
 
 if TYPE_CHECKING:
+    from ipaddress import IPv4Address
     from premiscale.hypervisor.qemu_data import DomainStats
-    from typing import Any, Dict, List, Tuple
+    from typing import Any, Dict, List, Tuple, Callable
 
 
 log = logging.getLogger(__name__)
+
+
+def retry_libvirt_connection(retries: int = 3) -> Callable:
+    """
+    Decorator to retry a connection to the Libvirt hypervisor if it fails.
+
+    Args:
+        retries (int): Number of times to retry the connection. Defaults to 3.
+
+    Returns:
+        Callable: The decorated function.
+    """
+    def decorator(func: Callable[[Any], Callable]) -> Callable:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            nonlocal retries
+            self = args[0]
+            tries = 0
+            while tries < retries:
+                try:
+                    return func(*args, **kwargs)
+                except libvirtError as e:
+                    log.error(f'Failed to connect to host at "{self.connection_string}" on try {e}/{retries}')
+                    tries += 1
+            log.error(f'Failed to connect to host at "{self.connection_string}" after {retries} tries')
+            return None
+        return wrapper
+    return decorator
 
 
 class Libvirt(ABC):

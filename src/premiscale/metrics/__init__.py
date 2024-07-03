@@ -49,7 +49,6 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
         case 'memory':
             log.debug(f'Using local memory for time series database')
             from premiscale.metrics.timeseries.local import Local
-            from datetime import timedelta
 
             return Local(
                 retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
