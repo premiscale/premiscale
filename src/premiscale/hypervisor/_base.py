@@ -37,19 +37,26 @@ def retry_libvirt_connection(retries: int = 3) -> Callable:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             nonlocal retries
-            self = args[0]
+
+            self_ = args[0]
             tries = 0
+
             while tries < retries:
                 try:
-                    if self.is_connected():
+                    if self_.is_connected():
                         return func(*args, **kwargs)
                     else:
-                        log.warning(f'Connection to host at "{self.connection_string}" is not open, attempting to reconnect')
-                        self.open()
+                        log.warning(f'Connection to host at "{self_.connection_string}" is not open, attempting to reconnect')
+                        self_.open()
+                        tries += 1
+                        continue
+
                 except libvirtError as e:
-                    log.error(f'Failed to connect to host at "{self.connection_string}" on try {e}/{retries}')
+                    log.error(f'Failed to connect to host at "{self_.connection_string}" on try {e + 1}/{retries}')
                     tries += 1
-            log.error(f'Failed to connect to host at "{self.connection_string}" after {retries} tries')
+
+            log.error(f'Failed to connect to host at "{self_.connection_string}" after {retries} tries')
+
             return None
         return wrapper
     return decorator
