@@ -53,7 +53,7 @@ def retry_libvirt_connection(retries: int = 3) -> Callable:
                         continue
 
                 except libvirtError as e:
-                    log.error(f'Failed to connect to host at "{self_.connection_string}" on try {e + 1}/{retries}')
+                    log.error(f'Failed to connect to host at "{self_.connection_string}" on try {tries + 1} / {retries}: {e}')
                     tries += 1
 
             log.error(f'Failed to connect to host at "{self_.connection_string}" after {retries} tries')
