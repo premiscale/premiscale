@@ -91,7 +91,7 @@ services:
       - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
   mysql-agent-state:
     container_name: mysql-agent
-    image: mysql:8.4.0
+    image: mysql:9.0.0
     environment:
       - MYSQL_ROOT_PASSWORD=premiscale
       - MYSQL_DATABASE=premiscale
@@ -291,7 +291,7 @@ services:
       timeout: 3s
   mysql-platform:
     container_name: mysql-platform
-    image: mysql:8.4.0
+    image: mysql:9.0.0
     environment:
       - MYSQL_ROOT_PASSWORD=premiscale
       - MYSQL_DATABASE=premiscale
