@@ -1472,18 +1472,18 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pydoclint"
-version = "0.4.2"
+version = "0.5.3"
 description = "A Python docstring linter that checks arguments, returns, yields, and raises sections"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pydoclint-0.4.2-py2.py3-none-any.whl", hash = "sha256:1941ba8d47b021939e47f6b79b77513449ef0565330b836173df9d6cf1606045"},
-    {file = "pydoclint-0.4.2.tar.gz", hash = "sha256:559060dc1a91240ac1e28be570b3563ae66f292c7dd7124f4d4eab1483416a41"},
+    {file = "pydoclint-0.5.3-py2.py3-none-any.whl", hash = "sha256:519917fc5ee97af3f0b3bf3f43208812b8ba68ec112c38238585fccdb7460e31"},
+    {file = "pydoclint-0.5.3.tar.gz", hash = "sha256:b2b47c50fd5da07ed879044decf27c17fbb7ba0356efb89891cbd082b561062c"},
 ]
 
 [package.dependencies]
 click = ">=8.1.0"
-docstring-parser-fork = ">=0.0.5"
+docstring-parser-fork = ">=0.0.9"
 tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
 
 [package.extras]
@@ -2442,4 +2442,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ef0fb2540f76f70a305f1e2a44c9cc2ccb70e3f4b2525bb7af22baa160ccacb2"
+content-hash = "bdc9a2f6127c9b2e5908dbfeee46e7cbc9823e177f7767ffc8a11b89dc0ac2e4"
