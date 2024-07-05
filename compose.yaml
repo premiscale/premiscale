@@ -50,7 +50,7 @@ services:
       - ./certs/cert.pem:/opt/premiscale/cert.pem
     healthcheck:
       test: curl http://localhost:8085/healthcheck
-      start_period: 3s
+      start_period: 5s
       interval: 5s
       timeout: 5s
       retries: 3
@@ -311,7 +311,7 @@ services:
           memory: 1G
     healthcheck:
       test: mysqladmin ping -h localhost
-      start_period: 3s
+      start_period: 10s
       interval: 5s
       timeout: 5s
       retries: 3
