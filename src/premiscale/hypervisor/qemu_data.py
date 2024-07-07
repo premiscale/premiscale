@@ -10,7 +10,6 @@ import os
 
 from attrs import define
 from attr import ib
-from cattr import structure
 from typing import TYPE_CHECKING, List
 from datetime import datetime, timezone
 
