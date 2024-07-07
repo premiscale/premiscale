@@ -44,7 +44,7 @@ class Action(ABC):
     def __init__(self, action: int) -> None:
         self.action = action
 
-        # The number of virtual machines to act on.
+        # The normalized number of virtual machines to act on.
         self.modifier = 0
 
     @abstractmethod
@@ -116,7 +116,7 @@ class Create(Action):
             dict: an audit trail message based on what occurred with the Action's execution.
         """
         return {
-            'action': 'create',
+            'action': self.action,
             'modifier': self.modifier
         }
 
