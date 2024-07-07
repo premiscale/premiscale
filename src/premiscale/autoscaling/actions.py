@@ -76,15 +76,9 @@ class Action(ABC):
         pass
 
     @abstractmethod
-    def __add__(self, other: Action) -> Action:
+    def execute(self) -> None:
         """
-        Add this action to another Action type.
-
-        Args:
-            other (Action): the other action to add to this one.
-
-        Returns:
-            Action: the action type that results from adding this action to the other action.
+        Execute the action.
 
         Raises:
             NotImplementedError: if the method is not implemented.
@@ -106,23 +100,6 @@ class Null(Action):
             'modifier': self.modifier
         }
 
-    def __add__(self, other: Action) -> Action:
-        """
-        Add this action to another Action type.
-
-        The Null action is like an identity action under addition; adding it to any other action will return the other action.
-
-        Args:
-            other (Action): the other action to add to this one.
-
-        Returns:
-            Action: the other action if it is not a Null action. Otherwise, returns this action.
-        """
-        if isinstance(other, Null):
-            return self
-        else:
-            return other
-
 
 class Create(Action):
     """
@@ -142,23 +119,6 @@ class Create(Action):
             'action': 'create',
             'modifier': self.modifier
         }
-
-    def __add__(self, other: Action) -> Action:
-        """
-        Add this action to another Action type.
-
-        Args:
-            other (Action): the other action to add to this one.
-
-        Returns:
-            Action: the action type that results from adding this action to the other action.
-        """
-        if isinstance(other, Create):
-            act = Create()
-            act.modifier = self.modifier + other.modifier
-            return act
-        # elif
-        return other
 
 
 class Migrate(Action):
