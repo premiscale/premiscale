@@ -17,7 +17,7 @@ The controller can be configured to run in two different modes, including `kuber
 In `standalone` mode (the default), the controller starts its own time series data collection process.
 
 <p align="center" width="100%">
-  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/master/img/premiscale-architecture-controller_internal_autoscaler_enabled.svg" alt="premiscale architecture: internal autoscaler enabled">
+  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/AGENT-121/img/premiscale-architecture-controller_internal_autoscaler_enabled.svg" alt="premiscale architecture: internal autoscaler enabled">
 </p>
 
 ### Kubernetes
@@ -25,7 +25,7 @@ In `standalone` mode (the default), the controller starts its own time series da
 Starting the controller in `kubernetes` mode starts relevant components of the controller that allow it to interface with the cluster autoscaler.
 
 <p align="center" width="100%">
-  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/master/img/premiscale-architecture-controller_internal_autoscaler_disabled.svg" alt="premiscale architecture: internal autoscaler disabled">
+  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/AGENT-121/img/premiscale-architecture-controller_internal_autoscaler_disabled.svg" alt="premiscale architecture: internal autoscaler disabled">
 </p>
 
 Note that, in this configuration, the controller does not require a time series database. State is still reconciled, but the time series signal comes from the cluster autoscaler instead.
