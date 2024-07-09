@@ -111,10 +111,10 @@ services:
           memory: 1G
     healthcheck:
       test: mysqladmin ping -h localhost
-      start_period: 3s
+      start_period: 5s
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
   influxdb:
     container_name: influxdb-agent
     image: influxdb:2.7.6
@@ -145,7 +145,7 @@ services:
   # Platform network
   grafana:
     container_name: grafana
-    image: grafana:9.5.20
+    image: grafana/grafana:9.5.20
     environment:
       - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
       - GF_PATHS_DATA=/var/lib/grafana
@@ -181,7 +181,7 @@ services:
       influxdb:
         condition: service_healthy
     healthcheck:
-      test: curl http://localhost:3000
+      test: curl https://grafana:3000
       interval: 3s
       retries: 5
       start_period: 5s
