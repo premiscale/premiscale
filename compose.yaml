@@ -146,7 +146,10 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana:9.5.20
+    restart: unless-stopped
     environment:
+      - TERM=linux
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-polystat-panel
       - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_SECURITY_ADMIN_PASSWORD=premiscale
@@ -165,9 +168,12 @@ services:
       - controller
       - platform
     volumes:
-      - ./certs:/certs
-      # Persist any configuration changes made in the UI in this repository.
-      - ./config/grafana/data:/var/lib/grafana
+      # Certs
+      - ./certs/cert.pem:/etc/grafana/cert.pem
+      - ./certs/key.pem:/etc/grafana/key.pem
+      # SQLite data
+      - grafana-data:/var/lib/grafana
+      # Config
       - ./config/grafana/config.ini:/etc/grafana/grafana.ini
     deploy:
       resources:
@@ -180,19 +186,48 @@ services:
     depends_on:
       influxdb:
         condition: service_healthy
+      mysql-grafana:
+        condition: service_healthy
     healthcheck:
-      test: curl https://grafana:3000
+      test: curl http://localhost:3000
       interval: 3s
       retries: 5
       start_period: 5s
       timeout: 5s
+  mysql-grafana:
+    container_name: mysql-grafana
+    image: mysql:9.0.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=premiscale
+      - MYSQL_DATABASE=grafana
+      - MYSQL_USER=premiscale
+      - MYSQL_PASSWORD=premiscale
+    ports:
+      - 3308:3306
+    networks:
+      - controller
+      - platform
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+    healthcheck:
+      test: mysqladmin ping -h localhost
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 5
   platform:
     container_name: nginx
     image: nginx:stable
     ports:
       - 443:443
     volumes:
-      - ./compose.nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/compose.nginx.conf:/etc/nginx/nginx.conf
       - ./certs:/etc/nginx/certs
     networks:
       - platform
@@ -367,4 +402,6 @@ networks:
     internal: false
 volumes:
   cache:
+    driver: local
+  grafana-data:
     driver: local

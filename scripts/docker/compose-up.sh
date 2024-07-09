@@ -95,7 +95,7 @@ function reverse_lookup_profile()
 docker compose \
     --profile "$PROFILE" \
     -f compose.yaml up \
-    -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration
+    -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration grafana
 
 
 cleanup_env
