@@ -1,0 +1,92 @@
+## @param version [string] The version of the configuration file.
+version: v1alpha1
+
+## @section Controller Configuration
+
+controller:
+  ## @param controller.pidFile [string, default: /opt/premiscale/premiscale.pid] Path to the file where the controller daemon process writes its PID.
+  pidFile: /opt/premiscale/premiscale.pid
+
+  ## @param controller.mode [string, default: kubernetes] The mode of the controller. Can be 'kubernetes' or 'standalone'. If 'standalone', the controller will not attempt to connect to a Kubernetes cluster autoscaler. If 'kubernetes', the controller will attempt to connect to the Kubernetes cluster autoscaler.
+  mode: standalone
+
+  kubernetes:
+    ## @param controller.kubernetes.autoscalerPort [default: 8080] The port on which the Kubernetes autoscaler is listening.
+    autoscalerPort: 8085
+
+    ## @param controller.kubernetes.autoscalerHost [string, default: cluster-autoscaler] The host on which the Kubernetes autoscaler is running. See also the cluster autoscaler Helm chart: https://github.com/premiscale/kubernetes-autoscaler/tree/master/charts/cluster-autoscaler.
+    autoscalerHost: cluster-autoscaler
+
+  ## @param controller.healthcheck [object] Configure the healthcheck endpoint for the controller.
+  healthcheck:
+    ## @param controller.healthcheck.host [string, default: 127.0.0.1] The host to bind the healthcheck endpoint to.
+    host: 127.0.0.1
+
+    ## @param controller.healthcheck.port [default: 8085] The port to bind the healthcheck endpoint to.
+    port: 8085
+
+  databases:
+    ## @param controller.databases.maxHostConnectionThreads [default: 10] Establish connections to hosts in maxHostConnectionThreads-batches for all metrics collection.
+    maxHostConnectionThreads: 10
+
+    ## @param controller.databases.state.collectionInterval [default: 60] How often the agent retrieves state from all of the connected hosts.
+    collectionInterval: 60
+
+    ## @param controller.databases.state.hostConnectionTimeout [default: 60] How long to wait for a connection to a host before timing out.
+    hostConnectionTimeout: 60
+
+    state:
+      ## @param controller.databases.state.type [string, default: memory] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
+      type: memory
+
+    timeseries:
+      ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
+      type: influxdb
+
+      ## @param controller.databases.metrics.trailing [default: 1200] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes
+      trailing: 1200
+
+  ## @param controller.platform [object] Configure the platform
+  platform:
+    ## @param controller.platform.actionsQueueMax [default: 0] The maximum number of inbound actions from the platform to queue up before dropping them. 0 means no limit.
+    actionsQueueMaxSize: 0
+
+    ## @param controller.platform.domain [string, default: $PREMISCALE_PLATFORM] The domain of the platform.
+    domain: $PREMISCALE_PLATFORM
+
+    ## @param controller.platform.token [string, default: $PREMISCALE_TOKEN] The token to use to authenticate with the platform.
+    token: $PREMISCALE_TOKEN
+
+    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates to the controller for connection to the platform services.
+    certificates:
+      ## @param controller.platform.certificates.path [string, default: /opt/premiscale/certs] Path to a directory containing the controller's certificates.
+      path: $PREMISCALE_CACERT
+
+  ## @section Reconciliation Configuration
+
+  reconciliation:
+    ## @param controller.reconciliation.interval [default: 60] How often the controller reconciles the state of the ASGs. The controller collects metrics and state in separate databases and queues up actions for autoscaling groups in separate processes.
+    interval: 60
+
+  ## @section Autoscaling Configuration
+
+  autoscale:
+    ## @param controller.autoscale.hosts [array] Groups of hosts to assign to ASGs.
+    hosts:
+      - name: tynan-local
+        address: 10.0.0.100
+        port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
+        user: emma
+        protocol: SSH
+        hypervisor: qemu
+      - name: rocinante-local
+        address: 10.0.0.102
+        port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
+        user: emma
+        protocol: SSH
+        hypervisor: qemu
+
+    ## @param controller.autoscale.groups [object] Specify and configure autoscaling groups on the hosts above.
+    groups: {}
