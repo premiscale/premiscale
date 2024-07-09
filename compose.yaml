@@ -141,10 +141,14 @@ services:
       retries: 5
       start_period: 5s
       timeout: 5s
+
+  # Platform network
   grafana:
-    container_name: grafana-agent
+    container_name: grafana
     image: grafana:9.5.20
     environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+      - GF_PATHS_DATA=/var/lib/grafana
       - GF_SECURITY_ADMIN_PASSWORD=premiscale
       - GF_SECURITY_ADMIN_USER=premiscale
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -152,13 +156,19 @@ services:
       - GF_USERS_AUTO_ASSIGN_ORG=true
       - GF_USERS_AUTO_ASSIGN_ROLE=Viewer
       - GF_USERS_DEFAULT_THEME=light
-      - GF_USERS_VIEWERS_CAN_EDIT=false
-      - GF_USERS_VIEWERS_CAN_SAVE_DASHBOARDS=false
-      - GF_USERS_VIEWERS_CAN_SAVE_TEMPORARY
+      - GF_USERS_VIEWERS_CAN_EDIT=true
+      - GF_USERS_VIEWERS_CAN_SAVE_DASHBOARDS=true
+      - GF_USERS_VIEWERS_CAN_SAVE_TEMPORARY=true
     ports:
       - 3000:3000
     networks:
       - controller
+      - platform
+    volumes:
+      - ./certs:/certs
+      # Persist any configuration changes made in the UI in this repository.
+      - ./config/grafana/data:/var/lib/grafana
+      - ./config/grafana/config.ini:/etc/grafana/grafana.ini
     deploy:
       resources:
         limits:
@@ -167,14 +177,15 @@ services:
         reservations:
           cpus: '0.25'
           memory: 1G
+    depends_on:
+      influxdb:
+        condition: service_healthy
     healthcheck:
       test: curl http://localhost:3000
       interval: 3s
       retries: 5
       start_period: 5s
       timeout: 5s
-
-  # Platform network
   platform:
     container_name: nginx
     image: nginx:stable
