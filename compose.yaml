@@ -146,6 +146,7 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana:9.5.20
+    user: '0'
     restart: unless-stopped
     environment:
       - TERM=linux
@@ -167,14 +168,15 @@ services:
     networks:
       - controller
       - platform
+      - default
     volumes:
       # Certs
-      - ./certs/cert.pem:/etc/grafana/cert.pem
-      - ./certs/key.pem:/etc/grafana/key.pem
+      - ./certs/cert.pem:/etc/grafana/cert.pem:ro
+      - ./certs/key.pem:/etc/grafana/key.pem:ro
       # SQLite data
       - grafana-data:/var/lib/grafana
       # Config
-      - ./config/grafana/config.ini:/etc/grafana/grafana.ini
+      - ./config/grafana/config.ini:/etc/grafana/grafana.ini:ro
     deploy:
       resources:
         limits:
@@ -360,7 +362,7 @@ services:
       - 6379:6379
     command: redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD
     volumes:
-      - cache:/data
+      - redis-cache:/data
     healthcheck:
       test: redis-cli ping
       interval: 3s
@@ -401,7 +403,7 @@ networks:
     driver: bridge
     internal: false
 volumes:
-  cache:
+  redis-cache:
     driver: local
   grafana-data:
     driver: local
