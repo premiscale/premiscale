@@ -9,6 +9,7 @@ The other portion is dedicated to factory methods for building connections to th
 from __future__ import annotations
 
 import logging
+import sys
 
 from typing import TYPE_CHECKING
 from concurrent.futures import ThreadPoolExecutor
@@ -58,10 +59,9 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
             log.debug(f'Using InfluxDB for time series database')
             from premiscale.metrics.timeseries.influxdb import InfluxDB
 
-            connection = unstructure(config.controller.databases.timeseries.connection)
-            del(connection['type'])
-
-            return InfluxDB(**connection)
+            return InfluxDB(
+                config.controller.databases.timeseries
+            )
         case _:
             raise ValueError(f'Unknown timeseries database type: {config.controller.databases.timeseries.type}')
 
@@ -88,7 +88,7 @@ def build_state_connection(config: Config) -> State:
         case 'mysql':
             from premiscale.metrics.state.mysql import MySQL
 
-            connection = unstructure(config.controller.databases.state.connection)
+            connection = unstructure(config.controller.databases.state)
             del(connection['type'])
 
             return MySQL(**connection)

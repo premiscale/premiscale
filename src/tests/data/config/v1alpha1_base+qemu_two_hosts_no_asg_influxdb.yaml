@@ -47,10 +47,20 @@ controller:
       trailing: 1200
 
       connection:
+        ## @param controller.databases.metrics.connection.url [string, default: http://influxdb:8086] The URL of the InfluxDB server.
         url: http://influxdb:8086
+
+        ## @param controller.databases.metrics.connection.database [string] The name of the database to use. In the case of 'InfluxDB'-type, database is analogous to a bucket.
         database: premiscale
+
+        ## @param controller.databases.metrics.connection.organization [string] (This field is only relevant for InfluxDB at this time.) Name of the organization to use for the organization.
+        organization: premiscale
+
         credentials:
+          ## @param controller.databases.metrics.connection.credentials.username [string] The username to use to authenticate with the InfluxDB server.
           username: premiscale
+
+          ## @param controller.databases.metrics.connection.credentials.password [string] The password to use to authenticate with the InfluxDB server.
           password: premiscale
 
   ## @param controller.platform [object] Configure the platform

@@ -51,6 +51,7 @@ class Connection:
     url: str
     database: str
     credentials: DatabaseCredentials
+    organization: str | None = ib(default=None)
 
     def __attrs_post_init__(self):
         """
@@ -62,6 +63,9 @@ class Connection:
         """
         Expand environment variables in the connection configuration.
         """
+        if self.organization is not None:
+            self.organization = os.path.expandvars(self.organization)
+
         self.url = os.path.expandvars(self.url)
         self.database = os.path.expandvars(self.database)
 
@@ -84,6 +88,14 @@ class TimeSeries:
     trailing: int
     dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        if self.type.lower() == 'influxdb' and self.connection is None:
+            log.error('Connection information must be provided when using InfluxDB as the time series database.')
+            sys.exit(1)
 
 
 @define

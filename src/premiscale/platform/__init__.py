@@ -20,7 +20,7 @@ from multiprocessing.queues import Queue
 from urllib.parse import urljoin
 from http import HTTPStatus
 from setproctitle import setproctitle
-from premiscale.exceptions import RateLimitedError
+from premiscale.errors import RateLimitedError
 from premiscale.utils import write_json, read_json
 from premiscale.platform.utils import retry
 
