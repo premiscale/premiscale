@@ -1,5 +1,4 @@
 services:
-  # Controller network
   premiscale: &premiscale
     container_name: premiscale
     platform: linux/amd64
@@ -56,6 +55,16 @@ services:
       retries: 3
     ports:
       - 8085:8085
+  ##
+  premiscale-two-hosts-influxdb:
+    <<: *premiscale
+    container_name: premiscale-two-hosts-influxdb
+    profiles:
+      - two_hosts_influxdb
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      # Mount a different config from the default into the running container for testing.
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb.yaml:/opt/premiscale/config.yaml
   ##
   premiscale-two-hosts: &premiscale-two-hosts
     <<: *premiscale
@@ -119,10 +128,13 @@ services:
     container_name: influxdb-agent
     image: influxdb:2.7.6
     environment:
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=premiscale
+      #- DOCKER_INFLUXDB_INIT_RETENTION=1w
+      - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=premiscale
       - DOCKER_INFLUXDB_INIT_PASSWORD=premiscale
       - DOCKER_INFLUXDB_INIT_ORG=premiscale
-      - DOCKER_INFLUXDB_INIT_BUCKET=premiscale-local
+      - DOCKER_INFLUXDB_INIT_BUCKET=premiscale
     ports:
       - 8086:8086
     networks:
@@ -141,8 +153,6 @@ services:
       retries: 5
       start_period: 5s
       timeout: 5s
-
-  # Platform network
   grafana:
     container_name: grafana
     image: grafana/grafana:9.5.20

@@ -21,6 +21,7 @@ class InfluxDB(TimeSeries):
     def __init__(self, url: str, database: str, username: str, password: str) -> None:
         self.url = url
         self.database = database
+
         self._connection = influxdb.InfluxDBClient(
             self.url,
             self.database,
