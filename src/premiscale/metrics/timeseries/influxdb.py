@@ -15,7 +15,12 @@ from premiscale.metrics.timeseries._base import TimeSeries
 
 if TYPE_CHECKING:
     from typing import Dict, Tuple
-    from influxdb_client import QueryApi, WriteApi, DeleteApi
+    from influxdb_client import (
+        QueryApi,
+        WriteApi,
+        DeleteApi,
+        BucketsAPI
+    )
     from premiscale.config.v1alpha1 import TimeSeries as TimeSeriesConfig
 
 
@@ -48,6 +53,7 @@ class InfluxDB(TimeSeries):
         self._write_api: WriteApi | None = None
         self._query_api: QueryApi | None = None
         self._delete_api: DeleteApi | None = None
+        self._buckets_api: BucketsAPI | None = None
 
         # Retention policy
         self.trailing = time_series_config.trailing
@@ -65,28 +71,35 @@ class InfluxDB(TimeSeries):
         """
         Open a connection to the metrics backend these methods interact with.
         """
-        log.debug(f'Opening connection to InfluxDB at "{self.url}".')
+        log.debug(f'Opening connection to InfluxDB at "{self.url}"')
         self._connection = InfluxDBClient(
             self.url,
             self.bucket,
             self._username,
             self._password
         )
-        log.debug(f'Connection to InfluxDB at "{self.url}" opened.')
+        log.debug(f'Connection to InfluxDB at "{self.url}" opened')
 
+        self._buckets_api = self._connection.buckets_api()
         self._query_api = self._connection.query_api()
         self._write_api = self._connection.write_api(
             write_options=SYNCHRONOUS
         )
         self._delete_api = self._connection.delete_api()
 
+        # Check to ensure the bucket we wish to write to exists.
+        if self._buckets_api.find_bucket_by_name(self.bucket) is None:
+            log.debug(f'Creating bucket "{self.bucket}"')
+            self._connection.create_bucket(bucket_name=self.bucket)
+
     def close(self) -> None:
         """
         Close the connection to the metrics backend.
         """
-        log.debug("Closing connection to InfluxDB.")
+        log.debug("Closing connection to InfluxDB")
         if self._connection is not None:
             self._connection.close()
+        self._buckets_api = None
         self._query_api = None
         self._write_api = None
         self._delete_api = None
@@ -99,7 +112,7 @@ class InfluxDB(TimeSeries):
             Tuple: all the data in the metrics store. If the connection is not open, return an empty tuple.
         """
         if self._query_api is None:
-            log.error("InfluxDB connection is not open.")
+            log.error("InfluxDB connection is not open")
             return tuple()
 
         data = self._query_api.query(
