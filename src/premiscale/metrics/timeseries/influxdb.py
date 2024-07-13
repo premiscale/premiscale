@@ -9,7 +9,7 @@ import logging
 import sys
 
 from typing import TYPE_CHECKING
-from influxdb_client import InfluxDBClient, Point
+from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from premiscale.metrics.timeseries._base import TimeSeries
 
@@ -39,7 +39,7 @@ class InfluxDB(TimeSeries):
         # Unpack objects in the TimeSeries-dataclass.
         self.url = time_series_config.connection.url
 
-        # This is analogous to the bucket name in InfluxDB.
+        # database is analogous to the bucket name in InfluxDB.
         self.bucket = time_series_config.connection.database
 
         # Credentials
@@ -97,8 +97,10 @@ class InfluxDB(TimeSeries):
         Close the connection to the metrics backend.
         """
         log.debug("Closing connection to InfluxDB")
+
         if self._connection is not None:
             self._connection.close()
+
         self._buckets_api = None
         self._query_api = None
         self._write_api = None
@@ -139,12 +141,16 @@ class InfluxDB(TimeSeries):
             log.error("InfluxDB connection is not open.")
             return None
 
-        point = Point(**datum)
+        point = Point.from_dict(
+            datum,
+            write_precision=WritePrecision.MS
+        )
 
         self._write_api.write(
             bucket=self.bucket,
             record=point
         )
+
         self._run_retention_policy()
 
     def insert_batch(self, data: Tuple) -> None:
@@ -153,23 +159,52 @@ class InfluxDB(TimeSeries):
 
         Args:
             data (Tuple): the data to insert.
-
-        Raises:
-            NotImplementedError: if the method is not implemented.
         """
-        raise NotImplementedError
+        if self._write_api is None:
+            log.error("InfluxDB connection is not open.")
+            return None
+
+        # https://github.com/influxdata/influxdb-client-python/blob/653af4657265755ff718c2f03339616d036fea3c/influxdb_client/client/write/point.py#L81
+        points = [
+            Point.from_dict(
+                datum,
+                write_precision=WritePrecision.MS
+            ) for datum in data
+        ]
+
+        self._write_api.write(
+            bucket=self.bucket,
+            records=points
+        )
+
+        self._run_retention_policy()
 
     def clear(self) -> None:
         """
         Clear the metrics store of all data.
         """
-        raise NotImplementedError
+        if self._delete_api is None:
+            log.error("InfluxDB connection is not open.")
+            return None
+
+        self._delete_api.delete(
+            predicate=f'_measurement == "{self.bucket}"',
+            start='1970-01-01T00:00:00Z', # epoch 0
+            stop='now()'
+        )
 
     def _run_retention_policy(self) -> None:
         """
         Run the retention policy on the database, removing points older than the retention policy.
-
-        Raises:
-            NotImplementedError: if the method is not implemented.
         """
-        raise NotImplementedError
+        if self._delete_api is None:
+            log.error("InfluxDB connection is not open.")
+            return None
+
+        log.debug(f"Running retention policy on InfluxDB for {self.bucket}")
+        for measurement in ['cpu', 'memory', 'block', 'net']:
+            self._delete_api.delete(
+                predicate=f'_measurement == "{measurement}"',
+                start=f'-{self.trailing}s',
+                stop='now()'
+            )

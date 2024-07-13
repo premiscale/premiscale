@@ -284,17 +284,100 @@ class DomainStats:
             _block_datum
         )
 
-    def to_influx(self) -> Dict:
+    def to_influx(self) -> Tuple[Dict, Dict, Dict, Dict]:
         """
         Convert the domain statistics into a compatible format for InfluxDB.
 
         Returns:
-            Dict: all of the collected domain statistics with some additional fields.
-
-        Raises:
-            NotImplementedError: This method has not been implemented yet.
+            Tuple[Dict, Dict, Dict, Dict]: A tuple of dictionaries representing the 4 scalable metrics by which we can autoscale at this time.
         """
-        raise NotImplementedError('This method has not been implemented yet.')
+        _cpu_datum: Dict = {
+            'measurement': 'cpu',
+            'time': self.time.timestamp(),
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                'total_cpu_utilization': self.cpu_time - (self.cpu_user + self.cpu_system),
+                'cpu_time': self.cpu_time,
+                'cpu_user': self.cpu_user,
+                'cpu_system': self.cpu_system,
+                'vcpu_current': self.vcpu_current,
+                'vcpu_maximum': self.vcpu_maximum,
+            }
+        }
+
+        _memory_datum: Dict = {
+            'measurement': 'memory',
+            'time': self.time.timestamp(),
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                # Memory utilization is the difference between the current and maximum balloon values.
+                'total_memory_utilization': round(self.balloon_current / self.balloon_maximum * 100, 2) if self.balloon_current is not None and self.balloon_maximum is not None else -1
+            }
+        }
+
+        _net_datum: Dict = {
+            'measurement': 'net',
+            'time': self.time.timestamp(),
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                'net_count': self.net_count,
+                # Sum utilization, errors and drops across all network interfaces. We can use this to autoscale on network and
+                # set thresholds for network errors and drops to either trigger a scale verb or affect scheduling of workloads.
+                'total_net_utilization': sum(net.rx_bytes + net.tx_bytes for net in self.net),
+                'total_net_errors': sum(net.rx_errs + net.tx_errs for net in self.net),
+                'total_net_drops': sum(net.rx_drop + net.tx_drop for net in self.net)
+            }
+        }
+
+        # Calculate the utilization of each network interface.
+        for net in self.net:
+            # To autoscale on network interface utilization, we can use the sum of the rx_bytes and tx_bytes fields.
+            # This said, we don't know the % utilization of the physical NICs on the host from this metric. Virtual
+            # NICs are likely never going to be bottleneck intra-host, but physical NICs are.
+            _net_datum['fields'][f'{net.name}_utilization'] = net.rx_bytes + net.tx_bytes
+
+        _block_datum: Dict = {
+            'measurement': 'block',
+            'time': self.time.timestamp(),
+            'tags': {
+                'name': self.name,
+                'host': self.host,
+                'state': str(self.state_state),
+                'reason': str(self.state_reason)
+            },
+            'fields': {
+                'block_count': self.block_count
+            }
+        }
+
+        # Calculate the capacity utilization of each block device.
+        for block in self.block:
+            _block_datum['fields'][f'{block.name}_capacity_utilization'] = round(block.allocation / block.capacity * 100, )
+
+        for mountpoint in set(os.path.dirname(block.path) for block in self.block):
+            _block_datum['fields'][f'{mountpoint}_utlization'] = sum(block.physical for _block in self.block if os.path.dirname(_block.path) == mountpoint)
+
+        return (
+            _cpu_datum,
+            _memory_datum,
+            _net_datum,
+            _block_datum
+        )
 
 
 @define
