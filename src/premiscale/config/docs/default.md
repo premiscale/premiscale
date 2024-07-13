@@ -30,7 +30,7 @@
 | `controller.databases.state.type`               | The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.                                                                                                  | `memory`                        |
 | `controller.databases.timeseries.type`          | The type of database to use for storing time series data. At this time, can be 'influxdb' or 'memory'.                                                                                  | `memory`                        |
 | `controller.databases.timeseries.dbfile`        | If using the 'memory' type, the path to the file where the time series data is stored as a CSV format.                                                                                  | `/opt/premiscale/timeseries.db` |
-| `controller.databases.timeseries.trailing`      | Seconds of collected time series data to keep and evaluate upon (must be >=interval). Default is 20 minutes                                                                             | `1200`                          |
+| `controller.databases.timeseries.retention`     | How long to keep time series data in the database.                                                                                                                                      | `300`                           |
 
 ### Platform Configuration
 

@@ -43,8 +43,8 @@ controller:
       ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
       type: influxdb
 
-      ## @param controller.databases.metrics.trailing [default: 1200] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 20 minutes
-      trailing: 1200
+      ## @param controller.databases.metrics.retention [default: 300] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 300 seconds, or 5 minutes.
+      retention: 300
 
       connection:
         ## @param controller.databases.metrics.connection.url [string, default: http://influxdb:8086] The URL of the InfluxDB server.
@@ -57,10 +57,10 @@ controller:
         organization: premiscale
 
         credentials:
-          ## @param controller.databases.metrics.connection.credentials.username [string] The username to use to authenticate with the InfluxDB server.
-          username: premiscale
+          ## @param controller.databases.metrics.connection.credentials.username [string] The username to use to authenticate with the time-series database. For InfluxDB, this field is not used.
+          username: ''
 
-          ## @param controller.databases.metrics.connection.credentials.password [string] The password to use to authenticate with the InfluxDB server.
+          ## @param controller.databases.metrics.connection.credentials.password [string] The token to use to authenticate with the InfluxDB server.
           password: premiscale
 
   ## @param controller.platform [object] Configure the platform

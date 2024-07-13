@@ -52,7 +52,7 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
             from premiscale.metrics.timeseries.local import Local
 
             return Local(
-                retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
+                retention=timedelta(seconds=config.controller.databases.timeseries.retention),
                 file=config.controller.databases.timeseries.dbfile
             )
         case 'influxdb':

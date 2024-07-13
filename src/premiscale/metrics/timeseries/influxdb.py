@@ -9,7 +9,7 @@ import logging
 import sys
 
 from typing import TYPE_CHECKING
-from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client import InfluxDBClient, Point, WritePrecision, BucketRetentionRules
 from influxdb_client.client.write_api import SYNCHRONOUS
 from premiscale.metrics.timeseries._base import TimeSeries
 
@@ -58,7 +58,7 @@ class InfluxDB(TimeSeries):
         self._buckets_api: BucketsAPI | None = None
 
         # Retention policy
-        self.trailing = time_series_config.trailing
+        self.retention = time_series_config.retention
 
     def is_connected(self) -> bool:
         """
@@ -93,7 +93,14 @@ class InfluxDB(TimeSeries):
         # Check to ensure the bucket we wish to write to exists.
         if self._buckets_api.find_bucket_by_name(self.bucket) is None:
             log.debug(f'Creating bucket "{self.bucket}"')
-            self._connection.create_bucket(bucket_name=self.bucket)
+            self._buckets_api.create_bucket(
+                bucket_name=self.bucket,
+                # https://github.com/influxdata/influxdb-client-python/blob/653af4657265755ff718c2f03339616d036fea3c/influxdb_client/client/bucket_api.py#L31
+                retention_rules=BucketRetentionRules(
+                    type='expire',
+                    every_seconds=self.retention
+                )
+            )
 
     def close(self) -> None:
         """
@@ -121,7 +128,7 @@ class InfluxDB(TimeSeries):
             return tuple()
 
         data = self._query_api.query(
-            f'from(bucket: "{self.bucket}") |> range(start: -{self.trailing}s)'
+            f'from(bucket: "{self.bucket}") |> range(start: -{self.retention}s)'
         )
 
         return data
@@ -154,8 +161,6 @@ class InfluxDB(TimeSeries):
             record=point
         )
 
-        self._run_retention_policy()
-
     def insert_batch(self, data: Tuple) -> None:
         """
         Insert a batch of points into the metrics store.
@@ -180,8 +185,6 @@ class InfluxDB(TimeSeries):
             records=points
         )
 
-        self._run_retention_policy()
-
     def clear(self) -> None:
         """
         Clear the metrics store of all data.
@@ -199,15 +202,10 @@ class InfluxDB(TimeSeries):
     def _run_retention_policy(self) -> None:
         """
         Run the retention policy on the database, removing points older than the retention policy.
-        """
-        if self._delete_api is None:
-            log.error("InfluxDB connection is not open.")
-            return None
 
-        log.debug(f"Running retention policy on InfluxDB for {self.bucket}")
-        for measurement in ['cpu', 'memory', 'block', 'net']:
-            self._delete_api.delete(
-                predicate=f'_measurement == "{measurement}"',
-                start=f'-{self.trailing}s',
-                stop='now()'
-            )
+        InfluxDB allows us to set a retention interval automatically, so we don't need to manually delete old data.
+
+        Raises:
+            NotImplementedError: InfluxDB automatically handles retention policies, so there's no need to call this method manually within this class.
+        """
+        raise NotImplementedError("InfluxDB automatically handles retention policies.")

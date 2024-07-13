@@ -53,8 +53,8 @@ controller:
       ## @param controller.databases.timeseries.dbfile [string, default: /opt/premiscale/timeseries.db] If using the 'memory' type, the path to the file where the time series data is stored as a CSV format.
       # dbfile: /opt/premiscale/timeseries.csv
 
-      ## @param controller.databases.timeseries.trailing [default: 1200] Seconds of collected time series data to keep and evaluate upon (must be >=interval). Default is 20 minutes
-      trailing: 1200
+      ## @param controller.databases.timeseries.retention [default: 300] How long to keep time series data in the database.
+      retention: 300
 
   ## @section Platform Configuration
 

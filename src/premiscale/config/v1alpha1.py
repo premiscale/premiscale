@@ -85,7 +85,7 @@ class TimeSeries:
     Time series database configuration options.
     """
     type: str
-    trailing: int
+    retention: int
     dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
 
@@ -96,6 +96,10 @@ class TimeSeries:
         if self.type.lower() == 'influxdb' and self.connection is None:
             log.error('Connection information must be provided when using InfluxDB as the time series database.')
             sys.exit(1)
+
+        if self.type == 'influxdb' and self.retention < 3600:
+            log.warning('Retention of time series metrics must be at least 3600 seconds, or 1 hour, when using InfluxDB. Defaulting to 3600 seconds.')
+            self.retention = 3600
 
 
 @define

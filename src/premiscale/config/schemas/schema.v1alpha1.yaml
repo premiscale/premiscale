@@ -41,7 +41,7 @@ state:
 ---
 timeseries:
   type: enum('memory', 'influxdb')
-  trailing: int(min=5)
+  retention: int(min=300)
   # Only relevant for type 'memory'.
   dbfile: str(min=1, required=False)
   connection: include('connection', required=False)
