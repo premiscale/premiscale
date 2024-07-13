@@ -42,9 +42,11 @@ class InfluxDB(TimeSeries):
         # database is analogous to the bucket name in InfluxDB.
         self.bucket = time_series_config.connection.database
 
+        self.organization = time_series_config.connection.organization
+
         # Credentials
-        self._username = time_series_config.connection.credentials.username
-        self._password = time_series_config.connection.credentials.password
+        self._username = time_series_config.connection.credentials.username # this isn't used for InfluxDB
+        self._password = time_series_config.connection.credentials.password # this field is analogous to the connection token
 
         # Connection
         self._connection: InfluxDBClient | None = None
@@ -72,12 +74,13 @@ class InfluxDB(TimeSeries):
         Open a connection to the metrics backend these methods interact with.
         """
         log.debug(f'Opening connection to InfluxDB at "{self.url}"')
+
         self._connection = InfluxDBClient(
-            self.url,
-            self.bucket,
-            self._username,
-            self._password
+            url=self.url,
+            token=self._password,
+            org=self.organization
         )
+
         log.debug(f'Connection to InfluxDB at "{self.url}" opened')
 
         self._buckets_api = self._connection.buckets_api()

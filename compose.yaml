@@ -46,7 +46,7 @@ services:
       platform:
         condition: service_healthy
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
     healthcheck:
       test: curl http://localhost:8085/healthcheck
       start_period: 5s
@@ -62,7 +62,7 @@ services:
     profiles:
       - two_hosts_influxdb
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb.yaml:/opt/premiscale/config.yaml
   ##
@@ -72,7 +72,7 @@ services:
     profiles:
       - two_hosts
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
   ##
@@ -83,7 +83,7 @@ services:
     profiles:
       - two_hosts_profile
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml
       # Mount the output file to the host for generating flamegraphs of the controller's performance.
@@ -95,7 +95,7 @@ services:
     profiles:
       - single_host
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
   mysql-agent-state:
@@ -229,7 +229,7 @@ services:
           memory: 1G
     healthcheck:
       test: mysqladmin ping -h localhost
-      start_period: 5s
+      start_period: 8s
       interval: 5s
       timeout: 5s
       retries: 5
@@ -239,8 +239,8 @@ services:
     ports:
       - 443:443
     volumes:
-      - ./config/nginx/compose.nginx.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/nginx/certs
+      - ./config/nginx/compose.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
     networks:
       - platform
       - controller
@@ -270,7 +270,7 @@ services:
   #     - platform
   #     - controller
   #   volumes:
-  #     - ./certs:/certs
+  #     - ./certs:/certs:ro
   #   deploy:
   #     resources:
   #       limits:
@@ -401,10 +401,10 @@ services:
           memory: 1G
     healthcheck:
       test: mysqladmin ping -h localhost
-      start_period: 10s
+      start_period: 15s
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
 networks:
   controller:
     driver: bridge

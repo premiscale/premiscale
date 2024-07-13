@@ -74,7 +74,7 @@ controller:
     ## @param controller.platform.token [string, default: $PREMISCALE_TOKEN] The token to use to authenticate with the platform.
     token: $PREMISCALE_TOKEN
 
-    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates to the controller for connection to the platform services.
+    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates configuration to the controller for connection to the platform services.
     certificates:
       ## @param controller.platform.certificates.path [string, default: /opt/premiscale/certs] Path to a directory containing the controller's certificates.
       path: $PREMISCALE_CACERT
