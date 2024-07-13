@@ -58,7 +58,7 @@ controller:
 
         credentials:
           ## @param controller.databases.metrics.connection.credentials.username [string] The username to use to authenticate with the time-series database. For InfluxDB, this field is not used.
-          username: ''
+          username: 'na'
 
           ## @param controller.databases.metrics.connection.credentials.password [string] The token to use to authenticate with the InfluxDB server.
           password: premiscale

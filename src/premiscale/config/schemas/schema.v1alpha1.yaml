@@ -51,7 +51,9 @@ connection:
   database: str(min=1)
   organization: str(min=1, required=False)
   credentials:
-    username: str(min=1)
+    # In the case of InfluxDB, this field is not used.
+    username: str(min=0)
+    # In the case of InfluxDB, this field is used as the token.
     password: str(min=1)
 ---
 platform:

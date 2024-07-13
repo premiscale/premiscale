@@ -180,10 +180,12 @@ class InfluxDB(TimeSeries):
             ) for datum in data
         ]
 
-        self._write_api.write(
-            bucket=self.bucket,
-            records=points
-        )
+        for point in points:
+            self._write_api.write(
+                bucket=self.bucket,
+                org=self.organization,
+                record=point
+            )
 
     def clear(self) -> None:
         """

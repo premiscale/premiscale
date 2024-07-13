@@ -9,7 +9,6 @@ The other portion is dedicated to factory methods for building connections to th
 from __future__ import annotations
 
 import logging
-import sys
 
 from typing import TYPE_CHECKING
 from concurrent.futures import ThreadPoolExecutor
@@ -299,4 +298,4 @@ class MetricsCollector:
                     log.debug(f'Inserting time series metrics for VM: {vm}')
                     self._timeseriesConnection.insert_batch(vm)
 
-                # log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
+                log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
