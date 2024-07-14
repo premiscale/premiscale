@@ -176,7 +176,7 @@ class InfluxDB(TimeSeries):
         points = [
             Point.from_dict(
                 datum,
-                write_precision=WritePrecision.MS
+                write_precision=WritePrecision.S
             ) for datum in data
         ]
 

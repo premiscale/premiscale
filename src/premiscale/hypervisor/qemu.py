@@ -243,6 +243,6 @@ class Qemu(Libvirt):
         if vm_stats is None:
             return []
 
-        tinyflux_vm_stats = [vm.to_tinyflux() for vm in vm_stats]
+        tinyflux_vm_stats = [vm.to_influx() for vm in vm_stats]
 
         return tinyflux_vm_stats

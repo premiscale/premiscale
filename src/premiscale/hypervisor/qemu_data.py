@@ -293,7 +293,7 @@ class DomainStats:
         """
         _cpu_datum: Dict = {
             'measurement': 'cpu',
-            'time': self.time.timestamp(),
+            'time': self.time.isoformat(),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -312,7 +312,7 @@ class DomainStats:
 
         _memory_datum: Dict = {
             'measurement': 'memory',
-            'time': self.time.timestamp(),
+            'time': self.time.isoformat(),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -327,7 +327,7 @@ class DomainStats:
 
         _net_datum: Dict = {
             'measurement': 'net',
-            'time': self.time.timestamp(),
+            'time': self.time.isoformat(),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -353,7 +353,7 @@ class DomainStats:
 
         _block_datum: Dict = {
             'measurement': 'block',
-            'time': self.time.timestamp(),
+            'time': self.time.isoformat(),
             'tags': {
                 'name': self.name,
                 'host': self.host,
