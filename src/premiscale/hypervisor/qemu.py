@@ -103,6 +103,7 @@ class Qemu(Libvirt):
 
         return _stats
 
+    # TODO: This should return a list of dictionaries, not a list of
     @cached(cache=TTLCache(maxsize=1, ttl=5))
     @retry_libvirt_connection()
     def _getHostVMStats(self) -> List[DomainStats]:
@@ -208,8 +209,6 @@ class Qemu(Libvirt):
 
         return domain_stats_filtered_list
 
-    @cached(cache=TTLCache(maxsize=1, ttl=5))
-    @retry_libvirt_connection()
     def statsToStateDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
@@ -221,8 +220,6 @@ class Qemu(Libvirt):
         """
         return []
 
-    @cached(cache=TTLCache(maxsize=1, ttl=5))
-    @retry_libvirt_connection()
     def statsToMetricsDB(self) -> List[Tuple]:
         """
         Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to

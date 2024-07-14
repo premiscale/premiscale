@@ -1475,13 +1475,13 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pydoclint"
-version = "0.5.3"
+version = "0.5.4"
 description = "A Python docstring linter that checks arguments, returns, yields, and raises sections"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pydoclint-0.5.3-py2.py3-none-any.whl", hash = "sha256:519917fc5ee97af3f0b3bf3f43208812b8ba68ec112c38238585fccdb7460e31"},
-    {file = "pydoclint-0.5.3.tar.gz", hash = "sha256:b2b47c50fd5da07ed879044decf27c17fbb7ba0356efb89891cbd082b561062c"},
+    {file = "pydoclint-0.5.4-py2.py3-none-any.whl", hash = "sha256:e23bbcf68609030c4c2de621f1a10ad6617a2304f279d2f00fd81963754bb137"},
+    {file = "pydoclint-0.5.4.tar.gz", hash = "sha256:76d57376c981ec2fab8ee528d19d0acb7fb66dece851d6db9107ea34b71275a3"},
 ]
 
 [package.dependencies]

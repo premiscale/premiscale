@@ -271,6 +271,8 @@ class MetricsCollector:
         Args:
             host (Host): The host object to collect metrics from.
         """
+        vms_metrics_db_entry: List[Tuple] = []
+
         with build_hypervisor_connection(host, readonly=True) as host_connection:
             # Exit early; instantiating the connection to the host failed and has already been logged.
             # We'll try again on the next iteration.
@@ -280,22 +282,24 @@ class MetricsCollector:
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
             # Diff current state and recorded state and update the state database. We
-            # plit reads and writes here to avoid locking the database for too long.
+            # split reads and writes here to avoid locking the database for too long.
             if self._stateConnection.get_host(host.name, host.address) != (_host_db_entry := host.to_db_entry()):
+                log.debug(f'Host {host.name} has changed. Updating state database entry')
                 self._stateConnection.host_update(
                     **_host_db_entry,
                 )
 
             if self.timeseries_enabled and self._timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                vms_metrics_db_entry: List[Tuple] = host_connection.statsToMetricsDB()
+                vms_metrics_db_entry = host_connection.statsToMetricsDB()
+            else:
+                log.debug(f'Time series data collection is disabled. Skipping collection for host {host.name}')
+                return None
 
-                # log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
+        for vm in vms_metrics_db_entry:
+            # vm :: Tuple[Dict, Dict, Dict, Dict]
+            # each Dict is a different measurement by which we can scale on.
+            log.debug(f'Inserting time series metrics for VM: {vm}')
+            self._timeseriesConnection.insert_batch(vm)
 
-                for vm in vms_metrics_db_entry:
-                    # vm :: Tuple[Dict, Dict, Dict, Dict]
-                    # each Dict is a different measurement by which we can scale on.
-                    log.debug(f'Inserting time series metrics for VM: {vm}')
-                    self._timeseriesConnection.insert_batch(vm)
-
-                log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
+        log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')

@@ -138,7 +138,6 @@ class InfluxDB(TimeSeries):
         Commit any changes to the database. By default, this does nothing, since InfluxDB isn't transactional.
         """
         log.warning("InfluxDB is not transactional, so committing does nothing.")
-        return None
 
     def insert(self, datum: Dict) -> None:
         """
@@ -206,8 +205,5 @@ class InfluxDB(TimeSeries):
         Run the retention policy on the database, removing points older than the retention policy.
 
         InfluxDB allows us to set a retention interval automatically, so we don't need to manually delete old data.
-
-        Raises:
-            NotImplementedError: InfluxDB automatically handles retention policies, so there's no need to call this method manually within this class.
         """
-        raise NotImplementedError("InfluxDB automatically handles retention policies.")
+        log.warning("InfluxDB automatically handles retention policies, so there's no need to call this method manually within this class")

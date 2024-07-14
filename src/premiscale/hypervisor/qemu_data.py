@@ -132,9 +132,14 @@ class DomainStats:
     block_count: int | None = ib(default=None)
 
     # Time of the collection. This is important for time series databases.
-    time: datetime = ib(default=datetime.now(tz=timezone.utc))
+    time: datetime = ib(
+        default=datetime.now(
+            tz=timezone.utc
+        )
+    )
 
     def __attrs_post_init__(self) -> None:
+        log.debug(f'*** Debugging time: {self.time}')
         if self.block_count is None:
             self.block_count = len(self.block)
 
@@ -293,7 +298,7 @@ class DomainStats:
         """
         _cpu_datum: Dict = {
             'measurement': 'cpu',
-            'time': self.time.isoformat(),
+            'time': int(self.time.timestamp()),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -312,7 +317,7 @@ class DomainStats:
 
         _memory_datum: Dict = {
             'measurement': 'memory',
-            'time': self.time.isoformat(),
+            'time': int(self.time.timestamp()),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -327,7 +332,7 @@ class DomainStats:
 
         _net_datum: Dict = {
             'measurement': 'net',
-            'time': self.time.isoformat(),
+            'time': int(self.time.timestamp()),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -353,7 +358,7 @@ class DomainStats:
 
         _block_datum: Dict = {
             'measurement': 'block',
-            'time': self.time.isoformat(),
+            'time': int(self.time.timestamp()),
             'tags': {
                 'name': self.name,
                 'host': self.host,
