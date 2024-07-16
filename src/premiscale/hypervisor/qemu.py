@@ -106,7 +106,7 @@ class Qemu(Libvirt):
     # TODO: This should return a list of dictionaries, not a list of
     @cached(cache=TTLCache(maxsize=1, ttl=5))
     @retry_libvirt_connection()
-    def _getHostVMStats(self) -> List[DomainStats]:
+    def _getVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM. A typical report includes all the following fields ~
 
@@ -230,7 +230,7 @@ class Qemu(Libvirt):
             List[Tuple]: Stats to a list of metrics database entries.
         """
 
-        vm_stats: List[DomainStats] = self._getHostVMStats()
+        vm_stats: List[DomainStats] = self._getVMStats()
 
         log.debug(f'VM Stats for host {self.name}: {vm_stats}')
 

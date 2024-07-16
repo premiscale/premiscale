@@ -59,7 +59,7 @@ if TYPE_CHECKING:
 #         """
 #         return {}
 
-#     def _getHostVMStats(self) -> List[DomainStats]:
+#     def _getVMStats(self) -> List[DomainStats]:
 #         """
 #         Get a report of resource utilization for a VM.
 
