@@ -269,6 +269,7 @@ class MetricsCollector:
         vms_metrics_db_entry: List[Tuple] = []
 
         with build_hypervisor_connection(host, readonly=True) as host_connection:
+
             # Exit early; instantiating the connection to the host failed and has already been logged.
             # We'll try again on the next iteration.
             if host_connection is None:
