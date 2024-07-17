@@ -56,15 +56,15 @@ services:
     ports:
       - 8085:8085
   ##
-  premiscale-two-hosts-influxdb:
+  premiscale-two-hosts-influxdb-mysql:
     <<: *premiscale
-    container_name: premiscale-two-hosts-influxdb
+    container_name: premiscale-two-hosts-influxdb-mysql
     profiles:
-      - two_hosts_influxdb
+      - two_hosts_influxdb_mysql
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb_mysql.yaml:/opt/premiscale/config.yaml:ro
   ##
   premiscale-two-hosts: &premiscale-two-hosts
     <<: *premiscale
@@ -74,7 +74,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml:ro
   ##
   premiscale-two-hosts-profile:
     <<: [*premiscale-two-hosts, *premiscale]
@@ -85,7 +85,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml:ro
       # Mount the output file to the host for generating flamegraphs of the controller's performance.
       - ./profile/output.bin:/opt/premiscale/output.bin
   ##
@@ -97,7 +97,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml:ro
   mysql-agent-state:
     container_name: mysql-agent
     image: mysql:9.0.0

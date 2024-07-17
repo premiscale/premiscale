@@ -1,6 +1,7 @@
 version: v1alpha1
 
 controller:
+  pidFile: /opt/premiscale/premiscale.pid
   mode: standalone
 
   kubernetes:

@@ -81,7 +81,6 @@ class MySQL(State):
             raise ValueError("Connection is not open. Please open the connection first.")
 
 
-
      ## Hosts
 
     def get_host(self, name: str, address: str) -> Tuple | None:
