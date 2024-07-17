@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 
+from pathlib import Path
 from attrs import define
 from attr import ib
 from cattrs import structure
@@ -76,6 +77,7 @@ class State:
     State database configuration options.
     """
     type: str
+    dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
 
 
@@ -137,6 +139,10 @@ class Certificates:
         Post-initialization method to expand environment variables.
         """
         self.expand()
+
+        if not Path(self.path).is_file():
+            log.error(f'Certificate file at path "{self.path}" does not exist')
+            sys.exit(1)
 
     def expand(self):
         """
@@ -258,7 +264,7 @@ class Host:
         log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds')
 
     # Minor helper functions to reduce code duplication.
-    def to_db_entry(self) -> Dict:
+    def state(self) -> Dict:
         """
         Convert the host configuration to a flat database record-format.
 

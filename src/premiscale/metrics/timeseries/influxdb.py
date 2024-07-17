@@ -152,7 +152,7 @@ class InfluxDB(TimeSeries):
 
         point = Point.from_dict(
             datum,
-            write_precision=WritePrecision.MS
+            write_precision=WritePrecision.S
         )
 
         self._write_api.write(
@@ -194,11 +194,15 @@ class InfluxDB(TimeSeries):
             log.error("InfluxDB connection is not open.")
             return None
 
-        self._delete_api.delete(
-            predicate=f'_measurement == "{self.bucket}"',
-            start='1970-01-01T00:00:00Z', # epoch 0
-            stop='now()'
-        )
+        log.info("Clearing all data from InfluxDB")
+
+        for measurement in ['cpu', 'memory', 'block', 'net']:
+            self._delete_api.delete(
+                bucket=self.bucket,
+                predicate=f'_measurement == "{measurement}"',
+                start='1970-01-01T00:00:00Z', # epoch 0
+                stop='now()'
+            )
 
     def _run_retention_policy(self) -> None:
         """

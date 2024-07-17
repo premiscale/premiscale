@@ -108,7 +108,7 @@ class Qemu(Libvirt):
     @retry_libvirt_connection()
     def _getVMStats(self) -> List[DomainStats]:
         """
-        Get a report of resource utilization for a VM. A typical report includes all the following fields ~
+        Get a report of resource utilization for a running virtual machine. A typical report includes all the following fields ~
 
             https://github.com/premiscale/premiscale/pull/196#issuecomment-2168388982
 
@@ -209,7 +209,7 @@ class Qemu(Libvirt):
 
         return domain_stats_filtered_list
 
-    def statsToStateDB(self) -> List[Tuple]:
+    def state(self) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
@@ -220,9 +220,9 @@ class Qemu(Libvirt):
         """
         return []
 
-    def statsToMetricsDB(self) -> List[Tuple]:
+    def timeseries(self) -> List[Tuple]:
         """
-        Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
+        Convert the stats from the host into a time series database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
 
@@ -230,16 +230,13 @@ class Qemu(Libvirt):
             List[Tuple]: Stats to a list of metrics database entries.
         """
 
-        vm_stats: List[DomainStats] = self._getVMStats()
-
-        log.debug(f'VM metrics for host {self.name}: "{vm_stats}"')
-
         # TODO: Implement a method to convert the host stats into a metrics database entry.
-        host_stats: Dict = self._getHostStats()
+        # host_stats: Dict = self._getHostStats()
 
-        if vm_stats is None:
-            return []
+        ts = [
+            vm.to_influx() for vm in self._getVMStats()
+        ]
 
-        tinyflux_vm_stats = [vm.to_influx() for vm in vm_stats]
+        log.debug(f'Time series data for host {self.name}: "{ts}"')
 
-        return tinyflux_vm_stats
+        return ts

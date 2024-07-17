@@ -39,6 +39,9 @@ controller:
       ## @param controller.databases.state.type [string, default: memory] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
       type: memory
 
+      ## @param controller.databases.state.dbfile [string] The path to the file where the state data is stored.
+      dbfile: /opt/premiscale/state.db
+
     timeseries:
       ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
       type: influxdb

@@ -68,8 +68,8 @@ if TYPE_CHECKING:
 #         """
 #         return []
 
-#     def statsToMetricsDB(self) -> None:
+#     def state(self) -> None:
 #         return None
 
-#     def statsToStateDB(self) -> None:
+#     def timeseries(self) -> None:
 #         return None

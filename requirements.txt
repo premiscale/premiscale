@@ -706,9 +706,9 @@ sqlalchemy==2.0.31 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:f68470edd70c3ac3b6cd5c2a22a8daf18415203ca1b036aaeb9b0fb6f54e8298 \
     --hash=sha256:fa4b1af3e619b5b0b435e333f3967612db06351217c58bfb50cee5f003db2a5a \
     --hash=sha256:fc6b14e8602f59c6ba893980bea96571dd0ed83d8ebb9c4479d9ed5425d562e9
-sqlmodel==0.0.19 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:6c8125d4101970d031e9aae970b20cbeaf44149989f8366d939f4ab21aab8763 \
-    --hash=sha256:95449b0b48a40a3eecf0a629fa5735b9dfc8a5574a91090d24ca17f02246ad96
+sqlmodel==0.0.20 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:744756c49e24095808984754cc4d3a32c2d8361fef803c4914fadcb912239bc9 \
+    --hash=sha256:94dd1f63e4ceb0ab405e304e1ad3e8b8c8800b47c3ca5f68736807be8e5b9314
 tinyflux==1.0.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:0d191d5a11bb86f01d3b015ccc3130713abaa21cbc8f85d79066cd34a3650490 \
     --hash=sha256:a7aea4648d50cdcee4bb7904c37b2eedf27df39a3eb68f1ff22b77e9c30f1447

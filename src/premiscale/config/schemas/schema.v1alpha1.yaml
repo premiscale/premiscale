@@ -37,6 +37,7 @@ databases:
 ---
 state:
   type: enum('memory', 'mysql')
+  dbfile: str(min=1, required=False)
   connection: include('connection', required=False)
 ---
 timeseries:

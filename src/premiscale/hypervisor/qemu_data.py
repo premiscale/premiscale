@@ -132,11 +132,7 @@ class DomainStats:
     block_count: int | None = ib(default=None)
 
     # Time of the collection. This is important for time series databases.
-    time: datetime = ib(
-        default=datetime.now(
-            tz=timezone.utc
-        )
-    )
+    time: datetime | None = ib(default=None)
 
     def __attrs_post_init__(self) -> None:
         log.debug(f'*** Debugging time: {self.time}')
@@ -148,6 +144,9 @@ class DomainStats:
 
         if self.vcpu_current != self.vcpu_maximum:
             log.warning(f'vCPU count disparity for {self.name}: {self.vcpu_current} current != {self.vcpu_maximum} max. ')
+
+        if self.time is None:
+            self.time = datetime.now(tz=timezone.utc)
 
     def to_tinyflux(self) -> Tuple[Dict, Dict, Dict, Dict]:
         """
@@ -298,7 +297,11 @@ class DomainStats:
         """
         _cpu_datum: Dict = {
             'measurement': 'cpu',
-            'time': int(self.time.timestamp()),
+            'time': int(
+                self.time.timestamp()
+                if self.time is not None
+                else datetime.now().timestamp()
+            ),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -317,7 +320,11 @@ class DomainStats:
 
         _memory_datum: Dict = {
             'measurement': 'memory',
-            'time': int(self.time.timestamp()),
+            'time': int(
+                self.time.timestamp()
+                if self.time is not None
+                else datetime.now().timestamp()
+            ),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -332,7 +339,11 @@ class DomainStats:
 
         _net_datum: Dict = {
             'measurement': 'net',
-            'time': int(self.time.timestamp()),
+            'time': int(
+                self.time.timestamp()
+                if self.time is not None
+                else datetime.now().timestamp()
+            ),
             'tags': {
                 'name': self.name,
                 'host': self.host,
@@ -358,7 +369,11 @@ class DomainStats:
 
         _block_datum: Dict = {
             'measurement': 'block',
-            'time': int(self.time.timestamp()),
+            'time': int(
+                self.time.timestamp()
+                if self.time is not None
+                else datetime.now().timestamp()
+            ),
             'tags': {
                 'name': self.name,
                 'host': self.host,

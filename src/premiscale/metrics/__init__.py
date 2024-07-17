@@ -83,7 +83,9 @@ def build_state_connection(config: Config) -> State:
             # SQLite
             from premiscale.metrics.state.local import Local
 
-            return Local()
+            return Local(
+                dbfile=config.controller.databases.state.dbfile
+            )
         case 'mysql':
             from premiscale.metrics.state.mysql import MySQL
 
@@ -134,7 +136,7 @@ class MetricsCollector:
         stateConnection.initialize()
 
         if host is not None:
-            _host_dict = host.to_db_entry()
+            _host_dict = host.state()
 
             if not stateConnection.host_exists(host.name, host.address):
                 stateConnection.host_create(**_host_dict)
@@ -148,7 +150,7 @@ class MetricsCollector:
         for _h in self:
             if not stateConnection.host_exists(_h.name, _h.address):
                 stateConnection.host_create(
-                    **_h.to_db_entry()
+                    **_h.state()
                 )
 
         _end_time = datetime.now()
@@ -266,7 +268,7 @@ class MetricsCollector:
             timeseriesConnection = build_timeseries_connection(self.config)
             timeseriesConnection.open()
 
-        vms_metrics_db_entry: List[Tuple] = []
+        domain_timeseries: List[Tuple] = []
 
         with build_hypervisor_connection(host, readonly=True) as host_connection:
 
@@ -279,27 +281,26 @@ class MetricsCollector:
 
             stateConnection = build_state_connection(self.config)
             stateConnection.open()
-            stateConnection.initialize()
 
             # Diff current state and recorded state and update the state database. We
             # split reads and writes here to avoid locking the database for too long.
-            if stateConnection.get_host(host.name, host.address) != (_host_db_entry := host.to_db_entry()):
+            if stateConnection.get_host(host.name, host.address) != (host_state := host.state()):
                 log.debug(f'Host {host.name} has changed. Updating state database entry')
                 stateConnection.host_update(
-                    **_host_db_entry,
+                    **host_state,
                 )
 
             if timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                vms_metrics_db_entry = host_connection.statsToMetricsDB()
+                domain_timeseries = host_connection.timeseries()
             else:
                 log.debug(f'Time series data collection is disabled. Skipping collection for host {host.name}')
                 return None
 
-        for vm in vms_metrics_db_entry:
+        for domain in domain_timeseries:
             # vm :: Tuple[Dict, Dict, Dict, Dict]
             # each Dict is a different measurement by which we can scale on.
-            log.debug(f'Inserting time series metrics for VM: {vm}')
-            timeseriesConnection.insert_batch(vm)
+            log.debug(f'Inserting time series metrics for VM: {domain}')
+            timeseriesConnection.insert_batch(domain)
 
         log.debug(f'Time series metrics currently stored: "{timeseriesConnection.get_all()}"')
