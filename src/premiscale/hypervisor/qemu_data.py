@@ -135,7 +135,6 @@ class DomainStats:
     time: datetime | None = ib(default=None)
 
     def __attrs_post_init__(self) -> None:
-        log.debug(f'*** Debugging time: {self.time}')
         if self.block_count is None:
             self.block_count = len(self.block)
 
@@ -147,6 +146,7 @@ class DomainStats:
 
         if self.time is None:
             self.time = datetime.now(tz=timezone.utc)
+            log.debug(f'*** Debugging time: {self.time}')
 
     def to_tinyflux(self) -> Tuple[Dict, Dict, Dict, Dict]:
         """
