@@ -1,13 +1,12 @@
-## @param version [string] The version of the configuration file.
 version: v1alpha1
 
 controller:
-  # pidFile: /opt/premiscale/premiscale.pid
   mode: standalone
 
   kubernetes:
     autoscalerPort: 8085
     autoscalerHost: cluster-autoscaler
+
   healthcheck:
     host: 127.0.0.1
     port: 8085
@@ -15,7 +14,6 @@ controller:
   databases:
     maxHostConnectionThreads: 10
     collectionInterval: 60
-
     hostConnectionTimeout: 60
 
     state:
@@ -42,10 +40,12 @@ controller:
         credentials:
           username: na
           password: premiscale
+
   platform:
     actionsQueueMaxSize: 0
     domain: $PREMISCALE_PLATFORM
     token: $PREMISCALE_TOKEN
+
     certificates:
       path: $PREMISCALE_CACERT
 
