@@ -10,6 +10,7 @@ import sys
 
 from typing import TYPE_CHECKING
 from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.exc import ArgumentError
 from premiscale.metrics.state._base import State
 from premiscale.metrics.state._mysql_models import (
     # These tables are automatically created by SQLModel following import on database open.
@@ -57,9 +58,13 @@ class MySQL(State):
         Open a connection to the MySQL database.
         """
         if self._connection is None:
-            connection = create_engine(self._connection_string)
-            SQLModel.metadata.create_all(connection)
-            self._connection = Session(connection)
+            try:
+                connection = create_engine(self._connection_string)
+                SQLModel.metadata.create_all(connection)
+                self._connection = Session(connection)
+            except ArgumentError as e:
+                log.error(f"Failed to create connection: {e}")
+                sys.exit(1)
         log.warning("Connection already open.")
 
     def close(self) -> None:
