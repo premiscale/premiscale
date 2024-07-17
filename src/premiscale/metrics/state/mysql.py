@@ -41,7 +41,7 @@ class MySQL(State):
         self._username = state_config.connection.credentials.username
         self._password = state_config.connection.credentials.password
 
-        self._connection_string = f"mysql+{self.url}://{self._username}:{self._password}@{self.database}"
+        self._connection_string = f"mysql://{self._username}:{self._password}@{self.url}/{self.database}"
         self._connection: Session | None = None
 
     def is_connected(self) -> bool:
@@ -60,11 +60,12 @@ class MySQL(State):
         if self._connection is None:
             try:
                 connection = create_engine(self._connection_string)
-                SQLModel.metadata.create_all(connection)
-                self._connection = Session(connection)
             except ArgumentError as e:
                 log.error(f"Failed to create connection: {e}")
                 sys.exit(1)
+
+            SQLModel.metadata.create_all(connection)
+            self._connection = Session(connection)
         log.warning("Connection already open.")
 
     def close(self) -> None:
