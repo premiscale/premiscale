@@ -1,5 +1,4 @@
 services:
-  # Controller network
   premiscale: &premiscale
     container_name: premiscale
     platform: linux/amd64
@@ -47,7 +46,7 @@ services:
       platform:
         condition: service_healthy
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
     healthcheck:
       test: curl http://localhost:8085/healthcheck
       start_period: 5s
@@ -57,13 +56,23 @@ services:
     ports:
       - 8085:8085
   ##
+  premiscale-two-hosts-influxdb:
+    <<: *premiscale
+    container_name: premiscale-two-hosts-influxdb
+    profiles:
+      - two_hosts_influxdb
+    volumes:
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
+      # Mount a different config from the default into the running container for testing.
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb.yaml:/opt/premiscale/config.yaml
+  ##
   premiscale-two-hosts: &premiscale-two-hosts
     <<: *premiscale
     container_name: premiscale-two-hosts
     profiles:
       - two_hosts
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
   ##
@@ -74,7 +83,7 @@ services:
     profiles:
       - two_hosts_profile
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml
       # Mount the output file to the host for generating flamegraphs of the controller's performance.
@@ -86,7 +95,7 @@ services:
     profiles:
       - single_host
     volumes:
-      - ./certs/cert.pem:/opt/premiscale/cert.pem
+      - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
       - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
   mysql-agent-state:
@@ -111,18 +120,21 @@ services:
           memory: 1G
     healthcheck:
       test: mysqladmin ping -h localhost
-      start_period: 3s
+      start_period: 5s
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
   influxdb:
     container_name: influxdb-agent
     image: influxdb:2.7.6
     environment:
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=premiscale
+      #- DOCKER_INFLUXDB_INIT_RETENTION=1w
+      - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=premiscale
       - DOCKER_INFLUXDB_INIT_PASSWORD=premiscale
       - DOCKER_INFLUXDB_INIT_ORG=premiscale
-      - DOCKER_INFLUXDB_INIT_BUCKET=premiscale-local
+      - DOCKER_INFLUXDB_INIT_BUCKET=premiscale
     ports:
       - 8086:8086
     networks:
@@ -141,16 +153,94 @@ services:
       retries: 5
       start_period: 5s
       timeout: 5s
-
-  # Platform network
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:9.5.20
+    user: '0'
+    restart: unless-stopped
+    environment:
+      - TERM=linux
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-polystat-panel
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_SECURITY_ADMIN_PASSWORD=premiscale
+      - GF_SECURITY_ADMIN_USER=premiscale
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
+      - GF_USERS_AUTO_ASSIGN_ORG=true
+      - GF_USERS_AUTO_ASSIGN_ROLE=Viewer
+      - GF_USERS_DEFAULT_THEME=light
+      - GF_USERS_VIEWERS_CAN_EDIT=true
+      - GF_USERS_VIEWERS_CAN_SAVE_DASHBOARDS=true
+      - GF_USERS_VIEWERS_CAN_SAVE_TEMPORARY=true
+    ports:
+      - 3000:3000
+    networks:
+      - controller
+      - platform
+      - default
+    volumes:
+      # Certs
+      - ./certs/cert.pem:/etc/grafana/cert.pem:ro
+      - ./certs/key.pem:/etc/grafana/key.pem:ro
+      # SQLite data
+      - grafana-data:/var/lib/grafana
+      # Config
+      - ./config/grafana/config.ini:/etc/grafana/grafana.ini:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+    depends_on:
+      influxdb:
+        condition: service_healthy
+      mysql-grafana:
+        condition: service_healthy
+    healthcheck:
+      test: curl http://localhost:3000
+      interval: 3s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+  mysql-grafana:
+    container_name: mysql-grafana
+    image: mysql:9.0.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=premiscale
+      - MYSQL_DATABASE=grafana
+      - MYSQL_USER=premiscale
+      - MYSQL_PASSWORD=premiscale
+    ports:
+      - 3308:3306
+    networks:
+      - controller
+      - platform
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+    healthcheck:
+      test: mysqladmin ping -h localhost
+      start_period: 8s
+      interval: 5s
+      timeout: 5s
+      retries: 5
   platform:
     container_name: nginx
     image: nginx:stable
     ports:
       - 443:443
     volumes:
-      - ./compose.nginx.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/nginx/certs
+      - ./config/nginx/compose.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
     networks:
       - platform
       - controller
@@ -180,7 +270,7 @@ services:
   #     - platform
   #     - controller
   #   volumes:
-  #     - ./certs:/certs
+  #     - ./certs:/certs:ro
   #   deploy:
   #     resources:
   #       limits:
@@ -282,7 +372,7 @@ services:
       - 6379:6379
     command: redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD
     volumes:
-      - cache:/data
+      - redis-cache:/data
     healthcheck:
       test: redis-cli ping
       interval: 3s
@@ -311,10 +401,10 @@ services:
           memory: 1G
     healthcheck:
       test: mysqladmin ping -h localhost
-      start_period: 10s
+      start_period: 15s
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
 networks:
   controller:
     driver: bridge
@@ -323,5 +413,7 @@ networks:
     driver: bridge
     internal: false
 volumes:
-  cache:
+  redis-cache:
+    driver: local
+  grafana-data:
     driver: local

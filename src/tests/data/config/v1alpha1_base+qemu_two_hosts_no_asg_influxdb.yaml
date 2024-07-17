@@ -39,12 +39,32 @@ controller:
       ## @param controller.databases.state.type [string, default: memory] The type of database to use for storing state. Can be 'mysql' or 'sqlite' or 'memory'.
       type: memory
 
+      ## @param controller.databases.state.dbfile [string] The path to the file where the state data is stored.
+      dbfile: /opt/premiscale/state.db
+
     timeseries:
       ## @param controller.databases.metrics.type [string, default: memory] The type of database to use for storing metrics. At this time, can be 'influxdb' or 'memory'.
-      type: memory
+      type: influxdb
 
-      ## @param controller.databases.metrics.retention [default: 300] Seconds of collected metrics to keep (must be >=interval). Default is 5 minutes. When using InfluxDB, this value must be >=3600.
+      ## @param controller.databases.metrics.retention [default: 300] Seconds of collected metrics to keep and evaluate upon (must be >=interval). Default is 300 seconds, or 5 minutes.
       retention: 300
+
+      connection:
+        ## @param controller.databases.metrics.connection.url [string, default: http://influxdb:8086] The URL of the InfluxDB server.
+        url: http://influxdb:8086
+
+        ## @param controller.databases.metrics.connection.database [string] The name of the database to use. In the case of 'InfluxDB'-type, database is analogous to a bucket.
+        database: premiscale
+
+        ## @param controller.databases.metrics.connection.organization [string] (This field is only relevant for InfluxDB at this time.) Name of the organization to use for the organization.
+        organization: premiscale
+
+        credentials:
+          ## @param controller.databases.metrics.connection.credentials.username [string] The username to use to authenticate with the time-series database. For InfluxDB, this field is not used.
+          username: 'na'
+
+          ## @param controller.databases.metrics.connection.credentials.password [string] The token to use to authenticate with the InfluxDB server.
+          password: premiscale
 
   ## @param controller.platform [object] Configure the platform
   platform:
@@ -57,7 +77,7 @@ controller:
     ## @param controller.platform.token [string, default: $PREMISCALE_TOKEN] The token to use to authenticate with the platform.
     token: $PREMISCALE_TOKEN
 
-    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates to the controller for connection to the platform services.
+    ## @param controller.platform.certificates [object] For local-only testing, you can provide self-signed certificates configuration to the controller for connection to the platform services.
     certificates:
       ## @param controller.platform.certificates.path [string, default: /opt/premiscale/certs] Path to a directory containing the controller's certificates.
       path: $PREMISCALE_CACERT
@@ -76,6 +96,14 @@ controller:
       - name: tynan-local
         address: 10.0.0.100
         port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
+        user: emma
+        protocol: SSH
+        hypervisor: qemu
+      - name: rocinante-local
+        address: 10.0.0.102
+        port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
         user: emma
         protocol: SSH
         hypervisor: qemu

@@ -169,7 +169,7 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _getHostVMStats(self) -> List[DomainStats]:
+    def _getVMStats(self) -> List[DomainStats]:
         """
         Get a report of resource utilization for a VM.
 
@@ -182,7 +182,7 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def statsToStateDB(self) -> List[Tuple]:
+    def state(self) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
@@ -197,7 +197,7 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def statsToMetricsDB(self) -> List[Tuple]:
+    def timeseries(self) -> List[Tuple]:
         """
         Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not

@@ -172,7 +172,9 @@ def start(config: Config, version: str, token: str) -> int:
 
                 for _process in filtered_processes:
                     if _process is not process:
+                        log.debug(f'Terminating process {_process}')
                         _process.cancel()
+                        log.debug(f'Process {_process} terminated successfully')
 
                 _ret_code = 1
 

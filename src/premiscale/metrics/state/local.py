@@ -1,5 +1,5 @@
 """
-Methods for interacting with the in-memory database.
+Methods for interacting with the state database.
 """
 
 
@@ -22,12 +22,20 @@ log = logging.getLogger(__name__)
 
 class Local(State):
     """
-    Implement a high-level interface to an in-memory state database.
+    Implement a high-level interface to a state database.
+
+    Args:
+        dbfile (str | None): Path to the SQLite database file. Defaults to None.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, dbfile: str | None) -> None:
         self._connection: sqlite3.Connection
         self._cursor: sqlite3.Cursor
+
+        if dbfile is None:
+            self.dbfile = 'file::memory:?cache=shared'
+        else:
+            self.dbfile = dbfile
 
     def is_connected(self) -> bool:
         """
@@ -41,7 +49,7 @@ class Local(State):
     @synchronized
     def run(self, query: str, parameters: Tuple | None = None) -> List:
         """
-        Run the in-memory database.
+        Run a query against the database.
         """
         if parameters:
             q = self._cursor.execute(query, parameters).fetchall()
@@ -53,27 +61,24 @@ class Local(State):
         return q
 
     @synchronized
-    def open(self, database: str = 'file::memory:?cache=shared') -> None:
+    def open(self) -> None:
         """
         Open a connection to a SQLite database. Defaults to an in-memory database.
-
-        Args:
-            database (str): Path to the SQLite database. Defaults to ':memory:'.
         """
-        log.debug('Opening connection to in-memory SQLite database')
+        log.debug(f'Opening connection to SQLite database at "{self.dbfile}"')
         self._connection = sqlite3.connect(
-            database=database,
+            database=self.dbfile,
             check_same_thread=False
         )
         self._cursor = self._connection.cursor()
-        log.debug('Connection to in-memory SQLite database opened')
+        log.debug('Connection to SQLite database opened successfully')
 
     @synchronized
     def close(self) -> None:
         """
         Close the connection to the SQLite database.
         """
-        log.debug('Closing connection to in-memory SQLite database')
+        log.debug('Closing connection to SQLite database')
         self._connection.close()
 
     @synchronized
@@ -81,7 +86,7 @@ class Local(State):
         """
         Commit any changes to the SQLite database.
         """
-        log.debug('Committing changes to in-memory SQLite database')
+        log.debug('Committing changes to SQLite database')
         self._connection.commit()
 
     @synchronized
@@ -89,7 +94,7 @@ class Local(State):
         """
         Rollback any changes to the SQLite database.
         """
-        log.debug('Rolling back changes to in-memory SQLite database')
+        log.debug('Rolling back changes to SQLite database')
         self._connection.rollback()
 
     @synchronized
@@ -97,7 +102,7 @@ class Local(State):
         """
         Initialize the SQLite database.
         """
-        log.debug('Initializing in-memory SQLite database')
+        log.info('Initializing SQLite database at "{self.dbfile}"')
         self._cursor.execute(
             'CREATE TABLE IF NOT EXISTS hosts (name TEXT, address TEXT, protocol TEXT, port INTEGER, hypervisor TEXT, cpu INTEGER, memory INTEGER, storage INTEGER)'
         )
@@ -108,7 +113,7 @@ class Local(State):
             'CREATE TABLE IF NOT EXISTS asgs (name TEXT)'
         )
         self.commit()
-        log.debug('In-memory SQLite database initialized')
+        log.info('SQLite database initialized')
 
     ## Hosts
 

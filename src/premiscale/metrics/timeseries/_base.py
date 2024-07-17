@@ -23,6 +23,19 @@ class TimeSeries(ABC):
     """
 
     @abstractmethod
+    def is_connected(self) -> bool:
+        """
+        Check if the connection to the time series database is open.
+
+        Returns:
+            bool: True if the connection is open.
+
+        Raises:
+            NotImplementedError: If the method is not implemented.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def open(self) -> None:
         """
         Open a connection to the metrics backend these methods interact with.

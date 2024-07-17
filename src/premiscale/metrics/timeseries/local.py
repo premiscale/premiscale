@@ -14,7 +14,6 @@ from tinyflux.storages import MemoryStorage, CSVStorage
 from premiscale.metrics.timeseries._base import TimeSeries
 
 if TYPE_CHECKING:
-    from tinyflux.queries import Query
     from typing import Dict, Tuple
 
 

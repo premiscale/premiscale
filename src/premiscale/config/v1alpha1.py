@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 
+from pathlib import Path
 from attrs import define
 from attr import ib
 from cattrs import structure
@@ -51,6 +52,7 @@ class Connection:
     url: str
     database: str
     credentials: DatabaseCredentials
+    organization: str | None = ib(default=None)
 
     def __attrs_post_init__(self):
         """
@@ -62,6 +64,9 @@ class Connection:
         """
         Expand environment variables in the connection configuration.
         """
+        if self.organization is not None:
+            self.organization = os.path.expandvars(self.organization)
+
         self.url = os.path.expandvars(self.url)
         self.database = os.path.expandvars(self.database)
 
@@ -72,6 +77,7 @@ class State:
     State database configuration options.
     """
     type: str
+    dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
 
 
@@ -81,9 +87,21 @@ class TimeSeries:
     Time series database configuration options.
     """
     type: str
-    trailing: int
+    retention: int
     dbfile: str | None = ib(default=None)
     connection: Connection | None = ib(default=None)
+
+    def __attrs_post_init__(self):
+        """
+        Post-initialization method to expand environment variables.
+        """
+        if self.type.lower() == 'influxdb' and self.connection is None:
+            log.error('Connection information must be provided when using InfluxDB as the time series database.')
+            sys.exit(1)
+
+        if self.type == 'influxdb' and self.retention < 3600:
+            log.warning('Retention of time series metrics must be at least 3600 seconds, or 1 hour, when using InfluxDB. Defaulting to 3600 seconds.')
+            self.retention = 3600
 
 
 @define
@@ -121,6 +139,10 @@ class Certificates:
         Post-initialization method to expand environment variables.
         """
         self.expand()
+
+        if not Path(self.path).is_file():
+            log.error(f'Certificate file at path "{self.path}" does not exist')
+            sys.exit(1)
 
     def expand(self):
         """
@@ -242,7 +264,7 @@ class Host:
         log.info(f'Configured SSH connections to host {self.address} with a timeout of {self.timeout} seconds')
 
     # Minor helper functions to reduce code duplication.
-    def to_db_entry(self) -> Dict:
+    def state(self) -> Dict:
         """
         Convert the host configuration to a flat database record-format.
 

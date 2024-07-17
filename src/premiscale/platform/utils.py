@@ -9,7 +9,7 @@ import logging
 from typing import Callable, Any, Dict
 from functools import wraps
 from urllib.error import URLError
-from premiscale.exceptions import RateLimitedError
+from premiscale.errors import RateLimitedError
 
 
 log = logging.getLogger(__name__)

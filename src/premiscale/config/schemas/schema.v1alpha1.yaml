@@ -37,11 +37,12 @@ databases:
 ---
 state:
   type: enum('memory', 'mysql')
+  dbfile: str(min=1, required=False)
   connection: include('connection', required=False)
 ---
 timeseries:
   type: enum('memory', 'influxdb')
-  trailing: int(min=5)
+  retention: int(min=300)
   # Only relevant for type 'memory'.
   dbfile: str(min=1, required=False)
   connection: include('connection', required=False)
@@ -49,8 +50,11 @@ timeseries:
 connection:
   url: str(min=1)
   database: str(min=1)
+  organization: str(min=1, required=False)
   credentials:
-    username: str(min=1)
+    # In the case of InfluxDB, this field is not used.
+    username: str(min=0)
+    # In the case of InfluxDB, this field is used as the token.
     password: str(min=1)
 ---
 platform:

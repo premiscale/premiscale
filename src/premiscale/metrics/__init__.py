@@ -51,17 +51,16 @@ def build_timeseries_connection(config: Config) -> TimeSeries:
             from premiscale.metrics.timeseries.local import Local
 
             return Local(
-                retention=timedelta(seconds=config.controller.databases.timeseries.trailing),
+                retention=timedelta(seconds=config.controller.databases.timeseries.retention),
                 file=config.controller.databases.timeseries.dbfile
             )
         case 'influxdb':
             log.debug(f'Using InfluxDB for time series database')
             from premiscale.metrics.timeseries.influxdb import InfluxDB
 
-            connection = unstructure(config.controller.databases.timeseries.connection)
-            del(connection['type'])
-
-            return InfluxDB(**connection)
+            return InfluxDB(
+                config.controller.databases.timeseries
+            )
         case _:
             raise ValueError(f'Unknown timeseries database type: {config.controller.databases.timeseries.type}')
 
@@ -84,11 +83,13 @@ def build_state_connection(config: Config) -> State:
             # SQLite
             from premiscale.metrics.state.local import Local
 
-            return Local()
+            return Local(
+                dbfile=config.controller.databases.state.dbfile
+            )
         case 'mysql':
             from premiscale.metrics.state.mysql import MySQL
 
-            connection = unstructure(config.controller.databases.state.connection)
+            connection = unstructure(config.controller.databases.state)
             del(connection['type'])
 
             return MySQL(**connection)
@@ -105,8 +106,6 @@ class MetricsCollector:
         timeseries_enabled (bool): Whether to enable time-series data collection. Defaults to False.
     """
     def __init__(self, config: Config, timeseries_enabled: bool = False) -> None:
-        self._timeseriesConnection: TimeSeries | None = None
-        self._stateConnection: State
         self.timeseries_enabled = timeseries_enabled
         self.config = config
 
@@ -117,40 +116,30 @@ class MetricsCollector:
         setproctitle('metrics-collector')
         log.debug('Starting metrics collection subprocess')
 
-        self._stateConnection = build_state_connection(self.config)
-        self._stateConnection.open()
-        self._stateConnection.initialize()
-
-        # Set up database interfaces.
-        if self.timeseries_enabled:
-            self._timeseriesConnection = build_timeseries_connection(self.config)
-            self._timeseriesConnection.open()
-
         self._initialize_host()
         self._collectMetrics()
 
     def _initialize_host(self, host: Host | None = None) -> None:
         """
-        Ensure hosts are tracked in the database. This is a one-time operation, currently, and no 'host' should be
-        specified.
-
-        Eventually, this code should get copied to the collection loop to ensure that hosts are added to the
-        database as they are discovered. For now, we'll just add them all at once.
+        Ensure hosts are tracked in the database as they're discovered, or, run through all hosts in the configuration file
+        by not specifying any host.
 
         Args:
             host (Host | None): The host to initialize in the database (for forward compatibility). Defaults to None.
+                If None, all hosts in the configuration file are initialized.
         """
-
-        if host is not None:
-            log.warning(f'Host initialization is not yet implemented for individual hosts. All hosts will be initialized at once.')
 
         _start_time = datetime.now()
 
-        if host is not None:
-            _host_dict = host.to_db_entry()
+        stateConnection = build_state_connection(self.config)
+        stateConnection.open()
+        stateConnection.initialize()
 
-            if not self._stateConnection.host_exists(host.name, host.address):
-                self._stateConnection.host_create(**_host_dict)
+        if host is not None:
+            _host_dict = host.state()
+
+            if not stateConnection.host_exists(host.name, host.address):
+                stateConnection.host_create(**_host_dict)
 
             _end_time = datetime.now()
 
@@ -159,15 +148,15 @@ class MetricsCollector:
             return None
 
         for _h in self:
-            if not self._stateConnection.host_exists(_h.name, _h.address):
-                self._stateConnection.host_create(
-                    **_h.to_db_entry()
+            if not stateConnection.host_exists(_h.name, _h.address):
+                stateConnection.host_create(
+                    **_h.state()
                 )
 
         _end_time = datetime.now()
         _total_time = round((_end_time - _start_time).total_seconds(), 2)
 
-        log.debug(f'All hosts initialized in in-memory SQLite database in {_total_time}s')
+        log.debug(f'All hosts initialized in state database in {_total_time}s')
 
     def __iter__(self) -> Iterator:
         """
@@ -272,7 +261,17 @@ class MetricsCollector:
         Args:
             host (Host): The host object to collect metrics from.
         """
+        timeseriesConnection: TimeSeries | None = None
+
+        # Set up database interfaces.
+        if self.timeseries_enabled:
+            timeseriesConnection = build_timeseries_connection(self.config)
+            timeseriesConnection.open()
+
+        domain_timeseries: List[Tuple] = []
+
         with build_hypervisor_connection(host, readonly=True) as host_connection:
+
             # Exit early; instantiating the connection to the host failed and has already been logged.
             # We'll try again on the next iteration.
             if host_connection is None:
@@ -280,23 +279,28 @@ class MetricsCollector:
 
             log.debug(f'Connection to host {host.name} succeeded, collecting metrics')
 
+            stateConnection = build_state_connection(self.config)
+            stateConnection.open()
+
             # Diff current state and recorded state and update the state database. We
-            # plit reads and writes here to avoid locking the database for too long.
-            if self._stateConnection.get_host(host.name, host.address) != (_host_db_entry := host.to_db_entry()):
-                self._stateConnection.host_update(
-                    **_host_db_entry,
+            # split reads and writes here to avoid locking the database for too long.
+            if stateConnection.get_host(host.name, host.address) != (host_state := host.state()):
+                log.debug(f'Host {host.name} has changed. Updating state database entry')
+                stateConnection.host_update(
+                    **host_state,
                 )
 
-            if self.timeseries_enabled and self._timeseriesConnection is not None:
+            if timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                vms_metrics_db_entry: List[Tuple] = host_connection.statsToMetricsDB()
+                domain_timeseries = host_connection.timeseries()
+            else:
+                log.debug(f'Time series data collection is disabled. Skipping collection for host {host.name}')
+                return None
 
-                # log.debug(f'VM metrics for host "{host.name}": {vms_metrics_db_entry}')
+        for domain in domain_timeseries:
+            # vm :: Tuple[Dict, Dict, Dict, Dict]
+            # each Dict is a different measurement by which we can scale on.
+            log.debug(f'Inserting time series metrics for VM: {domain}')
+            timeseriesConnection.insert_batch(domain)
 
-                for vm in vms_metrics_db_entry:
-                    # vm :: Tuple[Dict, Dict, Dict, Dict]
-                    # each Dict is a different measurement by which we can scale on.
-                    log.debug(f'Inserting time series metrics for VM: {vm}')
-                    self._timeseriesConnection.insert_batch(vm)
-
-                # log.debug(f'Time series metrics currently stored: "{self._timeseriesConnection.get_all()}"')
+        log.debug(f'Time series metrics currently stored: "{timeseriesConnection.get_all()}"')

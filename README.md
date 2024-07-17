@@ -4,20 +4,20 @@
 ![Business License 1.1](https://img.shields.io/badge/License-Business_Source_1.1-red)
 
 
-PremiScale is a controller that brings autoscaling of virtual and physical infrastructure to local, self-hosted and private data centers, with a particular focus on integrating with the Kubernetes cluster [autoscaler](https://github.com/kubernetes/autoscaler).
+PremiScale is a controller that brings autoscaling of virtual and physical infrastructure to local, self-hosted and private data centers, with a particular focus on integrating with the Kubernetes [cluster autoscaler](https://github.com/kubernetes/autoscaler).
 
 ## Architecture
 
 PremiScale uses [libvirt](https://libvirt.org/) to connect to hosts and manage lifecycles of virtual machines. The Libvirt daemon provides a rich API for interacting with hypervisors, hosts and virtual machines.
 
-The controller can be configured to run in two different modes, including `kubernetes` (the default) and `standalone` modes. In either configuration, the controller aims to start only relevant processes for both data collection and managing virtual machines. Users are required at this time to provide a list of hosts on which virtual machines can be created, in addition to a list of autoscaling groups, into which virtual machines the controller manages, are organized.
+The controller can be configured to run in two different modes, including `kubernetes` and `standalone` modes. In either configuration, the controller aims to start only relevant processes for both data collection and managing virtual machines and hardware.
 
 ### Standalone
 
-In `standalone` mode (the default), the controller starts its own time series data collection process.
+In `standalone` mode, the controller starts its own time series data collection process.
 
 <p align="center" width="100%">
-  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/master/img/premiscale-architecture-controller_internal_autoscaler_enabled.png" alt="premiscale architecture: internal autoscaler enabled">
+  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/AGENT-121/img/premiscale-architecture-controller_internal_autoscaler_enabled.svg" alt="premiscale architecture: internal autoscaler enabled">
 </p>
 
 ### Kubernetes
@@ -25,7 +25,7 @@ In `standalone` mode (the default), the controller starts its own time series da
 Starting the controller in `kubernetes` mode starts relevant components of the controller that allow it to interface with the cluster autoscaler.
 
 <p align="center" width="100%">
-  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/master/img/premiscale-architecture-controller_internal_autoscaler_disabled.png" alt="premiscale architecture: internal autoscaler disabled">
+  <img width="100%" src="https://raw.githubusercontent.com/premiscale/premiscale/AGENT-121/img/premiscale-architecture-controller_internal_autoscaler_disabled.svg" alt="premiscale architecture: internal autoscaler disabled">
 </p>
 
 Note that, in this configuration, the controller does not require a time series database. State is still reconciled, but the time series signal comes from the cluster autoscaler instead.

@@ -49,12 +49,7 @@ cleanup_env
 decrypt_env
 
 
-# Generate self-signed certificates if they don't exist.
-if [ ! -d "certs/" ]; then
-    mkdir certs/
-    # https://medium.com/@maciej.skorupka/hostname-mismatch-ssl-error-in-python-2901d465683
-    openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -sha256 -days 10 -nodes -subj "/C=US/ST=Massachusetts/L=Chelsea/O=PremiScale/CN=platform/emailAddress=$(git config --global --get user.email)" -addext "subjectAltName=DNS:platform"
-fi
+./scripts/generate-test-self-signed-certs.sh
 
 
 COMPOSE_DOCKER_CLI_BUILD=1
@@ -95,7 +90,7 @@ function reverse_lookup_profile()
 docker compose \
     --profile "$PROFILE" \
     -f compose.yaml up \
-    -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration
+    -d --build "$(reverse_lookup_profile "$PROFILE")" platform echoes registration grafana
 
 
 cleanup_env
