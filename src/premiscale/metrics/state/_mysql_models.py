@@ -1,5 +1,6 @@
 """
-Methods for interacting with the MySQL database.
+This module contains the models for the MySQL database. These models are automatically
+created by SQLModel when the module is imported.
 """
 
 
@@ -9,10 +10,6 @@ import logging
 
 from typing import TYPE_CHECKING
 from sqlmodel import Field, SQLModel
-from premiscale.metrics.state._base import State
-
-if TYPE_CHECKING:
-    from typing import List, Tuple
 
 
 log = logging.getLogger(__name__)
@@ -28,6 +25,7 @@ class Host(SQLModel, table=True):
     port: int
     username: str
     password: str
+    # This field is used to indicate whether or not the host is on.
     power: bool
 
 

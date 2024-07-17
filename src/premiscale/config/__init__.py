@@ -18,8 +18,8 @@ def build_config_from_version(version: str) -> Type:
     """
     match version:
         case 'v1alpha1':
-            from premiscale.config.v1alpha1 import Config as ConfigV1Alpha1
+            from premiscale.config._v1alpha1 import Config as ConfigV1Alpha1
 
             return ConfigV1Alpha1
         case _:
-            raise ValueError(f'Unknown config version: {version}')
+            raise ValueError(f'Unknown config version: "{version}"')

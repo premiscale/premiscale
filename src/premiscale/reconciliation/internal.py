@@ -30,7 +30,7 @@ from premiscale.autoscaling.actions import (
 if TYPE_CHECKING:
     from premiscale.metrics.state._base import State
     from premiscale.metrics.timeseries._base import TimeSeries
-    from premiscale.config.v1alpha1 import Config
+    from premiscale.config._v1alpha1 import Config
     from multiprocessing.queues import Queue
     from premiscale.autoscaling.actions import Action
     from typing import List, Dict

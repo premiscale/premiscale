@@ -6,11 +6,13 @@ Methods for interacting with the MySQL database.
 from __future__ import annotations
 
 import logging
+import sys
 
 from typing import TYPE_CHECKING
-from sqlmodel import Field, Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel, create_engine
 from premiscale.metrics.state._base import State
-from premiscale.metrics.state.mysql_models import (
+from premiscale.metrics.state._mysql_models import (
+    # These tables are automatically created by SQLModel following import on database open.
     Host,
     Domain,
     AutoScalingGroup
@@ -18,7 +20,7 @@ from premiscale.metrics.state.mysql_models import (
 
 if TYPE_CHECKING:
     from typing import List, Tuple
-    from sqlmodel.engine.base import Engine
+    from premiscale.config._v1alpha1 import State as StateConfig
 
 
 log = logging.getLogger(__name__)
@@ -28,11 +30,15 @@ class MySQL(State):
     """
     Provide a clean interface to the MySQL database.
     """
-    def __init__(self, url: str, database: str, username: str, password: str) -> None:
-        self.url = url
-        self.database = database
-        self._username = username
-        self._password = password
+    def __init__(self, state_config: StateConfig) -> None:
+        if state_config.connection is None:
+            log.error("MySQL connection information must be provided in the configuration file")
+            sys.exit(1)
+
+        self.url = state_config.connection.url
+        self.database = state_config.connection.database
+        self._username = state_config.connection.credentials.username
+        self._password = state_config.connection.credentials.password
 
         self._connection_string = f"mysql+{self.url}://{self._username}:{self._password}@{self.database}"
         self._connection: Session | None = None
@@ -79,7 +85,6 @@ class MySQL(State):
         """
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
-
 
      ## Hosts
 

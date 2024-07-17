@@ -22,7 +22,7 @@ from premiscale.platform import Platform
 
 
 if TYPE_CHECKING:
-    from premiscale.config.v1alpha1 import Config
+    from premiscale.config._v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)
