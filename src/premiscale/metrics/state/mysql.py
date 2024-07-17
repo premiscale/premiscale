@@ -10,10 +10,15 @@ import logging
 from typing import TYPE_CHECKING
 from sqlmodel import Field, Session, SQLModel, create_engine
 from premiscale.metrics.state._base import State
-
+from premiscale.metrics.state.mysql_models import (
+    Host,
+    Domain,
+    AutoScalingGroup
+)
 
 if TYPE_CHECKING:
     from typing import List, Tuple
+    from sqlmodel.engine.base import Engine
 
 
 log = logging.getLogger(__name__)
@@ -24,13 +29,13 @@ class MySQL(State):
     Provide a clean interface to the MySQL database.
     """
     def __init__(self, url: str, database: str, username: str, password: str) -> None:
-        # url = 'mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>'
         self.url = url
-
         self.database = database
         self._username = username
         self._password = password
-        self._connection = None
+
+        self._connection_string = f"mysql+{self.url}://{self._username}:{self._password}@{self.database}"
+        self._connection: Session | None = None
 
     def is_connected(self) -> bool:
         """
@@ -45,26 +50,25 @@ class MySQL(State):
         """
         Open a connection to the MySQL database.
         """
-        # self.connection = mysql.connect(
-        #     self._username,
-        #     self._password,
-        #     self.url,
-        #     self.database
-        # )
-        self._username = ''
-        self._password = ''
+        if self._connection is None:
+            connection = create_engine(self._connection_string)
+            SQLModel.metadata.create_all(connection)
+            self._connection = Session(connection)
+        log.warning("Connection already open.")
 
     def close(self) -> None:
         """
         Close the connection with the database.
         """
-        # self._connection.close()
+        if self._connection is not None:
+            self._connection.close()
 
     def commit(self) -> None:
         """
         Commit changes to the database.
         """
-        # self._connection.commit()
+        if self._connection is not None:
+            self._connection.commit()
 
     def initialize(self) -> None:
         """
@@ -73,7 +77,10 @@ class MySQL(State):
         Raises:
             NotImplementedError: If the method is not implemented.
         """
-        raise NotImplementedError
+        if self._connection is None:
+            raise ValueError("Connection is not open. Please open the connection first.")
+
+
 
      ## Hosts
 

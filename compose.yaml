@@ -139,6 +139,8 @@ services:
       - 8086:8086
     networks:
       - controller
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
     deploy:
       resources:
         limits:
@@ -416,4 +418,6 @@ volumes:
   redis-cache:
     driver: local
   grafana-data:
+    driver: local
+  influxdb-data:
     driver: local
