@@ -65,7 +65,7 @@ class Local(State):
         """
         Open a connection to a SQLite database. Defaults to an in-memory database.
         """
-        log.debug('Opening connection to SQLite database at "{self.dbfile}"')
+        log.debug(f'Opening connection to SQLite database at "{self.dbfile}"')
         self._connection = sqlite3.connect(
             database=self.dbfile,
             check_same_thread=False
