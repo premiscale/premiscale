@@ -21,8 +21,8 @@ class Host(SQLModel, table=True):
     """
     id: int = Field(primary_key=True)
 
-    name: str
-    address: str
+    name: str = Field(index=True)
+    address: str = Field(index=True)
     protocol: str
     port: int
     hypervisor: str
@@ -39,8 +39,8 @@ class AutoScalingGroup(SQLModel, table=True):
     A model for the auto scaling group table.
     """
     id: int = Field(primary_key=True)
-    name: str
-    domain_id: int
+    name: str = Field(index=True)
+    domain_id: int = Field(foreign_key="domain.id")
     min_size: int
     max_size: int
     desired_capacity: int
@@ -51,6 +51,6 @@ class Domain(SQLModel, table=True):
     A model for the domain table.
     """
     id: int = Field(primary_key=True)
-    name: str
+    name: str = Field(index=True)
     host_id: int = Field(foreign_key="host.id")
     asg_id: int = Field(foreign_key="autoscalinggroup.id")
