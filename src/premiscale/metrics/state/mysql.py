@@ -10,13 +10,13 @@ import sys
 
 from typing import TYPE_CHECKING
 from sqlmodel import Session, SQLModel, create_engine
-from sqlalchemy.exc import ArgumentError
+from sqlalchemy.exc import ArgumentError, OperationalError
 from premiscale.metrics.state._base import State
 from premiscale.metrics.state._mysql_models import (
     # These tables are automatically created by SQLModel following import on database open.
     Host,
-    Domain,
-    AutoScalingGroup
+    AutoScalingGroup,
+    Domain
 )
 
 if TYPE_CHECKING:
@@ -62,6 +62,9 @@ class MySQL(State):
                 connection = create_engine(self._connection_string)
             except ArgumentError as e:
                 log.error(f"Failed to create connection: {e}")
+                sys.exit(1)
+            except OperationalError as e:
+                log.error(f"Failed to connect to database: {e}")
                 sys.exit(1)
 
             SQLModel.metadata.create_all(connection)

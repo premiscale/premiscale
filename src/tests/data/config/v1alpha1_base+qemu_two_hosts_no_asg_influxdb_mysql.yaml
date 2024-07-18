@@ -21,7 +21,7 @@ controller:
       type: mysql
 
       connection:
-        url: mysql:3306
+        url: mysql-agent-state:3306
         database: premiscale
         organization: premiscale
 

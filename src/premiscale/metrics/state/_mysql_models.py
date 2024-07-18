@@ -29,16 +29,6 @@ class Host(SQLModel, table=True):
     power: bool
 
 
-class Domain(SQLModel, table=True):
-    """
-    A model for the domain table.
-    """
-    id: int = Field(primary_key=True)
-    name: str
-    host_id: int = Field(foreign_key="host.id")
-    asg_id: int = Field(foreign_key="auto_scaling_group.id")
-
-
 class AutoScalingGroup(SQLModel, table=True):
     """
     A model for the auto scaling group table.
@@ -49,3 +39,13 @@ class AutoScalingGroup(SQLModel, table=True):
     min_size: int
     max_size: int
     desired_capacity: int
+
+
+class Domain(SQLModel, table=True):
+    """
+    A model for the domain table.
+    """
+    id: int = Field(primary_key=True)
+    name: str
+    host_id: int = Field(foreign_key="host.id")
+    asg_id: int = Field(foreign_key="autoscalinggroup.id")
