@@ -66,13 +66,13 @@ ruamel-yaml = "^0.18"
 prometheus-client = "^0.20"
 wrapt = "^1.16"
 xmltodict = "^0.13"
-tinyflux = "^1.0.0"
-grpcio = "^1.64.1"
-cachetools = "^5.3.3"
-influxdb-client = {extras = ["ciso"], version = "^1.44.0"}
-requests = "^2.32.3"
-pyhumps = "^3.8.0"
-mysqlclient = "^2.2.4"
+tinyflux = "^1.0"
+grpcio = "^1.64"
+cachetools = "^5.3"
+influxdb-client = {extras = ["ciso"], version = "^1.44"}
+requests = "^2.32"
+pyhumps = "^3.8"
+mysqlclient = "^2.2"
 
 [tool.poetry.group.profile.dependencies]
 memray = "^1.12"
