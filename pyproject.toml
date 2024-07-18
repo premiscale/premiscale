@@ -70,9 +70,10 @@ tinyflux = "^1.0.0"
 grpcio = "^1.64.1"
 cachetools = "^5.3.3"
 influxdb-client = {extras = ["ciso"], version = "^1.44.0"}
-
 requests = "^2.32.3"
 pyhumps = "^3.8.0"
+mysqlclient = "^2.2.4"
+
 [tool.poetry.group.profile.dependencies]
 memray = "^1.12"
 pytest-memray = "^1.6.0"

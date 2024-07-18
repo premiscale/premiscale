@@ -358,6 +358,16 @@ markupsafe==2.1.5 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:fa9db3f79de01457b03d4f01b34cf91bc0048eb2c3846ff26f66687c2f6d16ab \
     --hash=sha256:fce659a462a1be54d2ffcacea5e3ba2d74daa74f30f5f143fe0c58636e355fdd \
     --hash=sha256:ffee1f21e5ef0d712f9033568f8344d5da8cc2869dbd08d87c84656e6a2d2f68
+mysqlclient==2.2.4 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:329e4eec086a2336fe3541f1ce095d87a6f169d1cc8ba7b04ac68bcb234c9711 \
+    --hash=sha256:33bc9fb3464e7d7c10b1eaf7336c5ff8f2a3d3b88bab432116ad2490beb3bf41 \
+    --hash=sha256:3c318755e06df599338dad7625f884b8a71fcf322a9939ef78c9b3db93e1de7a \
+    --hash=sha256:4e80dcad884dd6e14949ac6daf769123223a52a6805345608bf49cdaf7bc8b3a \
+    --hash=sha256:9d3310295cb682232cadc28abd172f406c718b9ada41d2371259098ae37779d3 \
+    --hash=sha256:9d4c015480c4a6b2b1602eccd9846103fc70606244788d04aa14b31c4bd1f0e2 \
+    --hash=sha256:ac44777eab0a66c14cb0d38965572f762e193ec2e5c0723bcd11319cc5b693c5 \
+    --hash=sha256:d43987bb9626096a302ca6ddcdd81feaeca65ced1d5fe892a6a66b808326aa54 \
+    --hash=sha256:e1ebe3f41d152d7cb7c265349fdb7f1eca86ccb0ca24a90036cde48e00ceb2ab
 prometheus-client==0.20.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:287629d00b147a32dcb2be0b9df905da599b2d82f80377083ec8463309a4bb89 \
     --hash=sha256:cde524a85bce83ca359cc837f28b8c0db5cac7aa653a588fd7e84ba061c329e7

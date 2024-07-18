@@ -41,7 +41,7 @@ class MySQL(State):
         self._username = state_config.connection.credentials.username
         self._password = state_config.connection.credentials.password
 
-        self._connection_string = f"mysql://{self._username}:{self._password}@{self.url}/{self.database}"
+        self._connection_string = f"mysql+mysqldb://{self._username}:{self._password}@{self.url}/{self.database}"
         self._connection: Session | None = None
 
     def is_connected(self) -> bool:
