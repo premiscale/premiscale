@@ -9,8 +9,9 @@ import logging
 import sys
 
 from typing import TYPE_CHECKING
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel, create_engine, select
 from sqlalchemy.exc import ArgumentError, OperationalError
+from wrapt import synchronized
 from premiscale.metrics.state._base import State
 from premiscale.metrics.state._mysql_models import (
     # These tables are automatically created by SQLModel following import on database open.
@@ -53,6 +54,7 @@ class MySQL(State):
         """
         return self._connection is not None
 
+    @synchronized
     def open(self) -> None:
         """
         Open a connection to the MySQL database.
@@ -69,8 +71,11 @@ class MySQL(State):
 
             SQLModel.metadata.create_all(connection)
             self._connection = Session(connection)
+            return None
+
         log.warning("Connection already open.")
 
+    @synchronized
     def close(self) -> None:
         """
         Close the connection with the database.
@@ -78,6 +83,7 @@ class MySQL(State):
         if self._connection is not None:
             self._connection.close()
 
+    @synchronized
     def commit(self) -> None:
         """
         Commit changes to the database.
@@ -85,12 +91,13 @@ class MySQL(State):
         if self._connection is not None:
             self._connection.commit()
 
+    @synchronized
     def initialize(self) -> None:
         """
         Initialize the state backend.
 
         Raises:
-            NotImplementedError: If the method is not implemented.
+            ValueError: If the connection is not open.
         """
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
@@ -109,11 +116,29 @@ class MySQL(State):
             Tuple | None: Host record, if it exists. Otherwise, None.
 
         Raises:
-            NotImplementedError: If the method is not implemented.
+            ValueError: If the connection is not open.
         """
-        raise NotImplementedError
+        if self._connection is None:
+            raise ValueError("Connection is not open. Please open the connection first.")
 
-    def host_create(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
+        host = self._connection.query(Host).filter(
+            Host.name == name,
+            Host.address == address
+        ).first()
+
+        return host
+
+    @synchronized
+    def host_create(self,
+            name: str,
+            address: str,
+            protocol: str,
+            port: int,
+            hypervisor: str,
+            cpu: int,
+            memory: int,
+            storage: int
+        ) -> bool:
         """
         Create a host record.
 
@@ -131,10 +156,29 @@ class MySQL(State):
             bool: True if action completed successfully.
 
         Raises:
-            NotImplementedError: If the method is not implemented.
+            ValueError: If the connection is not open.
         """
-        raise NotImplementedError
+        if self._connection is None:
+            raise ValueError("Connection is not open. Please open the connection first.")
 
+        host = Host(
+            name=name,
+            address=address,
+            protocol=protocol,
+            port=port,
+            hypervisor=hypervisor,
+            cpu=cpu,
+            memory=memory,
+            storage=storage,
+            power=True
+        )
+
+        self._connection.add(host)
+        self._connection.commit()
+
+        return True
+
+    @synchronized
     def host_delete(self, name: str, address: str) -> bool:
         """
         Delete a host record.
@@ -151,6 +195,7 @@ class MySQL(State):
         """
         raise NotImplementedError
 
+    @synchronized
     def host_update(self, name: str, address: str, protocol: str, port: int, hypervisor: str, cpu: int, memory: int, storage: int) -> bool:
         """
         Update a host record.
@@ -169,9 +214,39 @@ class MySQL(State):
             bool: True if action completed successfully.
 
         Raises:
-            NotImplementedError: If the method is not implemented.
+            ValueError: If the connection is not open.
         """
-        raise NotImplementedError
+        if self._connection is None:
+            raise ValueError("Connection is not open. Please open the connection first.")
+
+        host = self._connection.exec(
+            select(Host).where(
+                Host.name == name,
+                Host.address == address
+            )
+        ).first()
+
+        new_host = Host(
+            name=name,
+            address=address,
+            protocol=protocol,
+            port=port,
+            hypervisor=hypervisor,
+            cpu=cpu,
+            memory=memory,
+            storage=storage,
+            # TODO:
+            power=True
+        )
+
+        log.debug(f'Host: {host}; New Host: {new_host}')
+
+        if host is not None and host != new_host:
+            self._connection.add(new_host)
+            self._connection.commit()
+            self._connection.refresh(host)
+
+        return True
 
     def host_exists(self, name: str, address: str) -> bool:
         """
@@ -185,14 +260,14 @@ class MySQL(State):
             bool: True if the host exists.
 
         Raises:
-            NotImplementedError: If the method is not implemented.
+            ValueError: If the connection is not open.
         """
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
 
         host = self._connection.query(Host).filter(
             Host.name == name,
-            Host.ip == address
+            Host.address == address
         ).first()
 
         log.info(f'Host: {host}')
@@ -213,6 +288,7 @@ class MySQL(State):
 
     ## VMs
 
+    @synchronized
     def vm_create(self, host: str, vm_name: str, cores: int, memory: int, storage: int) -> bool:
         """
         Create a host record.
@@ -232,6 +308,7 @@ class MySQL(State):
         """
         raise NotImplementedError
 
+    @synchronized
     def vm_delete(self, host: str, vm_name: str) -> bool:
         """
         Delete a VM on a specified host.
@@ -265,6 +342,7 @@ class MySQL(State):
 
     ## ASGs
 
+    @synchronized
     def asg_create(self, name: str) -> bool:
         """
         Create an autoscaling group.
@@ -280,6 +358,7 @@ class MySQL(State):
         """
         raise NotImplementedError
 
+    @synchronized
     def asg_delete(self, name: str) -> bool:
         """
         Delete an autoscaling group.
@@ -295,6 +374,7 @@ class MySQL(State):
         """
         raise NotImplementedError
 
+    @synchronized
     def asg_add_vm(self, host: str, vm_name: str) -> bool:
         """
         Add a VM on a host to an autoscaling group.
@@ -311,6 +391,7 @@ class MySQL(State):
         """
         raise NotImplementedError
 
+    @synchronized
     def asg_remove_vm(self, host: str, vm_name: str) -> bool:
         """
         Remove a VM on a host from an ASG.

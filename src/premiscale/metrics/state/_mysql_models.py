@@ -20,11 +20,16 @@ class Host(SQLModel, table=True):
     A model for the host table.
     """
     id: int = Field(primary_key=True)
+
     name: str
-    ip: str
+    address: str
+    protocol: str
     port: int
-    username: str
-    password: str
+    hypervisor: str
+    cpu: int
+    memory: int
+    storage: int
+
     # This field is used to indicate whether or not the host is on.
     power: bool
 
