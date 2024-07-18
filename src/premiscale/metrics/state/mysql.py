@@ -187,7 +187,17 @@ class MySQL(State):
         Raises:
             NotImplementedError: If the method is not implemented.
         """
-        raise NotImplementedError
+        if self._connection is None:
+            raise ValueError("Connection is not open. Please open the connection first.")
+
+        host = self._connection.query(Host).filter(
+            Host.name == name,
+            Host.ip == address
+        ).first()
+
+        log.info(f'Host: {host}')
+
+        return host is not None
 
     def host_report(self) -> List:
         """
