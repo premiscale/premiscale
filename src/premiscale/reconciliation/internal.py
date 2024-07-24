@@ -48,10 +48,6 @@ class Reconcile:
         config (Config): The parsed, user-provided config file.
     """
     def __init__(self, config: Config) -> None:
-        # Database connections
-        self.state_database: State
-        self.timeseries_database: TimeSeries
-
         # Queues
         self.platform_queue: Queue
         self.asg_queue: Queue
@@ -64,10 +60,6 @@ class Reconcile:
         log.debug('Starting reconciliation subprocess')
         self.asg_queue = asg_queue
         self.platform_queue = platform_queue
-
-        log.debug('Opening connections to state and metrics databases')
-        self.state_database = build_state_connection(self._config)
-        self.timeseries_database = build_timeseries_connection(self._config)
 
         self._reconcile()
 
@@ -83,9 +75,13 @@ class Reconcile:
             # that state.
             initial_queue: Dict[str, List[Action]] = {}
 
-            # Reconcile metrics and state databases into queued actions to bring the ASG back into the desired state.
-            with self.timeseries_database as timeseries, self.state_database as state:
-                ts = timeseries.get_all()
+            for asg in self._config.controller.autoscale.groups:
+                log.debug(f'Reconciling ASG {asg}')
+                # Reconcile metrics and state databases into queued actions to bring the ASG back into the desired state.
+                with build_timeseries_connection(self._config) as timeseries, build_state_connection(self._config) as state_connection:
+                    ts = timeseries.get_all()
+                    # state = state_connection.get(asg)
+                ...
 
             reconciliation_run_end = datetime.now(timezone.utc)
 

@@ -369,6 +369,13 @@ class AutoscalingGroups:
     Because keys are variable, we need to define a custom init method for autoscaling groups.
     """
 
+    def __iter__(self):
+        """
+        Iterate over the autoscaling groups.
+        """
+        for key, value in self.__dict__.items():
+            yield key, value
+
     # https://www.attrs.org/en/stable/init.html#custom-init
     def __init__(self, **kwargs: Dict[str, AutoscalingGroup]):
         for key, value in kwargs.items():

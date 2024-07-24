@@ -239,7 +239,8 @@ class MySQL(State):
             power=True
         )
 
-        log.debug(f'Host: {host}; New Host: {new_host}')
+        log.debug(f'Host: {host}, {type(host)}; New Host: {new_host}, {type(new_host)}')
+        log.debug(f'Host == New Host: {host == new_host}')
 
         if host is not None and host != new_host:
             self._connection.add(new_host)
@@ -253,7 +254,7 @@ class MySQL(State):
         Check if a host exists in the database.
 
         Args:
-            name (str): name of host to check for.
+            name (str): name of the host to check for in the database.
             address (str): IP address of the host.
 
         Returns:
