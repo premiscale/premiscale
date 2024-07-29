@@ -209,33 +209,52 @@ class Qemu(Libvirt):
 
         return domain_stats_filtered_list
 
-    def state(self) -> List[Tuple]:
+    def state(self, backend: str = 'local') -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
+
+        Args:
+            backend (str): the type of backend to convert metrics to. Defaults to 'local'. Acceptable values include 'local', 'mysql'.
 
         Returns:
             List[Tuple]: The state of the host and VMs on it.
         """
         return []
 
-    def timeseries(self) -> List[Tuple]:
+    def timeseries(self, backend: str = 'local') -> List[Tuple]:
         """
         Convert the stats from the host into a time series database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
 
+        Args:
+            backend (str): the type of backend to convert metrics to. Defaults to 'local'. Acceptable values include 'local', 'influxdb'.
+
         Returns:
             List[Tuple]: Stats to a list of metrics database entries.
+
+        Raises:
+            ValueError: if the specified backend could not be handled.
         """
 
         # TODO: Implement a method to convert the host stats into a metrics database entry.
         # host_stats: Dict = self._getHostStats()
 
-        ts = [
-            vm.to_influx() for vm in self._getVMStats()
-        ]
+        ts = []
+
+        match backend:
+            case 'influxdb':
+                ts = [
+                    vm.to_influx() for vm in self._getVMStats()
+                ]
+            case 'local':
+                ts = [
+                    vm.to_tinyflux() for vm in self._getVMStats()
+                ]
+            case _:
+                raise ValueError(f'Could not convert collected time series data to type "{backend}"')
 
         log.debug(f'Time series data for host {self.name}: "{ts}"')
 

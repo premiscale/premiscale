@@ -293,7 +293,9 @@ class MetricsCollector:
 
             if timeseriesConnection is not None:
                 # If time series data collection is enabled, collect and store both host and virtual machine time-series data about their performance.
-                domain_timeseries = host_connection.timeseries()
+                domain_timeseries = host_connection.timeseries(
+                    backend=self.config.controller.databases.timeseries.type
+                )
             else:
                 log.debug(f'Time series data collection is disabled. Skipping collection for host {host.name}')
                 return None
