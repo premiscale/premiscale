@@ -182,11 +182,14 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def state(self) -> List[Tuple]:
+    def state(self, backend: str) -> List[Tuple]:
         """
         Convert the stats from the host into a state database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
+
+        Args:
+            backend (str): the type of backend to convert the metrics' structure to.
 
         Returns:
             List[Tuple]: The state of the host and VMs on it.
@@ -197,11 +200,14 @@ class Libvirt(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def timeseries(self) -> List[Tuple]:
+    def timeseries(self, backend: str) -> List[Tuple]:
         """
         Convert the stats from the host into a metrics database entry. Instead of relying on the calling class to
         format these correctly, every interface is required to implement its own method to do so, since it's not
         guaranteed that the stats will be the same across different hypervisors.
+
+        Args:
+            backend (str): the type of backend to convert the metrics' structure to.
 
         Returns:
             List[Tuple]: The metrics for the host and VMs on it.
