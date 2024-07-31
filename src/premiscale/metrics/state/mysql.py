@@ -13,7 +13,7 @@ from sqlmodel import Session, SQLModel, create_engine, select
 from sqlalchemy.exc import ArgumentError, OperationalError
 from wrapt import synchronized
 from premiscale.metrics.state._base import State
-from premiscale.metrics.state._mysql_models import (
+from premiscale.metrics.state.mysql_models import (
     # These tables are automatically created by SQLModel following import on database open.
     Host,
     AutoScalingGroup,
@@ -21,7 +21,7 @@ from premiscale.metrics.state._mysql_models import (
 )
 
 if TYPE_CHECKING:
-    from typing import List, Tuple
+    from typing import List, Dict
     from premiscale.config._v1alpha1 import State as StateConfig
 
 
@@ -104,7 +104,7 @@ class MySQL(State):
 
      ## Hosts
 
-    def get_host(self, name: str, address: str) -> Tuple | None:
+    def get_host(self, name: str, address: str) -> Dict | None:
         """
         Get a host record.
 
@@ -113,7 +113,7 @@ class MySQL(State):
             address (str): IP address of the host.
 
         Returns:
-            Tuple | None: Host record, if it exists. Otherwise, None.
+            Dict | None: record as a Host object, if it exists. Otherwise, None.
 
         Raises:
             ValueError: If the connection is not open.
@@ -121,12 +121,18 @@ class MySQL(State):
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
 
-        host = self._connection.query(Host).filter(
-            Host.name == name,
-            Host.address == address
-        ).first()
+        host = self._connection.get(
+            Host,
+            (
+                name,
+                address
+            )
+        )
 
-        return host
+        if host is not None:
+            return host.model_dump()
+        else:
+            return None
 
     @synchronized
     def host_create(self,
@@ -266,10 +272,13 @@ class MySQL(State):
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
 
-        host = self._connection.query(Host).filter(
-            Host.name == name,
-            Host.address == address
-        ).first()
+        host = self._connection.get_one(
+            Host,
+            (
+                name,
+                address
+            )
+        )
 
         log.info(f'Host: {host}')
 

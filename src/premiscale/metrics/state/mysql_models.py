@@ -29,8 +29,9 @@ class Host(SQLModel, table=True):
     memory: int
     storage: int
 
+    ipmi_address: str = Field(index=True)
     # This field is used to indicate whether or not the host is on.
-    power: bool
+    power: bool = Field(default=True)
 
 
 class AutoScalingGroup(SQLModel, table=True):
