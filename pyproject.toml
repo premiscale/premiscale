@@ -73,6 +73,7 @@ influxdb-client = {extras = ["ciso"], version = "^1.44"}
 requests = "^2.32"
 pyhumps = "^3.8"
 mysqlclient = "^2.2"
+kubernetes = "^30.1.0"
 
 [tool.poetry.group.profile.dependencies]
 memray = "^1.12"

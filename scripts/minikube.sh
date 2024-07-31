@@ -19,19 +19,39 @@ fi
 
 
 if [ "$1" == "start" ]; then
-    minikube start \
-        -p premiscale \
-        --kubernetes-version v1.28.3 \
-        --extra-config=kubelet.runtime-request-timeout=40m \
-        --addons=ingress \
-        --addons=metallb \
-        --addons=metrics-server \
-        --addons=registry \
-        --insecure-registry "10.0.0.0/24" \
-        --cpus 4 \
-        --nodes 1 \
-        --memory 4096 \
-        --disk-size 30g
+    if [ "$(uname)" = "Darwin" ]; then
+        # macOS
+        minikube start \
+            -p premiscale \
+            --driver=qemu \
+            --network user \
+            --kubernetes-version v1.28.3 \
+            --extra-config=kubelet.runtime-request-timeout=40m \
+            --addons=ingress \
+            --addons=metallb \
+            --addons=metrics-server \
+            --addons=registry \
+            --insecure-registry "10.0.101.0/24" \
+            --nodes 2 \
+            --cpus 4 \
+            --memory 8192 \
+            --disk-size 30g
+    else
+        # Linux
+        minikube start \
+            -p premiscale \
+            --kubernetes-version v1.28.3 \
+            --extra-config=kubelet.runtime-request-timeout=40m \
+            --addons=ingress \
+            --addons=metallb \
+            --addons=metrics-server \
+            --addons=registry \
+            --insecure-registry "10.0.101.0/24" \
+            --nodes 2 \
+            --cpus 4 \
+            --memory 8192 \
+            --disk-size 30g
+    fi
 
     # Docker registry for localhost images.
     docker run --name docker-registry-redirect --rm -itd --network=host ubuntu:22.04 /bin/bash -c "apt update && apt install -y socat && socat TCP-LISTEN:5000,reuseaddr,fork TCP:$(minikube ip -p premiscale):5000"

@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 
 from typing import TYPE_CHECKING
+from kubernetes import client, config
 from datetime import datetime, timezone
 from time import sleep
 from setproctitle import setproctitle
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
 
 
 log = logging.getLogger(__name__)
+config.load_incluster_config()
 
 
 class Reconcile:

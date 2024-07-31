@@ -73,6 +73,7 @@ The controller requires a user-provided config file in order to interact with ho
 | Name                    | Description                                 | Value   |
 | ----------------------- | ------------------------------------------- | ------- |
 | `serviceAccount.create` | If true, a service account will be created. | `false` |
+| `serviceAccount.name`   | The name of the service account.            | `""`    |
 
 ### PremiScale Controller Config
 
