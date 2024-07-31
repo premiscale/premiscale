@@ -13,7 +13,7 @@ from setproctitle import setproctitle
 
 if TYPE_CHECKING:
     from typing import Any
-    from premiscale.config.v1alpha1 import Config
+    from premiscale.config._v1alpha1 import Config
 
 
 log = logging.getLogger(__name__)

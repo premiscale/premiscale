@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from importlib import resources
 from yamale import make_schema, make_data, validate as yamale_validate
-from premiscale.config.v1alpha1 import Config
+from premiscale.config._v1alpha1 import Config
 from premiscale.config import build_config_from_version
 
 
@@ -54,7 +54,11 @@ def configParse(configPath: str) -> Config:
                 sys.exit(1)
 
             # Parse the config into a Config object, now.
-            _config = build_config_from_version(_loaded_config['version']).from_dict(_loaded_config)
+            _config = build_config_from_version(
+                _loaded_config['version']
+            ).from_dict(
+                _loaded_config
+            )
         except (yaml.YAMLError, KeyError) as e:
             log.error(f'Error parsing config file: {e}')
             sys.exit(1)

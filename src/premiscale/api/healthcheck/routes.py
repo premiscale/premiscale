@@ -44,7 +44,27 @@ def create_healthcheck_api(app: Flask) -> None:
     @app.get('/ready')
     def ready() -> Response:
         """
-        Quick unauthenticated ready endpoint.
+        Quick unauthenticated readiness endpoint.
+
+        Returns:
+            Response: an object with schema like
+
+            {
+                "status": "OK"
+            }
+        """
+        return Response(
+            {
+                'status': 'OK'
+            },
+            status=HTTPStatus.OK,
+            mimetype='application/json'
+        )
+
+    @app.get('/startup')
+    def startup() -> Response:
+        """
+        Quick unauthenticated startup endpoint.
 
         Returns:
             Response: an object with schema like

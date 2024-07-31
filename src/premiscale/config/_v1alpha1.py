@@ -13,6 +13,7 @@ from pathlib import Path
 from attrs import define
 from attr import ib
 from cattrs import structure
+from textwrap import dedent
 
 # In this particular module, cattrs requires these types during runtime to unpack,
 # so we skip the TYPE_CHECKING check wrapping these imports.
@@ -251,7 +252,14 @@ class Host:
             if _conf != '':
                 ssh_config_f.write('\n')
 
-            ssh_config_f.write(f'Host {self.address}\n\tConnectTimeout {self.timeout}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/{self.name}\n')
+            ssh_config_f.write(
+                dedent(f"""
+                Host {self.address}
+                    ConnectTimeout {self.timeout}
+                    StrictHostKeyChecking no
+                    IdentityFile ~/.ssh/{self.name}
+                """).lstrip()
+            )
 
         # Write the SSH key to the ~/.ssh directory.
         if self.sshKey is not None:
@@ -360,6 +368,13 @@ class AutoscalingGroups:
     """
     Because keys are variable, we need to define a custom init method for autoscaling groups.
     """
+
+    def __iter__(self):
+        """
+        Iterate over the autoscaling groups.
+        """
+        for key, value in self.__dict__.items():
+            yield key, value
 
     # https://www.attrs.org/en/stable/init.html#custom-init
     def __init__(self, **kwargs: Dict[str, AutoscalingGroup]):

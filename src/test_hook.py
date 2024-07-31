@@ -10,7 +10,7 @@ import logging
 
 from ipaddress import IPv4Address
 from premiscale.metrics.state.local import Local
-from premiscale.config.v1alpha1 import Host
+from premiscale.config._v1alpha1 import Host
 
 
 log = logging.getLogger(__name__)

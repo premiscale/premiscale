@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 
 
 if TYPE_CHECKING:
-    from typing import Any, List, Tuple
+    from typing import Any, List, Dict
 
 
 log = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class State(ABC):
     ## Hosts
 
     @abstractmethod
-    def get_host(self, name: str, address: str) -> Tuple | None:
+    def get_host(self, name: str, address: str) -> Dict | None:
         """
         Get a host record.
 
@@ -98,7 +98,7 @@ class State(ABC):
             address (str): IP address of the host.
 
         Returns:
-            Tuple | None: Host record, if it exists. Otherwise, None.
+            Dict | None: Host record, if it exists. Otherwise, None.
 
         Raises:
             NotImplementedError: If the method is not implemented.

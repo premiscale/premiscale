@@ -14,7 +14,7 @@ from premiscale.metrics.state._base import State
 
 
 if TYPE_CHECKING:
-    from typing import List, Tuple
+    from typing import List, Tuple, Dict
 
 
 log = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ class Local(State):
     ## Hosts
 
     @synchronized
-    def get_host(self, name: str, address: str) -> Tuple | None:
+    def get_host(self, name: str, address: str) -> Dict | None:
         """
         Get a host record.
 
@@ -127,12 +127,14 @@ class Local(State):
             address (str): IP address of the host.
 
         Returns:
-            Tuple | None: Host record, if it exists. Otherwise, None.
+            Dict | None: Host record, if it exists. Otherwise, None.
         """
-        entries = self._cursor.execute(
-            'SELECT * FROM hosts WHERE name = ? AND address = ?',
-            (name, address)
-        ).fetchall()
+        entries = [
+            dict(row) for row in self._cursor.execute(
+                'SELECT * FROM hosts WHERE name = ? AND address = ?',
+                (name, address)
+            ).fetchall() if row is not None
+        ]
 
         if len(entries) > 1:
             log.error(f'Expected 1 host record, got {len(entries)}. Returning the first entry.')
