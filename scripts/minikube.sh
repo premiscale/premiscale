@@ -40,6 +40,8 @@ if [ "$1" == "start" ]; then
         # Linux
         minikube start \
             -p premiscale \
+            --driver=kvm2 \
+            --network user \
             --kubernetes-version v1.28.3 \
             --extra-config=kubelet.runtime-request-timeout=40m \
             --addons=ingress \

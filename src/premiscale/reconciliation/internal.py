@@ -1,5 +1,5 @@
 """
-Reconcile metrics and state databases and place Actions on the autoscaling queue for the Autoscaling subprocess.
+Reconcile metrics and state databases, in addition to cluster state, and place Actions on the autoscaling queue for the Autoscaling subprocess.
 """
 
 
