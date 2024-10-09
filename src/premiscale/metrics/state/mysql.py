@@ -269,15 +269,7 @@ class MySQL(State):
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
 
-        host = self._connection.get(
-            Host,
-            (
-                name,
-                address
-            )
-        )
-
-        log.info(f'Host: {host}')
+        host = self.get_host(name, address)
 
         return host is not None
 

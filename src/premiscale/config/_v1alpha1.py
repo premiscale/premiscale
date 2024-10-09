@@ -11,7 +11,7 @@ import sys
 
 from pathlib import Path
 from attrs import define
-from attr import ib
+from attr import ib, make_class
 from cattrs import structure
 from textwrap import dedent
 
@@ -369,24 +369,6 @@ class AutoscalingGroups:
     Because keys are variable, we need to define a custom init method for autoscaling groups.
     """
 
-    def __iter__(self):
-        """
-        Iterate over the autoscaling groups.
-        """
-        for key, value in self.__slots__.items():
-            yield key, value
-
-    # https://www.attrs.org/en/stable/init.html#custom-init
-    def __init__(self, **kwargs: Dict[str, AutoscalingGroup]):
-        for key, value in kwargs.items():
-            # This ends up being like,
-            # asg_1: AutoscalingGroup
-            # asg_2: AutoscalingGroup
-            # etc. But we don't know how many ASGs users will configure so we can't statically type the keys.
-            setattr(self, key, value)
-
-        # self.__attrs_init__()
-
 
 @define
 class Autoscale:
@@ -394,8 +376,32 @@ class Autoscale:
     Autoscale configuration options.
     """
     hosts: List[Host]
-    groups: AutoscalingGroups
+    _groups: AutoscalingGroups | None = ib(default=None)
 
+    # Amazing.
+    # https://github.com/python-attrs/attrs/issues/150#issuecomment-281182029
+    @property
+    def groups(self) -> AutoscalingGroups | None:
+        """
+        Get the autoscaling groups.
+
+        Returns:
+            AutoscalingGroups | None: The autoscaling groups.
+        """
+        return self._groups
+
+    @groups.setter
+    def groups(self, value: Dict[str, AutoscalingGroup]) -> None:
+        """
+        Set the autoscaling groups.
+
+        Args:
+            value (Dict[str, AutoscalingGroup]): The autoscaling groups.
+        """
+        self._groups = make_class(
+            'AutoscalingGroups',
+            {key: structure(value[key], AutoscalingGroup) for key in value}
+        )()
 
 @define
 class Healthcheck:
