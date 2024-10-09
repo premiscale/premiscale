@@ -11,13 +11,17 @@ import sys
 
 from pathlib import Path
 from attrs import define
-from attr import ib, make_class
+from attr import ib, make_class, s
 from cattrs import structure
 from textwrap import dedent
 
 # In this particular module, cattrs requires these types during runtime to unpack,
 # so we skip the TYPE_CHECKING check wrapping these imports.
-from typing import Dict, List
+from typing import Dict, List, TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 log = logging.getLogger(__name__)
@@ -363,30 +367,23 @@ class AutoscalingGroup:
     scaling: ScaleStrategy
 
 
-@define(frozen=False, slots=True)
-class AutoscalingGroups:
-    """
-    Because keys are variable, we need to define a custom init method for autoscaling groups.
-    """
-
-
-@define
+@s
 class Autoscale:
     """
     Autoscale configuration options.
     """
     hosts: List[Host]
-    _groups: AutoscalingGroups | None = ib(default=None)
+    _groups = ib()
 
     # Amazing.
     # https://github.com/python-attrs/attrs/issues/150#issuecomment-281182029
     @property
-    def groups(self) -> AutoscalingGroups | None:
+    def groups(self) -> Any:
         """
         Get the autoscaling groups.
 
         Returns:
-            AutoscalingGroups | None: The autoscaling groups.
+            Any: The autoscaling groups.
         """
         return self._groups
 
@@ -400,8 +397,10 @@ class Autoscale:
         """
         self._groups = make_class(
             'AutoscalingGroups',
-            {key: structure(value[key], AutoscalingGroup) for key in value}
-        )()
+            {key: structure(value[key], AutoscalingGroup) for key in value},
+            slots=True,
+            frozen=False
+        )
 
 @define
 class Healthcheck:
