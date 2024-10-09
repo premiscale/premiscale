@@ -13,7 +13,7 @@ from cattr import unstructure
 
 if TYPE_CHECKING:
     from premiscale.hypervisor._base import Libvirt
-    from premiscale.config.v1alpha1 import Host
+    from premiscale.config._v1alpha1 import Host
 
 
 log = logging.getLogger(__name__)

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
         DeleteApi,
         BucketsAPI
     )
-    from premiscale.config.v1alpha1 import TimeSeries as TimeSeriesConfig
+    from premiscale.config._v1alpha1 import TimeSeries as TimeSeriesConfig
 
 
 log = logging.getLogger(__name__)

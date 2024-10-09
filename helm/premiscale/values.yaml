@@ -162,6 +162,9 @@ serviceAccount:
   ## @param serviceAccount.create [default: false] If true, a service account will be created.
   create: false
 
+  ## @param serviceAccount.name [string] The name of the service account.
+  name: premiscale
+
 
 ## @section PremiScale Controller Config
 

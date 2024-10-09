@@ -22,7 +22,7 @@ from premiscale.hypervisor import build_hypervisor_connection
 if TYPE_CHECKING:
     from typing import Iterator, List, Tuple
     # TODO: Update this to 'from premiscale.config._config import ConfigVersion as Config' once an ABC for Host is implemented.
-    from premiscale.config.v1alpha1 import Config, Host
+    from premiscale.config._v1alpha1 import Config, Host
     from premiscale.metrics.state._base import State
     from premiscale.metrics.timeseries._base import TimeSeries
 
@@ -80,6 +80,7 @@ def build_state_connection(config: Config) -> State:
     """
     match config.controller.databases.state.type:
         case 'memory':
+            log.debug(f'Using local memory for state database')
             # SQLite
             from premiscale.metrics.state.local import Local
 
@@ -87,12 +88,12 @@ def build_state_connection(config: Config) -> State:
                 dbfile=config.controller.databases.state.dbfile
             )
         case 'mysql':
+            log.debug(f'Using MySQL for state database')
             from premiscale.metrics.state.mysql import MySQL
 
-            connection = unstructure(config.controller.databases.state)
-            del(connection['type'])
-
-            return MySQL(**connection)
+            return MySQL(
+                config.controller.databases.state
+            )
         case _:
             raise ValueError(f'Unknown state database type: {config.controller.databases.state.type}')
 
@@ -282,10 +283,14 @@ class MetricsCollector:
             stateConnection = build_state_connection(self.config)
             stateConnection.open()
 
+            stored_host_state = stateConnection.get_host(host.name, host.address)
+            host_state = host.state()
+
             # Diff current state and recorded state and update the state database. We
             # split reads and writes here to avoid locking the database for too long.
-            if stateConnection.get_host(host.name, host.address) != (host_state := host.state()):
+            if stored_host_state and host_state and tuple(sorted(stored_host_state)) != (tuple(sorted(host_state.values()))):
                 log.debug(f'Host {host.name} has changed. Updating state database entry')
+
                 stateConnection.host_update(
                     **host_state,
                 )

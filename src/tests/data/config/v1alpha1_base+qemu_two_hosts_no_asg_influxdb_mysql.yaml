@@ -7,6 +7,7 @@ controller:
   kubernetes:
     autoscalerPort: 8085
     autoscalerHost: cluster-autoscaler
+
   healthcheck:
     host: 127.0.0.1
     port: 8085
@@ -17,15 +18,35 @@ controller:
     hostConnectionTimeout: 60
 
     state:
-      type: memory
+      type: mysql
+
+      connection:
+        url: mysql-agent-state:3306
+        database: premiscale
+        organization: premiscale
+
+        credentials:
+          username: premiscale
+          password: premiscale
 
     timeseries:
-      type: memory
+      type: influxdb
       retention: 300
+
+      connection:
+        url: http://influxdb:8086
+        database: premiscale
+        organization: premiscale
+
+        credentials:
+          username: na
+          password: premiscale
+
   platform:
     actionsQueueMaxSize: 0
     domain: $PREMISCALE_PLATFORM
     token: $PREMISCALE_TOKEN
+
     certificates:
       path: $PREMISCALE_CACERT
 
@@ -37,6 +58,14 @@ controller:
       - name: tynan-local
         address: 10.0.0.100
         port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
+        user: emma
+        protocol: SSH
+        hypervisor: qemu
+      - name: rocinante-local
+        address: 10.0.0.102
+        port: 22
+        sshKey: $PREMISCALE_TEST_SSH_KEY
         user: emma
         protocol: SSH
         hypervisor: qemu

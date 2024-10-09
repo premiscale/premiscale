@@ -56,15 +56,15 @@ services:
     ports:
       - 8085:8085
   ##
-  premiscale-two-hosts-influxdb:
+  premiscale-two-hosts-influxdb-mysql:
     <<: *premiscale
-    container_name: premiscale-two-hosts-influxdb
+    container_name: premiscale-two-hosts-influxdb-mysql
     profiles:
-      - two_hosts_influxdb
+      - two_hosts_influxdb_mysql
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg_influxdb_mysql.yaml:/opt/premiscale/config.yaml:ro
   ##
   premiscale-two-hosts: &premiscale-two-hosts
     <<: *premiscale
@@ -74,7 +74,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_two_hosts_no_asg.yaml:/opt/premiscale/config.yaml:ro
   ##
   premiscale-two-hosts-profile:
     <<: [*premiscale-two-hosts, *premiscale]
@@ -85,7 +85,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_zero_no_asg.yaml:/opt/premiscale/config.yaml:ro
       # Mount the output file to the host for generating flamegraphs of the controller's performance.
       - ./profile/output.bin:/opt/premiscale/output.bin
   ##
@@ -97,7 +97,7 @@ services:
     volumes:
       - ./certs/cert.pem:/opt/premiscale/cert.pem:ro
       # Mount a different config from the default into the running container for testing.
-      - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml
+      - ./src/tests/data/config/v1alpha1_base+qemu_single_host_no_asg.yaml:/opt/premiscale/config.yaml:ro
   mysql-agent-state:
     container_name: mysql-agent
     image: mysql:9.0.0
@@ -139,6 +139,8 @@ services:
       - 8086:8086
     networks:
       - controller
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
     deploy:
       resources:
         limits:
@@ -186,7 +188,7 @@ services:
       # SQLite data
       - grafana-data:/var/lib/grafana
       # Config
-      - ./config/grafana/config.ini:/etc/grafana/grafana.ini:ro
+      - ./src/tests/config/grafana/config.ini:/etc/grafana/grafana.ini:ro
     deploy:
       resources:
         limits:
@@ -239,7 +241,7 @@ services:
     ports:
       - 443:443
     volumes:
-      - ./config/nginx/compose.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./src/tests/config/nginx/compose.nginx.conf:/etc/nginx/nginx.conf:ro
       - ./certs:/etc/nginx/certs:ro
     networks:
       - platform
@@ -280,7 +282,7 @@ services:
   #         cpus: '0.25'
   #         memory: 300M
   echoes:
-    container_name: premiscale-echoes
+    container_name: echoes
     build:
       context: ../echoes/
       dockerfile: Dockerfile.develop
@@ -323,7 +325,7 @@ services:
       timeout: 5s
       retries: 3
   registration:
-    container_name: premiscale-registration
+    container_name: registration
     build:
       context: ../registration/
       dockerfile: Dockerfile.develop
@@ -416,4 +418,6 @@ volumes:
   redis-cache:
     driver: local
   grafana-data:
+    driver: local
+  influxdb-data:
     driver: local
