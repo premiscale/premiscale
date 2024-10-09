@@ -125,6 +125,7 @@ repos:
     rev: 0.4.2
     hooks:
       - id: pydoclint
+        entry: /usr/bin/env poetry run pydoclint
         args:
           - --style=google
           - --config=pyproject.toml

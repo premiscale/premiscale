@@ -363,7 +363,7 @@ class AutoscalingGroup:
     scaling: ScaleStrategy
 
 
-@define(frozen=False)
+@define(frozen=False, slots=True)
 class AutoscalingGroups:
     """
     Because keys are variable, we need to define a custom init method for autoscaling groups.
@@ -373,7 +373,7 @@ class AutoscalingGroups:
         """
         Iterate over the autoscaling groups.
         """
-        for key, value in self.__dict__.items():
+        for key, value in self.__slots__.items():
             yield key, value
 
     # https://www.attrs.org/en/stable/init.html#custom-init
@@ -384,6 +384,8 @@ class AutoscalingGroups:
             # asg_2: AutoscalingGroup
             # etc. But we don't know how many ASGs users will configure so we can't statically type the keys.
             setattr(self, key, value)
+
+        # self.__attrs_init__()
 
 
 @define

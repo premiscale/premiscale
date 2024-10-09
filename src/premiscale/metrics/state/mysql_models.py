@@ -33,6 +33,26 @@ class Host(SQLModel, table=True):
     # This field is used to indicate whether or not the host is on.
     power: bool = Field(default=True)
 
+    def equals(self, other: Host) -> bool:
+        """
+        Compares two Host objects to determine if they are equal.
+
+        Args:
+            other (Host): The other Host object to compare to.
+
+        Returns:
+            bool: True if the two Host objects are equal, False otherwise.
+        """
+        return self.name == other.name \
+            and self.address == other.address \
+            and self.protocol == other.protocol \
+            and self.port == other.port \
+            and self.hypervisor == other.hypervisor \
+            and self.cpu == other.cpu \
+            and self.memory == other.memory \
+            and self.storage == other.storage \
+            and self.power == other.power
+
 
 class AutoScalingGroup(SQLModel, table=True):
     """

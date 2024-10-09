@@ -102,7 +102,7 @@ class Local(State):
         """
         Initialize the SQLite database.
         """
-        log.info('Initializing SQLite database at "{self.dbfile}"')
+        log.info(f'Initializing SQLite database at "{self.dbfile}"')
         self._cursor.execute(
             'CREATE TABLE IF NOT EXISTS hosts (name TEXT, address TEXT, protocol TEXT, port INTEGER, hypervisor TEXT, cpu INTEGER, memory INTEGER, storage INTEGER)'
         )

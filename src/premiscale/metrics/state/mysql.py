@@ -129,10 +129,17 @@ class MySQL(State):
             )
         )
 
+<<<<<<< HEAD
         if host is not None:
             return host.model_dump()
         else:
             return None
+=======
+        if host is None:
+            return None
+
+        return host.name, host.address, host.protocol, host.port, host.hypervisor, host.cpu, host.memory, host.storage
+>>>>>>> 54f7ec8 (AGENT-121: Sync)
 
     @synchronized
     def host_create(self,
@@ -245,10 +252,7 @@ class MySQL(State):
             power=True
         )
 
-        log.debug(f'Host: {host}, {type(host)}; New Host: {new_host}, {type(new_host)}')
-        log.debug(f'Host == New Host: {host == new_host}')
-
-        if host is not None and host != new_host:
+        if host is not None and host.equals(new_host):
             self._connection.add(new_host)
             self._connection.commit()
             self._connection.refresh(host)

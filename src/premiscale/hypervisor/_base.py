@@ -123,7 +123,7 @@ class Libvirt(ABC):
         Open a connection to the Libvirt hypervisor.
         """
         try:
-            log.debug(f'Attempting to connect to host at {self.connection_string}')
+            log.debug(f'Connecting to host at {self.connection_string}')
 
             if self.readonly:
                 self._connection = lv.openReadOnly(self.connection_string)
