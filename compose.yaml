@@ -282,7 +282,7 @@ services:
   #         cpus: '0.25'
   #         memory: 300M
   echoes:
-    container_name: premiscale-echoes
+    container_name: echoes
     build:
       context: ../echoes/
       dockerfile: Dockerfile.develop
@@ -325,7 +325,7 @@ services:
       timeout: 5s
       retries: 3
   registration:
-    container_name: premiscale-registration
+    container_name: registration
     build:
       context: ../registration/
       dockerfile: Dockerfile.develop

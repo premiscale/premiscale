@@ -38,7 +38,11 @@ if TYPE_CHECKING:
 
 
 log = logging.getLogger(__name__)
-config.load_incluster_config()
+
+try:
+    config.load_incluster_config()
+except config.config_exception.ConfigException:
+    log.warning('Failed to load in-cluster configuration. Aborting Kubernetes client setup.')
 
 
 class Reconcile:

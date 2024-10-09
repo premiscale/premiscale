@@ -21,7 +21,7 @@ from premiscale.metrics.state.mysql_models import (
 )
 
 if TYPE_CHECKING:
-    from typing import List, Dict
+    from typing import List, Tuple
     from premiscale.config._v1alpha1 import State as StateConfig
 
 
@@ -104,7 +104,7 @@ class MySQL(State):
 
      ## Hosts
 
-    def get_host(self, name: str, address: str) -> Dict | None:
+    def get_host(self, name: str, address: str) -> Tuple | None:
         """
         Get a host record.
 
@@ -113,7 +113,7 @@ class MySQL(State):
             address (str): IP address of the host.
 
         Returns:
-            Dict | None: record as a Host object, if it exists. Otherwise, None.
+            Tuple | None: record as a Host object, if it exists. Otherwise, None.
 
         Raises:
             ValueError: If the connection is not open.
@@ -129,17 +129,10 @@ class MySQL(State):
             )
         )
 
-<<<<<<< HEAD
-        if host is not None:
-            return host.model_dump()
-        else:
-            return None
-=======
         if host is None:
             return None
 
         return host.name, host.address, host.protocol, host.port, host.hypervisor, host.cpu, host.memory, host.storage
->>>>>>> 54f7ec8 (AGENT-121: Sync)
 
     @synchronized
     def host_create(self,
@@ -276,7 +269,7 @@ class MySQL(State):
         if self._connection is None:
             raise ValueError("Connection is not open. Please open the connection first.")
 
-        host = self._connection.get_one(
+        host = self._connection.get(
             Host,
             (
                 name,
