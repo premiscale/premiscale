@@ -283,9 +283,9 @@ grpcio==1.65.1 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:f40cebe5edb518d78b8131e87cb83b3ee688984de38a232024b9b44e74ee53d3 \
     --hash=sha256:f62652ddcadc75d0e7aa629e96bb61658f85a993e748333715b4ab667192e4e8 \
     --hash=sha256:ff5a84907e51924973aa05ed8759210d8cdae7ffcf9e44fd17646cf4a902df59
-idna==3.7 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc \
-    --hash=sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0
+idna==3.15; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:048adeaf8c2d788c40fee287673ccaa74c24ffd8dcf09ffa555a2fbb59f10ac8 \
+    --hash=sha256:ca962446ea538f7092a95e057da437618e886f4d349216d2b1e294abfdb65fdc
 influxdb-client[ciso]==1.44.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:da9bc0cc49de4a0ac844d833c1efa65227ec5a2254e63cdbe07b5d532c0c37f8 \
     --hash=sha256:e4c1ac9c9925c4693d63e988e22f65d2ddc1867f8910813b7f4721633175f2a0
