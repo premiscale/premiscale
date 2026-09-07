@@ -541,17 +541,19 @@ dotenv = ["python-dotenv"]
 
 [[package]]
 name = "flask-cors"
-version = "4.0.1"
-description = "A Flask extension adding a decorator for CORS support"
+version = "6.0.5"
+description = "A Flask extension simplifying CORS support"
 optional = false
-python-versions = "*"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "Flask_Cors-4.0.1-py2.py3-none-any.whl", hash = "sha256:f2a704e4458665580c074b714c4627dd5a306b333deb9074d0b1794dfa2fb677"},
-    {file = "flask_cors-4.0.1.tar.gz", hash = "sha256:eeb69b342142fdbf4766ad99357a7f3876a2ceb77689dc10ff912aac06c389e4"},
+    {file = "flask_cors-6.0.5-py3-none-any.whl", hash = "sha256:68fcf75693e961f3af26683b23c4b9a8fb6b64de17d20d0c37b95e8de7ab2ed8"},
+    {file = "flask_cors-6.0.5.tar.gz", hash = "sha256:30c5031552cd59f620ac0c8211dac45b345d3b2df310e7721879e4f46ef9c601"},
 ]
 
 [package.dependencies]
-Flask = ">=0.9"
+flask = ">=0.9"
+typing_extensions = {version = ">=4.6.0", markers = "python_version < \"3.11\""}
+Werkzeug = ">=0.7"
 
 [[package]]
 name = "greenlet"
@@ -2470,4 +2472,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d38a1ae5b7d92b71abc20637d6f62e807e04213d29f8b90ad2b9ea6db6874691"
+content-hash = "0528ea9c5eb966bfb5266a91525ce1438315ad5ba4989c9cc995679e7a0c78ba"
